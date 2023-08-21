@@ -1,0 +1,22 @@
+{
+  "name": "contracts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "anvil --host 0.0.0.0",
+    "deploy": "forge build && forge create --rpc-url localhost:8545 --private-key $(grep PRIVATE_KEY .env | cut -d '=' -f2) src/Royale.sol:Royale --constructor-args $(grep TESTER1 .env | cut -d '=' -f2)",
+    "creategame": "cast send $(grep ROYALE .env | cut -d '=' -f2) --private-key $(grep PRIVATE_KEY .env | cut -d '=' -f2) 'createGame(uint256)' 1ether --value 1ether",
+    "deploy-create": "pnpm run deploy && pnpm run creategame",
+    "checkgame": "cast call $(grep ROYALE .env | cut -d '=' -f2) 'games(uint256)' ",
+    "joingame": "cast send $(grep ROYALE .env | cut -d '=' -f2) --private-key $(grep KEY2 .env | cut -d '=' -f2) 'joinGame(uint256)'",
+    "startgame": "cast send $(grep ROYALE .env | cut -d '=' -f2) --private-key $(grep PRIVATE_KEY .env | cut -d '=' -f2) 'startGame(uint256)'",
+    "setready1": "cast send $(grep ROYALE .env | cut -d '=' -f2) --private-key $(grep PRIVATE_KEY .env | cut -d '=' -f2) 'setReady(uint256 , address , bool)'",
+    "setready2": "cast send $(grep ROYALE .env | cut -d '=' -f2) --private-key $(grep KEY2 .env | cut -d '=' -f2) 'setReady(uint256 , address , bool)'",
+    "call": "cast call $(grep ROYALE .env | cut -d '=' -f2)",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
