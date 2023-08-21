@@ -237,6 +237,41 @@ contract Royale is Ownable {
         return games[_roomId].info.totalStaked;
     }
 
+    function getRoomBoard(uint256 _roomId, uint8 _tilePos) public view returns (uint8, bool){
+        return (games[_roomId].board[_tilePos].occupantId,
+            games[_roomId].board[_tilePos].isWall
+        );
+    }
+
+    function getPlayerIds(uint256 _roomId) public view returns (address[MAX_PLAYERS] memory){
+        return games[_roomId].playerIds;
+    }
+
+    function getPlayerFTs(uint256 _roomId) public view returns (uint16[MAX_PLAYERS] memory){
+        return games[_roomId].playerFTs;
+    }
+
+    function getPiecePositions(uint256 _roomId) public view returns (uint8[MAX_PLAYERS*2-1] memory){
+        return games[_roomId].positions;
+    }
+
+    function getPlayerLives(uint256 _roomId) public view returns (bool[MAX_PLAYERS] memory){
+        return games[_roomId].playerAlive;
+    }
+
+    function getPlayerReadiness(uint256 _roomId) public view returns (bool[MAX_PLAYERS] memory){
+        return games[_roomId].playerReady;
+    }
+
+    function getPlayerPauseVote(uint256 _roomId) public view returns (bool[MAX_PLAYERS] memory){
+        return games[_roomId].playerPauseVote;
+    }
+
+    function getPlayerLastMoveTime(uint256 _roomId) public view returns (uint256[MAX_PLAYERS] memory){
+        return games[_roomId].playerLastMoveTime;
+    }
+
+
     // setters
     function setBurnerWallet(address _burnerWallet) public onlyOwner {
         burnerWallet = _burnerWallet;
