@@ -529,6 +529,7 @@ contract Royale is Ownable {
         game.info.minStake = _minStake;
         game.playerIds[0] = msg.sender;
         game.playerFTs[0] = starting_FT;
+        game.playerAlive[0] = true;
         games.push(game);
 
         uint8 roomId = uint8(games.length - 1);
@@ -563,7 +564,7 @@ contract Royale is Ownable {
         uint8 playerId = games[_roomId].info.playersCount; // get player id
         games[_roomId].playerIds[playerId-1] = msg.sender; // set player id
         games[_roomId].playerFTs[playerId-1] = starting_FT; // set player FT
-
+        games[_roomId].playerAlive[playerId-1] = true; // set player Alive
         playerInGame[msg.sender] = _roomId; // set player in game
 
         uint8 x;

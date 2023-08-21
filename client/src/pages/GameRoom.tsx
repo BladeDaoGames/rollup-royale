@@ -9,30 +9,33 @@ import { Button, Tooltip } from 'flowbite-react';
 import GameStatusBar from '../components/GameRoom/GameStatusBar';
 import FTstatusBar from '../components/GameRoom/FTstatusBar';
 import { useParams } from 'react-router-dom';
-import { useContractRead, useContractEvent} from 'wagmi';
+import { useContractEvent} from 'wagmi';
 import { readContract, readContracts, watchReadContracts } from '@wagmi/core';
 import RoyaleABI from '../config/abis/Royale.json';
 import {ROYALE_ADDRESS} from '../config/constants';
-import {GameInfo} from './GameTypes';
 import { addressShortener } from '../utils/addressShortener';
 import { formatEther } from 'viem';
+import {useAtom} from 'jotai';
+import { createGameInfoAtom, createPlayerFTs, 
+  createPlayerAliveStatus, 
+  createPlayerReadiness, createPlayerPauseVote } from '../atoms';
 
 
 const GameRoom = () => {
   const params = useParams();
   const roomId = parseInt(params?.id as string)??0;
-  const [gameInfo, setGameInfo] = useState<GameInfo>()
+  const [gameInfo, setGameInfo] = useAtom(createGameInfoAtom)
 
   // declare state of array of lenth 4
   const [playerIds, setPlayerIds] = useState<Array<string>>(["0","0","0","0",])
-  const [playerFTs, setPlayerFTs] = useState<Array<number>>([0,0,0,0])
+  const [playerFTs, setPlayerFTs] = useAtom(createPlayerFTs)
   const [piecePositions, setPiecePositions] = useState<Array<number>>([
       255,255,255,255,
       255,255,255
       ])
-  const [playerAliveStatus, setPlayerAliveStatus] = useState<Array<boolean>>([false,false,false,false])
-  const [playerReadyStatus, setPlayerReadyStatus] = useState<Array<boolean>>([false,false,false,false])
-  const [playerPauseVote, setPlayerPauseVote] = useState<Array<boolean>>([false,false,false,false])
+  const [playerAliveStatus, setPlayerAliveStatus] = useAtom(createPlayerAliveStatus)
+  const [playerReadyStatus, setPlayerReadyStatus] = useAtom(createPlayerReadiness)
+  const [playerPauseVote, setPlayerPauseVote] = useAtom(createPlayerPauseVote)
   //const [playerLastMoveTime, setPlayerLastMoveTime] = useState<Array<number>>([0,0,0,0])
   
   const gameConfig = {
@@ -177,8 +180,6 @@ const GameRoom = () => {
           ">
               {/* game status bar */}
               <GameStatusBar/>
-              <div className="text-lg font-bold text-white">
-                Placeholder</div>
               <FTstatusBar/>
               {/* border-2 border-blue-500 rounded-lg */}
               <div id="phaser-div" className="
