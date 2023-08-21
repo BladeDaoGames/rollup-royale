@@ -11,6 +11,8 @@ type IRoom = {
     status: string;
 }
 
+export const createProgressBar = atom<number>(0);
+
 export const createRoomAtom = atom<IRoom[]>([]);
 
-export const createTotalRoomsAtoom = atom<number>(1);
+export const createTotalRoomsAtoom = atom<number>(0);

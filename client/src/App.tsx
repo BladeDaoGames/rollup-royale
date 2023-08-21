@@ -6,6 +6,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Lobby from './pages/Lobby';
 import GameRoom from './pages/GameRoom';
 import { Progress } from 'flowbite-react';
+import useFetchRooms from './hooks/useFetchRooms';
+import {useAtomValue} from 'jotai';
+import { createProgressBar } from './atoms';
 
 // sm:bg-red-400 
 // md:bg-orange-400
@@ -15,22 +18,9 @@ import { Progress } from 'flowbite-react';
 function App() {
 
   const [progress, setProgress] = useState(0);
+  const progressBarValue = useAtomValue(createProgressBar)
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((oldProgress) => {
-        if (oldProgress === 100) {
-          return 100;
-        }
-        const diff = Math.random() * 10;
-        return Math.min(oldProgress + diff, 100);
-      });
-    }, 100);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
+  useFetchRooms();
 
   return (
     <>
@@ -41,11 +31,11 @@ function App() {
           pt-[88px]
           '>
 
-          {progress != 100 ? 
+          {progressBarValue != 100 ? 
             <Progress
               labelProgress
               labelText
-              progress={progress}
+              progress={progressBarValue}
               progressLabelPosition="inside"
               size="lg"
               textLabel="Game Setup..."

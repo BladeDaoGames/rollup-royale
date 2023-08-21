@@ -3,40 +3,61 @@ import { useContractRead, useContractEvent} from 'wagmi';
 import { readContract } from '@wagmi/core';
 import RoyaleABI from '../../config/abis/Royale.json';
 import {ROYALE_ADDRESS} from '../../config/constants';
-import {useAtom} from 'jotai';
+import {useAtom, useAtomValue} from 'jotai';
 import {createTotalRoomsAtoom, createRoomAtom} from '../../atoms';
+import { addressShortener } from '../../utils/addressShortener';
+import { Link } from 'react-router-dom';
+import { formatUnits } from 'viem';
 
-const TableRow = () => {
-    return (
-        <tr className="
-        bg-lightbeige
-        hover:bg-prime2 hover:text-alertred1
-        border-purpgrey
-        h-[3.8rem] min-h-[3.8rem]
-        ">
-                    
-                    <td className="px-3 sm:px-6 py-4">
-                        0123456789
-                    </td>
-                    <td className="px-3 sm:px-6">
-                        0.1
-                    </td>
-                    <td className="px-3 sm:px-6">
-                        10 x 10
-                    </td>
-                    <td className="px-3 sm:px-6">
-                        2/4
-                    </td>
-                    <td className="px-3 sm:px-6">
-                        <button className="
-                                bg-prime1 rounded-lg text-white px-3 sm:px-6 py-1
-                                hover:bg-palegreen
-                            ">
-                                Join
-                            </button>
-                    </td>
-                </tr>
-    )
+type RoomRowData ={
+    roomId: number,
+    owner: string, 
+    stake: number, 
+    boardc: number, 
+    boardr: number, 
+    playerCount: number, 
+    maxPlayers: number, 
+    status: string
+}
+
+const TableRow = ({
+    roomId, owner, stake, boardc, boardr, 
+    playerCount, maxPlayers, status}: RoomRowData) => 
+    {
+        return (
+            <tr className="
+            bg-lightbeige
+            hover:bg-prime2 hover:text-alertred1
+            h-[3.8rem] min-h-[3.8rem]
+            ">  
+                <td className="px-3 sm:px-6 text-left
+                border-b border-b-purpgrey
+                ">
+                    {roomId}
+                </td>
+                <td className="px-3 sm:px-6 border-b border-b-purpgrey">
+                    {addressShortener(owner)}
+                </td>
+                <td className="px-3 sm:px-6 border-b border-b-purpgrey">
+                    {stake}
+                </td>
+                <td className="px-3 sm:px-6 border-b border-b-purpgrey">
+                    {boardc+"x"+boardr}
+                </td>
+                <td className="px-3 sm:px-6 border-b border-b-purpgrey">
+                    {playerCount+"/"+maxPlayers}
+                </td>
+                <td className="px-3 sm:px-6 border-b border-b-purpgrey">
+                    <Link to={`/game/${roomId}`} className={
+                            `rounded-lg text-white px-3 sm:px-6 py-1
+                            ${status=="Join"?"bg-prime1 hover:bg-palegreen":
+                            "bg-prime3 hover: bg-gameblue"} 
+                    `}>
+                            {status}
+                        </Link>
+                </td>
+                    </tr>
+        )
 }
 
 const LobbyTableManual = () => {
@@ -58,7 +79,7 @@ const LobbyTableManual = () => {
         async listener(log){
             //{_roomId: 2n, _creator: '0x90F79bf6EB2c4f870365E785982E1f101E93b906'}
             const newRoomId = parseInt(log[0]?.args?._roomId)
-            console.log("room: " + newRoomId??"NaN"+"created")
+            console.log("room: " + (newRoomId??"NaN")+"created")
             if(newRoomId > totalRooms) setTotalRooms(newRoomId) // first room at index 0 is placeholder
 
             await readContract({
@@ -70,55 +91,35 @@ const LobbyTableManual = () => {
                 // console.log("room info")
                 // console.log(res)
 
-                const newRoomsData = [...rooms]
-                newRoomsData[newRoomId] = {
-                    _roomId: newRoomId,
-                    _creator: res?.gameCreator,
-                    stake: parseInt(res?.minStake)??999,
-                    boardrow: 10,
-                    boardcol: 10,
-                    players: parseInt(res?.playersCount)??1,
-                    maxplayers: 4,
-                    status: !res?.hasStarted ? "Join" : res?.hasEnded ? "Ended" : "Spectate",
-                }
+                setRooms((prevRoomData)=>{
 
-                // sample res
-                // const sampleRes = {
+                    prevRoomData[newRoomId] = {
+                        _roomId: newRoomId,
+                        _creator: res?.gameCreator,
+                        stake: parseFloat(formatUnits(res?.minStake,18))/1.000??999,
+                        boardrow: 10,
+                        boardcol: 10,
+                        players: parseInt(res?.playersCount)??1,
+                        maxplayers: 4,
+                        status: !res?.hasStarted ? "Join" : res?.hasEnded ? "Ended" : "Spectate",
+                    }
 
-                //     gameAbandoned: false,
-                //     gameCreator: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-                //     gamePaused: false,
-                //     hasEnded: false,
-                //     hasStarted: false,
-                //     itemCount: 0,
-                //     minStake: 100000000000000000n,
-                //     playersCount: 1,
-                //     totalStaked: 100000000000000000n,
-                // }
+                    return [...prevRoomData];
 
-
+                })
             })
-
-            // let newRoomData = [...rooms]
-            // rooms[newRooms] = {
-            //     ...log?.args,
-            //     stake: 
-            //     boardrow: number;
-            //     boardcol: number;
-            //     players: number;
-            //     maxplayers: number;
-            //     status: string;
-
-            // }
         },
     })
+
+    console.log('rendering rooms data...')
+    console.log("number of rooms:"+data??"NaN")
 
     return (
         <div className="relative shadow-md 
         overflow-y-auto  h-[300px]
         bg-lightbeige
         border-prime2 rounded-lg border-2
-        "><div>{parseInt(data as BigInt)}</div>
+        ">
             <table className="w-full 
                 table-auto
                 text-xs 
@@ -126,7 +127,8 @@ const LobbyTableManual = () => {
                 md:text-base
                 text-center text-gray-500
                 sm:font-bold
-            ">
+            "
+            >
                 <thead className="
                     text-white font-bold
                     border-b border-prime2
@@ -135,6 +137,9 @@ const LobbyTableManual = () => {
                     bg-greygreen
                     ">
                         <th scope="col" className="pl-4 pr-3 py-3">
+                            Room Id
+                        </th>
+                        <th scope="col" className="px-6 py-3">
                             Room Owner
                         </th>
                         <th scope="col" className="px-6 py-3">
@@ -152,10 +157,21 @@ const LobbyTableManual = () => {
                     </tr>
                 </thead>
                 <tbody className="divide-y">
-                    <TableRow/>
-                    <TableRow/>
-                    <TableRow/>
-                    <TableRow/>
+                    {
+                        rooms.map((r)=>{
+                            if(r.status=="Ended") return;
+                            return <TableRow
+                                        roomId={r._roomId}
+                                        owner={r._creator}
+                                        stake={r.stake}
+                                        boardc={r.boardcol}
+                                        boardr={r.boardrow}
+                                        playerCount={r.players}
+                                        maxPlayers={r.maxplayers}
+                                        status={r.status}
+                                    />
+                        })
+                    }
                 </tbody>
             </table>
         </div>
