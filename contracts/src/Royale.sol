@@ -31,7 +31,7 @@ contract Royale is Ownable {
     event GameEnded(uint256 indexed _roomId, address indexed _winner);
     event RewardSent(uint256 indexed _roomId, address indexed _winner, uint256 indexed _reward);
 
-    constructor(address _burnerWallet){
+    constructor(address _burnerWallet) Ownable(msg.sender){
         burnerWallet = _burnerWallet;
         games.push(); //pad with a dummy game
         games[0].info.hasEnded = true; // set dummy game to end
