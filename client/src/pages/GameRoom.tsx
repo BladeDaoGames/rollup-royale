@@ -120,9 +120,9 @@ const GameRoom = () => {
 
       // gameinfo data
       if(data_[0]?.status=="success"){
-        setGameInfo({...data_[0],
-          minStake: parseFloat(formatEther(data_[0]?.minStake??0)),
-          totalStaked: parseFloat(formatEther(data_[0]?.totalStaked??0))
+        setGameInfo({...data_[0]?.result,
+          minStake: parseFloat(formatEther(data_[0]?.result?.minStake??0)),
+          totalStaked: parseFloat(formatEther(data_[0]?.result?.totalStaked??0))
         })
       }
 

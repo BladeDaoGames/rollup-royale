@@ -112,6 +112,7 @@ const GameStatusBar = () => {
     const alive = useAtomValue(createPlayerAliveStatus)
     const pause = useAtomValue(createPlayerPauseVote)
     const gameStatus = gameStatusFunction(gameInfo as GameInfo)
+    console.log("game status bar render")
     return (
         <div className="flex flex-row
             justify-between items-center

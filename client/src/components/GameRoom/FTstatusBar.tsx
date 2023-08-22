@@ -1,11 +1,14 @@
 import React from 'react';
 import { Tooltip } from 'flowbite-react';
-import { useAccount } from 'wagmi';
 import { addressShortener } from '../../utils/addressShortener';
+import {useAtomValue} from 'jotai';
+import {createGameInfoAtom, createPlayerFTs} from '../../atoms';
+import { GameInfo } from './GameTypes';
 
 const FTstatusBar = () => {
-
-  const {address} = useAccount();
+  const gameInfo = useAtomValue(createGameInfoAtom)
+  const playerFTs = useAtomValue(createPlayerFTs)
+  console.log(gameInfo)
   return (
     <div className="
     flex flex-row justify-between items-center
@@ -16,7 +19,7 @@ const FTstatusBar = () => {
       flex justify-between items-center
     ">
       <span>Room Owner: </span> <span className="mx-1">
-      {addressShortener(address as string)}</span>
+      {addressShortener(gameInfo?.gameCreator as string)}</span>
     </div>
     
     <div className="grid grid-flow-col flex-auto
@@ -29,7 +32,7 @@ const FTstatusBar = () => {
       text-white flex justify-center
       ">
         <Tooltip content="Player 1 FT">
-          P1: 100
+          {`P1: ${playerFTs[0]}`}
         </Tooltip>
         </div>
 
@@ -37,7 +40,7 @@ const FTstatusBar = () => {
       text-gray-800 flex justify-center
       ">
         <Tooltip content="Player 2 FT">
-          P2: 100
+        {`P2: ${playerFTs[1]}`}
         </Tooltip>
         </div>
 
@@ -45,7 +48,7 @@ const FTstatusBar = () => {
       text-white flex justify-center
       ">
         <Tooltip content="Player 3 FT">
-          P3: 100
+        {`P3: ${playerFTs[2]}`}
         </Tooltip>
         </div>
 
@@ -53,7 +56,7 @@ const FTstatusBar = () => {
       text-gray-800 flex justify-center
       ">
         <Tooltip content="Player 4 FT">
-          P4: 100
+        {`P4: ${playerFTs[3]}`}
         </Tooltip>
         </div>
 

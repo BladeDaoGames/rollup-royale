@@ -29,8 +29,9 @@ export const createGameInfoAtom = atom<GameInfo>({
                                         playersCount: 0,
                                         totalStaked: 0
                                     });
-                                    
+
 export const createPlayerFTs = atom<Array<number>>([0,0,0,0])
 export const createPlayerReadiness = atom<Array<boolean>>([false,false,false,false])
 export const createPlayerAliveStatus = atom<Array<boolean>>([false,false,false,false])
 export const createPlayerPauseVote = atom<Array<boolean>>([false,false,false,false])
+export const createPlayerOverallStatus = atom<Array<string>>(["waiting","waiting","waiting","waiting"])
