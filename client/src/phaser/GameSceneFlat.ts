@@ -6,6 +6,7 @@ import './characters/Player'; //as typing
 import './characters/Chest'; //as typing
 import { GridControls } from './movement/GridControls';
 import { GridPhysics } from './movement/GridPhysics';
+import { publishPhaserEvent } from './EventsCenter';
 
 class GameSceneFlat extends Phaser.Scene {
     private player1!: Player
@@ -88,7 +89,7 @@ class GameSceneFlat extends Phaser.Scene {
             console.log("target move-to tile")
             console.log(targetGridTile)
             // trigger external event
-            this.game.events.emit("pointerFired", playerGridTile);
+            publishPhaserEvent("playerMoveIntent", targetGridTile)
         })
 
         // remember to clean up on Scene shutdown

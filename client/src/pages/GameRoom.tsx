@@ -19,6 +19,8 @@ import { createGameInfoAtom, createPlayerFTs,
   createPlayerAliveStatus, 
   createPlayerReadiness, createPlayerPauseVote } from '../atoms';
 
+import {subscribePhaserEvent, unsubscribePhaserEvent} from '../phaser/EventsCenter';
+
 
 const GameRoom = () => {
   const params = useParams();
@@ -163,8 +165,16 @@ const GameRoom = () => {
 
 
     });
-    //return unwatch();
-    
+
+    subscribePhaserEvent("playerMoveIntent", (e)=>{
+      console.log("player Moved")
+      console.log(e)
+    })
+
+    return ()=>{
+      unwatch();
+      unsubscribePhaserEvent("playerMoveIntent", ()=>{});
+    }
   }, [])
   
   return (
