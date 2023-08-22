@@ -74,6 +74,31 @@ class GameSceneFlat extends Phaser.Scene {
         // give control to player1 physics
         this.gridControls = new GridControls(this.playerGridPhysics)
         //console.log(Phaser.Math.Vector2.DOWN)
+        
+        this.input.on(Phaser.Input.Events.POINTER_UP, (pointer: Phaser.Input.Pointer) => {
+            const { worldX, worldY } = pointer // coordinate system
+            //console.log("phaser pointer")
+            //console.log(worldX, worldY)
+            const playerGridTile = ground?.worldToTileXY(this.player1.x, this.player1.y)
+            const targetGridTile = ground?.worldToTileXY(worldX, worldY)
+            
+            console.log("player current tile")
+            console.log(playerGridTile)
+
+            console.log("target move-to tile")
+            console.log(targetGridTile)
+            // trigger external event
+            this.game.events.emit("pointerFired", playerGridTile);
+        })
+
+        // remember to clean up on Scene shutdown
+        this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+            this.input.off(Phaser.Input.Events.POINTER_UP)
+        })
+    }
+
+    testExternalTrigger(){
+        console.log("external trigger received")
     }
 
     update(t:number, dt:number){

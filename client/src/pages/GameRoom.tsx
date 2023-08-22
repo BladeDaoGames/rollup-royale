@@ -60,7 +60,12 @@ const GameRoom = () => {
       },
       scene: [GameSceneFlat]
   }
-  usePhaserGame(gameConfig);
+  const game = usePhaserGame(gameConfig);
+  // game pointer events
+  // game?.events.on('pointerFired', (e)=>{
+  //   console.log("phaser outer pointer fired")
+  //   console.log(e)
+  // })
 
   const config = {
     contracts:[
@@ -158,9 +163,8 @@ const GameRoom = () => {
 
 
     });
-
     //return unwatch();
-
+    
   }, [])
   
   return (
@@ -221,7 +225,13 @@ const GameRoom = () => {
 
                 {/* enter game */}
                 <Tooltip content="~ Stake and Enter Game ~">
-                  <Button className="flex flex-row items-center justify-center py-2 border rounded-lg  border-prime2 text-background1 bg-prime2 hover:text-prime2 hover:bg-prime2/5">
+                  <Button className="flex flex-row items-center justify-center py-2 
+                  border rounded-lg  border-prime2 text-background1 bg-prime2
+                  hover:text-prime2 hover:bg-prime2/5"
+                  onClick={()=>{
+                    game.scene.scenes[0].testExternalTrigger()
+                  }}
+                  >
                     <BiMoneyWithdraw className="w-8 h-6"/>
                     <GiEntryDoor className="w-8 h-6"/>
                   </Button>
