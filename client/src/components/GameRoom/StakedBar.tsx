@@ -17,7 +17,7 @@ const StakedBar = () => {
                 flex justify-start items-center
                 ">
                 <span>You are: </span> 
-                <span className="mx-1 ml-2 flex-1
+                <span className="mx-1 ml-2 w-full
                 rounded-lg text-center
                 bg-prime3 text-background1
                 ">

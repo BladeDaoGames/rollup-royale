@@ -165,13 +165,12 @@ const GameRoom = () => {
   
   return (
 
-    <div className="flex flex-row justify-center items-start
-    border border-green-500
-    ">
+    <div className="flex flex-row items-start justify-center border border-green-500 ">
       <div className="w-full md:w-[768px] mx-auto
               flex flex-col
               p-0 h-screen
               items-center
+              border border-green-400
           "
         >
           <div className="w-[60vh]
@@ -189,79 +188,42 @@ const GameRoom = () => {
               overflow-hidden
               "/>
 
-              <div className="flex flex-row
-                  py-2
-                  
-                  justify-between items-center
-                  ">
+              <div className="flex flex-row items-center justify-between py-2 ">
 
               {/* start game */}
               <Tooltip content="Owner Start Game">
-                  <Button className="
-                    flex flex-row items-center justify-center
-                    rounded-lg border border-palered
-                    bg-white/5 text-palered
-                    hover:bg-palered
-                    hover:text-white 
-                    py-2
-                  ">
-                    <BsPlayFill className="mx-0
-                    w-10 h-6"/>
-                    <GiHighPunch className="mx-0 
-                    w-10 h-6"/>
+                  <Button className="flex flex-row items-center justify-center py-2 border rounded-lg  border-palered bg-white/5 text-palered hover:bg-palered hover:text-white">
+                    <BsPlayFill className="w-8 h-6 mx-0"/>
+                    <GiHighPunch className="w-8 h-6 mx-0"/>
                   </Button>
                 </Tooltip>
 
                 {/* vote for pause */}
                 <Tooltip content="Vote For Game Pause">
-                <Button className="
-                  rounded-lg border border-prime1
-                  text-background1 bg-prime1
-                  hover:text-prime1 hover:bg-prime1/5 
-                  py-2
-                  ">
-                    <BsFillPauseFill className="
-                    w-12 h-6"/>
+                <Button className="py-2 border rounded-lg  border-prime1 text-background1 bg-prime1 hover:text-prime1 hover:bg-prime1/5">
+                    <BsFillPauseFill className="w-12 h-6 "/>
                   </Button>
                 </Tooltip>
 
                 {/* signal ready */}
                 <Tooltip content="Signal Ready Up">
-                  <Button className="
-                    rounded-lg border border-whitegreen
-                    text-background1 bg-whitegreen 
-                    hover:text-whitegreen hover:bg-whitegreen/5
-                    py-2
-                    ">
-                    <BsFillHandThumbsUpFill className="
-                    w-12 h-6
-                    "/>
+                  <Button className="py-2 border rounded-lg  border-whitegreen text-background1 bg-whitegreen hover:text-whitegreen hover:bg-whitegreen/5">
+                    <BsFillHandThumbsUpFill className="w-12 h-6 "/>
                   </Button>
                 </Tooltip>
 
                 {/* leave game */}
                 <Tooltip content="Leave Room Before Game Start">
-                  <Button className="
-                    rounded-lg border border-prime3
-                    text-background1 bg-prime3 
-                    hover:text-prime3 hover:bg-prime3/5
-                    py-2
-                    ">
+                  <Button className="py-2 border rounded-lg  border-prime3 text-background1 bg-prime3 hover:text-prime3 hover:bg-prime3/5">
                     <GiExitDoor className="w-12 h-6"/>
                   </Button>
                 </Tooltip>
 
                 {/* enter game */}
                 <Tooltip content="~ Stake and Enter Game ~">
-                  <Button className="
-                    flex flex-row items-center justify-center
-                    rounded-lg border border-prime2
-                    text-background1 bg-prime2 
-                    hover:text-prime2 hover:bg-prime2/5
-                    py-2
-                    ">
-                    <BiMoneyWithdraw className="w-10 h-6"/>
-                    <GiEntryDoor className="w-10 h-6"/>
+                  <Button className="flex flex-row items-center justify-center py-2 border rounded-lg  border-prime2 text-background1 bg-prime2 hover:text-prime2 hover:bg-prime2/5">
+                    <BiMoneyWithdraw className="w-8 h-6"/>
+                    <GiEntryDoor className="w-8 h-6"/>
                   </Button>
                 </Tooltip>
 

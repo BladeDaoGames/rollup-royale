@@ -86,7 +86,7 @@ const GameStatusBar = () => {
                 text-white font-semibold text-base
                 ">
                 <span className="mx-2">Game Status:</span> 
-                <span className="px-4 py-1 
+                <span className="px-4 py-1 w-full
                     bg-lightbeige text-background1
                     rounded-lg
                     ">{gameStatusMapper[gameStatus as string]}</span>
