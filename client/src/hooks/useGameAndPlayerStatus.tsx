@@ -27,8 +27,7 @@ export const useGameAndPlayerStatus = () => {
         return ""    
     },[gameInfo])
     const gameStatus = gameStatusFunction(gameInfo as GameInfo)
-    console.log("THE GAME STATUS")
-    console.log(gameStatus)
+    
     const playerStatusFunction = useCallback((gameStatus:string, ready:boolean, pause:boolean, alive:boolean)=>{
         if(gameStatus=="prestart" && !ready){
             return "waiting"
