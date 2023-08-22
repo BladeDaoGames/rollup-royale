@@ -1,14 +1,8 @@
-import React from 'react';
 import {BsHourglassSplit, BsHandThumbsUpFill} from 'react-icons/bs';
 import { CgUnavailable } from 'react-icons/cg';
 import {FaPause, FaSkull} from 'react-icons/fa';
 import { Tooltip } from 'flowbite-react';
-import {useAtomValue} from 'jotai';
-import {createGameInfoAtom, 
-    createPlayerReadiness, 
-    createPlayerAliveStatus,
-    createPlayerPauseVote} from '../../atoms';
-import { GameInfo } from './GameTypes';
+import {useGameAndPlayerStatus} from '../../hooks/useGameAndPlayerStatus';
 
 
 interface PlayerStatusIcon {
@@ -68,36 +62,6 @@ interface PlayerStatusFunction {
     pause: boolean
     alive: boolean
 }
-const playerStatusFunction = (gameStatus:string, ready:boolean, pause:boolean, alive:boolean)=>{
-    if(gameStatus=="prestart" && !ready){
-        return "waiting"
-    }else if(gameStatus=="prestart"&&ready){
-        return "ready"
-    }else if(gameStatus=="ongoing"&&!alive){
-        return "dead"
-    }else if(gameStatus=="ongoing"&&pause){
-        return "pause"
-    }else if(gameStatus=="ended"&&!alive){
-        return "dead"
-    }else{
-        return "unavailable"
-    }
-}
-
-const gameStatusFunction = (gameinfo: GameInfo)=>{
-
-    const {hasStarted, gamePaused, hasEnded} = gameinfo
-
-    if(!hasStarted && !gamePaused && !hasEnded){
-        return "prestart"
-    }else if(hasStarted && !gamePaused && !hasEnded){
-        return "ongoing"
-    }else if(hasStarted && gamePaused && !hasEnded){
-        return "paused"
-    }else if(hasStarted && hasEnded){
-        return "ended"
-    }
-}
 
 const gameStatusMapper = {
     "prestart": "Pre-Start",
@@ -107,11 +71,8 @@ const gameStatusMapper = {
 }
 
 const GameStatusBar = () => {
-    const gameInfo = useAtomValue(createGameInfoAtom)
-    const ready = useAtomValue(createPlayerReadiness)
-    const alive = useAtomValue(createPlayerAliveStatus)
-    const pause = useAtomValue(createPlayerPauseVote)
-    const gameStatus = gameStatusFunction(gameInfo as GameInfo)
+    const {gameStatus, playerStatus} = useGameAndPlayerStatus()
+
     console.log("game status bar render")
     return (
         <div className="flex flex-row
@@ -140,14 +101,10 @@ const GameStatusBar = () => {
                 ">
                     Players Status: </span>
                 
-                <PlayerStatusIcon playerId={1} status={playerStatusFunction(
-                    gameStatus as string, ready[0], pause[0], alive[0])}/>
-                <PlayerStatusIcon playerId={2} status={playerStatusFunction(
-                    gameStatus as string, ready[1], pause[1], alive[1])}/>
-                <PlayerStatusIcon playerId={3} status={playerStatusFunction(
-                    gameStatus as string, ready[2], pause[2], alive[2])}/>
-                <PlayerStatusIcon playerId={4} status={playerStatusFunction(
-                    gameStatus as string, ready[3], pause[3], alive[3])}/>
+                <PlayerStatusIcon playerId={1} status={playerStatus[0]}/>
+                <PlayerStatusIcon playerId={2} status={playerStatus[1]}/>
+                <PlayerStatusIcon playerId={3} status={playerStatus[2]}/>
+                <PlayerStatusIcon playerId={4} status={playerStatus[3]}/>
                 
 
                 </div>

@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import {useEffect, useState} from 'react';
 import Phaser from 'phaser';
 import GameSceneFlat from '../phaser/GameSceneFlat';
 import usePhaserGame from '../phaser/usePhaserGame';
@@ -8,12 +8,11 @@ import { GiHighPunch, GiEntryDoor, GiExitDoor} from 'react-icons/gi';
 import { Button, Tooltip } from 'flowbite-react';
 import GameStatusBar from '../components/GameRoom/GameStatusBar';
 import FTstatusBar from '../components/GameRoom/FTstatusBar';
+import StakedBar from '../components/GameRoom/StakedBar';
 import { useParams } from 'react-router-dom';
-import { useContractEvent} from 'wagmi';
-import { readContract, readContracts, watchReadContracts } from '@wagmi/core';
+import { watchReadContracts } from '@wagmi/core';
 import RoyaleABI from '../config/abis/Royale.json';
 import {ROYALE_ADDRESS} from '../config/constants';
-import { addressShortener } from '../utils/addressShortener';
 import { formatEther } from 'viem';
 import {useAtom} from 'jotai';
 import { createGameInfoAtom, createPlayerFTs, 
@@ -181,6 +180,7 @@ const GameRoom = () => {
               {/* game status bar */}
               <GameStatusBar/>
               <FTstatusBar/>
+              <StakedBar/>
               {/* border-2 border-blue-500 rounded-lg */}
               <div id="phaser-div" className="
               App
