@@ -6,6 +6,9 @@ import { BsPlayFill, BsFillPauseFill, BsFillHandThumbsUpFill} from 'react-icons/
 import {BiMoneyWithdraw} from 'react-icons/bi';
 import { GiHighPunch, GiEntryDoor, GiExitDoor} from 'react-icons/gi';
 import { Button, Tooltip } from 'flowbite-react';
+
+import {StakeAndEnterButton} from '../components/GameRoom/Buttons';
+
 import GameStatusBar from '../components/GameRoom/GameStatusBar';
 import FTstatusBar from '../components/GameRoom/FTstatusBar';
 import StakedBar from '../components/GameRoom/StakedBar';
@@ -15,7 +18,7 @@ import RoyaleABI from '../config/abis/Royale.json';
 import {ROYALE_ADDRESS} from '../config/constants';
 import { formatEther } from 'viem';
 import {useAtom} from 'jotai';
-import { createGameInfoAtom, createPlayerFTs, 
+import { createGameInfoAtom, createPlayerIds, createPlayerFTs, 
   createPlayerAliveStatus, 
   createPlayerReadiness, createPlayerPauseVote } from '../atoms';
 
@@ -28,7 +31,7 @@ const GameRoom = () => {
   const [gameInfo, setGameInfo] = useAtom(createGameInfoAtom)
 
   // declare state of array of lenth 4
-  const [playerIds, setPlayerIds] = useState<Array<string>>(["0","0","0","0",])
+  const [playerIds, setPlayerIds] = useAtom(createPlayerIds)
   const [playerFTs, setPlayerFTs] = useAtom(createPlayerFTs)
   const [piecePositions, setPiecePositions] = useState<Array<number>>([
       255,255,255,255,
@@ -69,7 +72,7 @@ const GameRoom = () => {
   //   console.log(e)
   // })
 
-  const config = {
+  const contractCallConfig = {
     contracts:[
       {
         address: ROYALE_ADDRESS,
@@ -120,7 +123,7 @@ const GameRoom = () => {
   //get current gameInfo and State in the room
   useEffect(()=>{
     console.log("useGetGameInfo Hook.")
-    const unwatch = watchReadContracts(config, (data_)=>{
+    const unwatch = watchReadContracts(contractCallConfig, (data_)=>{
       console.log("gameinfo watching data_")
       console.log(data_)
 
@@ -134,7 +137,9 @@ const GameRoom = () => {
 
       //playerIds data
       if(data_[1]?.status=="success"){
-        setPlayerIds(data_[1].result)
+        setPlayerIds((data_[1].result as string[])?.map((a: string)=>{
+            return a?.toLocaleLowerCase()?? "0x0"
+        }))
       }
 
       //playerFTs data
@@ -234,18 +239,7 @@ const GameRoom = () => {
                 </Tooltip>
 
                 {/* enter game */}
-                <Tooltip content="~ Stake and Enter Game ~">
-                  <Button className="flex flex-row items-center justify-center py-2 
-                  border rounded-lg  border-prime2 text-background1 bg-prime2
-                  hover:text-prime2 hover:bg-prime2/5"
-                  onClick={()=>{
-                    game.scene.scenes[0].testExternalTrigger()
-                  }}
-                  >
-                    <BiMoneyWithdraw className="w-8 h-6"/>
-                    <GiEntryDoor className="w-8 h-6"/>
-                  </Button>
-                </Tooltip>
+                <StakeAndEnterButton room={roomId}/>
 
               </div>
 

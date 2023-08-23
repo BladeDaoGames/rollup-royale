@@ -30,6 +30,7 @@ export const createGameInfoAtom = atom<GameInfo>({
                                         totalStaked: 0
                                     });
 
+export const createPlayerIds = atom<Array<string>>(["0x0", "0x0","0x0","0x0",])
 export const createPlayerFTs = atom<Array<number>>([0,0,0,0])
 export const createPlayerReadiness = atom<Array<boolean>>([false,false,false,false])
 export const createPlayerAliveStatus = atom<Array<boolean>>([false,false,false,false])
