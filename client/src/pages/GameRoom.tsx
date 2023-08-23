@@ -7,7 +7,9 @@ import {BiMoneyWithdraw} from 'react-icons/bi';
 import { GiHighPunch, GiEntryDoor, GiExitDoor} from 'react-icons/gi';
 import { Button, Tooltip } from 'flowbite-react';
 
-import {StakeAndEnterButton} from '../components/GameRoom/Buttons';
+import {StakeAndEnterButton,
+  LeaveRoomButton
+} from '../components/GameRoom/Buttons';
 
 import GameStatusBar from '../components/GameRoom/GameStatusBar';
 import FTstatusBar from '../components/GameRoom/FTstatusBar';
@@ -232,11 +234,7 @@ const GameRoom = () => {
                 </Tooltip>
 
                 {/* leave game */}
-                <Tooltip content="Leave Room Before Game Start">
-                  <Button className="py-2 border rounded-lg  border-prime3 text-background1 bg-prime3 hover:text-prime3 hover:bg-prime3/5">
-                    <GiExitDoor className="w-12 h-6"/>
-                  </Button>
-                </Tooltip>
+                <LeaveRoomButton room={roomId}/>
 
                 {/* enter game */}
                 <StakeAndEnterButton room={roomId}/>
