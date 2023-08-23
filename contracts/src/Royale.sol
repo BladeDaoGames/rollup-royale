@@ -18,8 +18,7 @@ contract Royale is Ownable {
     event GameAbandoned(uint256 _roomId); //
     event GameStarted(uint256 _roomId);
     event PlayerJoined(uint256 indexed _roomId, address indexed _player);
-    event PlayerReady(uint256 _roomId, address _player);
-    event PlayerNotReady(uint256 _roomId, address _player);
+    event PlayerToggleReady(uint256 _roomId, address _player);
     event PlayerPaused(uint256 _roomId, address _player);
     event PlayerUnPaused(uint256 _roomId, address _player);
     event GamePaused(uint256 _roomId);
@@ -599,7 +598,7 @@ contract Royale is Ownable {
         emit PlayerJoined(_roomId, msg.sender);
     }
 
-    function setReady(uint256 _roomId, address _player, bool _useBurner) external 
+    function toggleReady(uint256 _roomId, address _player, bool _useBurner) external 
         worldFunctioning()
         playerIsInGame(_roomId, _player, _useBurner)
         allowedToUseBurner(_useBurner)
@@ -608,23 +607,11 @@ contract Royale is Ownable {
         uint8 playerId = _getCallingPlayerId(_roomId, _player, _useBurner);
         require(playerId>0, "E11");
 
-        // set player ready
-        games[_roomId].playerReady[playerId-1] = true;
-        emit PlayerReady(_roomId, (_useBurner? _player:msg.sender));
+        // toggle player ready
+        games[_roomId].playerReady[playerId-1] = !games[_roomId].playerReady[playerId-1];
+        emit PlayerToggleReady(_roomId, (_useBurner? _player:msg.sender));
     }
 
-    function setNotReady(uint256 _roomId, address _player, bool _useBurner) external 
-        worldFunctioning()
-        playerIsInGame(_roomId, _player, _useBurner)
-        allowedToUseBurner(_useBurner)
-    {
-        // get player id
-        uint8 playerId = _getCallingPlayerId(_roomId, _player, _useBurner);
-        require(playerId>0, "E11");
-        // set player not ready
-        games[_roomId].playerReady[playerId-1] = false;
-        emit PlayerNotReady(_roomId, (_useBurner?_player:msg.sender));
-    }
 
     function playerPause(uint256 _roomId, address _player, bool _useBurner) external 
         worldFunctioning()
