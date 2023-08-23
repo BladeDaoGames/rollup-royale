@@ -8,7 +8,7 @@ import { GiHighPunch, GiEntryDoor, GiExitDoor} from 'react-icons/gi';
 import { Button, Tooltip } from 'flowbite-react';
 
 import {StakeAndEnterButton,
-  LeaveRoomButton
+  LeaveRoomButton, ReadyUpButton
 } from '../components/GameRoom/Buttons';
 
 import GameStatusBar from '../components/GameRoom/GameStatusBar';
@@ -227,11 +227,7 @@ const GameRoom = () => {
                 </Tooltip>
 
                 {/* signal ready */}
-                <Tooltip content="Signal Ready Up">
-                  <Button className="py-2 border rounded-lg  border-whitegreen text-background1 bg-whitegreen hover:text-whitegreen hover:bg-whitegreen/5">
-                    <BsFillHandThumbsUpFill className="w-12 h-6 "/>
-                  </Button>
-                </Tooltip>
+                <ReadyUpButton room={roomId}/>
 
                 {/* leave game */}
                 <LeaveRoomButton room={roomId}/>
