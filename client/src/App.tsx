@@ -27,11 +27,6 @@ function App() {
       <Navbar/>
         <main className='
           bg-[#34222E]
-          sm:bg-red-400 
-        md:bg-orange-400
-        lg:bg-yellow-200
-        xl:bg-green-300
-        2xl:bg-background1
           flex flex-col min-h-screen
           pt-0
           '>
