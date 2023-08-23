@@ -8,7 +8,7 @@ import { GiHighPunch, GiEntryDoor, GiExitDoor} from 'react-icons/gi';
 import { Button, Tooltip } from 'flowbite-react';
 
 import {StakeAndEnterButton,
-  LeaveRoomButton, ReadyUpButton, PlayerPauseButton
+  LeaveRoomButton, ReadyUpButton, PlayerPauseButton, StartGameButton
 } from '../components/GameRoom/Buttons';
 
 import GameStatusBar from '../components/GameRoom/GameStatusBar';
@@ -21,8 +21,8 @@ import {ROYALE_ADDRESS} from '../config/constants';
 import { formatEther } from 'viem';
 import {useAtom} from 'jotai';
 import { createGameInfoAtom, createPlayerIds, createPlayerFTs, 
-  createPlayerAliveStatus, 
-  createPlayerReadiness, createPlayerPauseVote } from '../atoms';
+  createPlayerAliveStatus, createPlayerReadiness, 
+  createPlayerPauseVote } from '../atoms';
 
 import {subscribePhaserEvent, unsubscribePhaserEvent} from '../phaser/EventsCenter';
 
@@ -212,12 +212,7 @@ const GameRoom = () => {
               <div className="flex flex-row items-center justify-between py-2 ">
 
               {/* start game */}
-              <Tooltip content="Owner Start Game">
-                  <Button className="flex flex-row items-center justify-center py-2 border rounded-lg  border-palered bg-white/5 text-palered hover:bg-palered hover:text-white">
-                    <BsPlayFill className="w-8 h-6 mx-0"/>
-                    <GiHighPunch className="w-8 h-6 mx-0"/>
-                  </Button>
-                </Tooltip>
+              <StartGameButton room={roomId}/>
 
                 {/* vote for pause */}
                 <PlayerPauseButton room={roomId}/>

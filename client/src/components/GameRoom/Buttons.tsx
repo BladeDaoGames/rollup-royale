@@ -99,7 +99,7 @@ export const ReadyUpButton = ({room}:{room: number})=>{
     const playerIds = useAtomValue(createPlayerIds)
 
     //get player id
-    const playerId = playerIds.indexOf(address?.toLocaleLowerCase() as string)
+    const playerId = playerIds.indexOf(address?.toLowerCase() as string)
     const playerReady = playerId>=0 ? playerReadiness[playerId] : false
 
     const { data, isLoading, isSuccess, write: writeToggleReady } = useContractWrite({
@@ -109,7 +109,7 @@ export const ReadyUpButton = ({room}:{room: number})=>{
     })
 
     return (
-        <Tooltip content="Signal Ready Up">
+        <Tooltip content="Signal Ready Up To Let Owner Start Game">
             <Button 
             disable={playerReady}
             className={`py-2 border rounded-lg 
@@ -143,7 +143,7 @@ export const PlayerPauseButton = ({room}:{room: number})=>{
     const playerIds = useAtomValue(createPlayerIds)
 
     //get player id
-    const playerId = playerIds.indexOf(address?.toLocaleLowerCase() as string)
+    const playerId = playerIds.indexOf(address?.toLowerCase() as string)
     const playerPlayerPaused = playerId>=0 ? playerPauseVote[playerId] : false
 
     const { data, isLoading, isSuccess, write: writeTogglePause } = useContractWrite({
@@ -175,6 +175,49 @@ export const PlayerPauseButton = ({room}:{room: number})=>{
                 isLoading?<Spinner color="failure"/>:
                 <BsFillPauseFill className="w-12 h-6 "/>
             }
+            </Button>
+        </Tooltip>
+    )
+}
+
+export const StartGameButton = ({room}:{room: number})=>{
+    const {address} = useAccount()
+    const gameinfo = useAtomValue(createGameInfoAtom)
+    const { data, isLoading, isSuccess, write: writeStartGame } = useContractWrite({
+        address: ROYALE_ADDRESS,
+        abi: RoyaleABI.abi,
+        functionName: 'startGame',
+    })
+
+    // check if player is room owner
+    const playerIsRoomOwner = (gameinfo?.gameCreator.toLowerCase() == address?.toLowerCase()??"unknown")
+    return (
+        <Tooltip content="Only Owner Can Start Game">
+            <Button 
+            disable={gameinfo?.hasStarted || !playerIsRoomOwner}
+            className={`flex flex-row items-center justify-center py-2 
+            border rounded-lg  
+
+            ${ ((!gameinfo?.hasStarted)&&(playerIsRoomOwner)) ?
+            "border-palered bg-palered text-white hover:bg-background1 hover:text-palered"
+                :
+            "border-palered bg-white/5 text-palered hover:bg-palered hover:text-white"
+            }
+            `}
+            
+            onClick={()=>{
+                writeStartGame({
+                    args: [room]
+                })
+            }}
+            >
+                {
+                isLoading?<Spinner color="failure"/>:
+                <>
+                <BsPlayFill className="w-8 h-6 mx-0"/>
+                <GiHighPunch className="w-8 h-6 mx-0"/>
+                </>
+                }
             </Button>
         </Tooltip>
     )
