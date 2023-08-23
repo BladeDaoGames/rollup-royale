@@ -613,7 +613,7 @@ contract Royale is Ownable {
     }
 
 
-    function playerPause(uint256 _roomId, address _player, bool _useBurner) external 
+    function tooglePlayerPause(uint256 _roomId, address _player, bool _useBurner) external 
         worldFunctioning()
         playerIsInGame(_roomId, _player, _useBurner)
         allowedToUseBurner(_useBurner)
@@ -622,7 +622,7 @@ contract Royale is Ownable {
         uint8 playerId = _getCallingPlayerId(_roomId, _player, _useBurner);
         require(playerId>0, "E11");
         // set player paused
-        games[_roomId].playerPauseVote[playerId-1] = true;
+        games[_roomId].playerPauseVote[playerId-1] = !games[_roomId].playerPauseVote[playerId-1];
         emit PlayerPaused(_roomId, (_useBurner?_player:msg.sender));
 
         // if all players voted to pause, set game paused
@@ -631,25 +631,7 @@ contract Royale is Ownable {
         {
             games[_roomId].info.gamePaused = true;
             emit GamePaused(_roomId);
-        }
-    }
-
-    function playerUnPause(uint256 _roomId, address _player, bool _useBurner) external 
-        worldFunctioning()
-        playerIsInGame(_roomId, _player, _useBurner)
-        allowedToUseBurner(_useBurner)
-    {
-        // get player id
-        uint8 playerId = _getCallingPlayerId(_roomId, _player, _useBurner);
-        require(playerId>0, "E11");
-        // set player paused
-        games[_roomId].playerPauseVote[playerId-1] = false;
-        emit PlayerUnPaused(_roomId, (_useBurner?_player:msg.sender));
-
-        // if all players voted to pause, set game paused
-        if (games[_roomId].info.playersCount != _getPlayerPauseCount(_roomId)
-        && games[_roomId].info.gamePaused
-        ) {
+        } else {
             games[_roomId].info.gamePaused = false;
             emit GameUnPaused(_roomId);
         }
