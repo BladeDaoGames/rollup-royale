@@ -38,7 +38,7 @@ const StakedBar = () => {
                 </div>
             
             <div className="w-1/5 mx-0 px-0
-            text-left
+            text-right pr-3.5
             ">
                 Total Staked Gas:
             </div>
