@@ -7,7 +7,7 @@ import { Spinner } from 'flowbite-react';
 
 import {useAtomValue} from 'jotai';
 import {createGameInfoAtom, createPlayerIds,
-    createPlayerReadiness
+    createPlayerReadiness, createPlayerPauseVote
 } from '../../atoms';
 
 import { useAccount, useContractWrite } from 'wagmi';
@@ -137,45 +137,44 @@ export const ReadyUpButton = ({room}:{room: number})=>{
     )
 }
 
-export const PauseButton = ({room}:{room: number})=>{
+export const PlayerPauseButton = ({room}:{room: number})=>{
     const {address} = useAccount()
-    const playerReadiness = useAtomValue(createPlayerReadiness)
+    const playerPauseVote = useAtomValue(createPlayerPauseVote)
     const playerIds = useAtomValue(createPlayerIds)
 
     //get player id
     const playerId = playerIds.indexOf(address?.toLocaleLowerCase() as string)
-    const playerReady = playerId>=0 ? playerReadiness[playerId] : false
+    const playerPlayerPaused = playerId>=0 ? playerPauseVote[playerId] : false
 
-    const { data, isLoading, isSuccess, write: writeToggleReady } = useContractWrite({
+    const { data, isLoading, isSuccess, write: writeTogglePause } = useContractWrite({
         address: ROYALE_ADDRESS,
         abi: RoyaleABI.abi,
-        functionName: 'toggleReady',
+        functionName: 'tooglePlayerPause',
     })
 
     return (
-        <Tooltip content="Signal Ready Up">
+        <Tooltip content="Vote For Game Pause">
             <Button 
-            disable={playerReady}
-            className={`py-2 border rounded-lg 
-            ${playerReady?
-            
-            "border-palegreen text-background1 bg-palegreen hover:text-palegreen hover:bg-background1"
+            className={`py-2 border rounded-lg  
+            ${
+                playerPlayerPaused?
+            "border-yellow-300 text-background1 bg-yellow-300 hover:text-yellow-300 hover:bg-prime1/5"
                 :
-            "border-whitegreen text-background1 bg-whitegreen hover:text-whitegreen hover:bg-background1"
+            "border-prime1 text-prime1 bg-background1 hover:text-background1 hover:bg-prime1"
             }
             
             `}
+            
             onClick={()=>{
-                writeToggleReady({
+                writeTogglePause({
                     args: [room, address, false]
                 })
             }}
-            >
-                {
-                    isLoading?<Spinner color="failure"/>:
-                    <BsFillHandThumbsUpFill className="w-12 h-6 "/>
-                }
-            
+            >   
+            {
+                isLoading?<Spinner color="failure"/>:
+                <BsFillPauseFill className="w-12 h-6 "/>
+            }
             </Button>
         </Tooltip>
     )
