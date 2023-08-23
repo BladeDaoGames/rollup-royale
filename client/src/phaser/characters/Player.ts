@@ -124,8 +124,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         console.log("posB4contract")
         console.log(this.posB4contract)
         const moveIntentDir = moveIntent.subtract(this.posB4contract)
-        
-        if((moveIntentDir.x==0)&&(moveIntentDir.y==-1)){
+        console.log(moveIntent)
+        console.log(moveIntentDir)
+        if((moveIntentDir.x==0)&&(moveIntentDir.y==1)){
             return Direction.DOWN
         }else if((moveIntentDir.x==-1)&&(moveIntentDir.y==0)){
             return Direction.LEFT
@@ -136,7 +137,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         }else{
             return Direction.NONE
         }
-        console.log(Direction.NONE)
     }
 
     contractSetPosition(x:number, y:number){

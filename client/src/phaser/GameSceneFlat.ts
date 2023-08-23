@@ -90,11 +90,13 @@ class GameSceneFlat extends Phaser.Scene {
                 const { worldX, worldY } = pointer
                 const targetGridTile = this.ground?.worldToTileXY(worldX, worldY)
                 //1. check to see if move is allowed
-                this.playerGridPhysics.movePlayer(
-                    this.player1.setMoveIntent(targetGridTile)
-                )
-
-
+                if(this.player1.isMoveAllowed(targetGridTile)){
+                    //2. move player if allowed
+                    this.playerGridPhysics.movePlayer(
+                        this.player1.setMoveIntent(targetGridTile)
+                    )
+                }
+                
                 //trigger smart contract move
                 publishPhaserEvent("playerMoveIntentConfirmed", targetGridTile)
             }
