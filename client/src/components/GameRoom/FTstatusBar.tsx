@@ -59,7 +59,7 @@ const FTstatusBar = () => {
     justify-stretch items-center mx-1
     rounded-md overflow-hidden
     ">
-      <PlayerFTBar playerId={1} ft={playerFTs[0]} bgColor={"bg-green-600"} textColor={"text-white"} 
+      <PlayerFTBar playerId={1} ft={playerFTs[0]} bgColor={"bg-prime3"} textColor={"text-white"} 
         gameStatus={gameStatus as string} playerStatus={playerStatus[0]} />
       <PlayerFTBar playerId={2} ft={playerFTs[1]} bgColor={"bg-yellow-300"} textColor={"text-gray-800"}
         gameStatus={gameStatus as string} playerStatus={playerStatus[1]} />
