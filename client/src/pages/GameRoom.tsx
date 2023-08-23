@@ -53,7 +53,7 @@ const GameRoom = () => {
           autoCenter: Phaser.Scale.Center.CENTER_BOTH,
           width: '100%',
           height: '100%',
-          zoom: 3
+          zoom: 1
           
       },
       physics:{
@@ -166,14 +166,14 @@ const GameRoom = () => {
 
     });
 
-    subscribePhaserEvent("playerMoveIntent", (e)=>{
-      console.log("player Moved")
+    subscribePhaserEvent("playerMoveIntentConfirmed", (e)=>{
+      console.log("player confirmed move")
       console.log(e)
     })
 
     return ()=>{
       unwatch();
-      unsubscribePhaserEvent("playerMoveIntent", ()=>{});
+      unsubscribePhaserEvent("playerMoveIntentConfirmed", ()=>{});
     }
   }, [])
   

@@ -24,17 +24,30 @@ export enum Direction
         //using numpad 0, 1, 2, 3, 4
     }
 
+const Vector2 = Phaser.Math.Vector2;
+type Vector2 = Phaser.Math.Vector2;
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     private direction: Direction = Direction.DOWN;
-    private tilePos: Phaser.Math.Vector2
+    private tilePos: Vector2;
+
+    private posB4contract!: Vector2;
+    private moveIntentPos!:Vector2;
+    private boardMoveCount:number =0;
+    private directionForSmartContract: Direction = Direction.NONE;
+    private alive:boolean=true;
+
     private originXoffset = GameScene.TILE_SIZE*GameScene.SCALEFACTOR;
     private originYoffset = GameScene.TILE_SIZE*GameScene.SCALEFACTOR;
     private offsetX = (GameScene.TILE_SIZE/ 2)*GameScene.SCALEFACTOR;
     private offsetY = GameScene.TILE_SIZE*GameScene.SCALEFACTOR; 
     private bodyOffset = 0//GameScene.TILE_SIZE/4 * GameScene.SCALEFACTOR// 4px from bottom of sprite (half of half of body)
     //static readonly inherentYoffset=GameScene.TILE_SIZE*GameScene.SCALEFACTOR; 
+
+    private dirVec:Vector2[]=[Vector2.DOWN, Vector2.LEFT,Vector2.UP, Vector2.RIGHT,]
+    private overlays:Phaser.GameObjects.Rectangle[]=[]
+    
     entity: string
 
     constructor(scene: Phaser.Scene, x: number, y: number, 
@@ -42,7 +55,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         
         
         super(scene, x, y, texture, frame);
-        //this.setOrigin(0.5, 1);
+        //this.setOrigin(0.5, 0.5);
         // scene.add.existing(this);
         // scene.physics.add.existing(this);
 
@@ -51,49 +64,125 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         // center of 1 tile of 16px and scale of 3 is 16/2 * 3 = 24
         // moving 1 tile is 16px * 3 = 48px
         // with scale of 3, player at 0,0 is at 0,48 (bottomCenter)
-        this.setPosition(
-            this.originXoffset + this.offsetX + (
-                x * GameScene.TILE_SIZE* GameScene.SCALEFACTOR),
-            
-            //originYoffset + offsetY
-            this.originYoffset + this.bodyOffset + (
-                y * GameScene.TILE_SIZE* GameScene.SCALEFACTOR),
-            
-            //0,0
-        );
+        this.contractSetPosition(x,y)
+        
+        // this.setPosition(
+        //     this.scene?.ground?.tileToWorldX(x)+ this.offsetX,
+        //     this.scene?.ground?.tileToWorldY(y)
+        // );
         this.tilePos = new Phaser.Math.Vector2(x, y);
         this.entity = entity;
         this.setDepth(3);
         this.anims.play(this.entity+'-idle-down');
         console.log('player position at:'+ this.getPosition().x + ', ' + this.getPosition().y)
+        console.log('player map position at: '+this.x+","+this.y)
+
+        console.log("player to left")
+        console.log(this.getAvailableMovesArray())
+        //console.log('player tilePos at worldXY: '+ this.scene.ground.getTileAtWorldXY(x,y))
     }
 
     // preUpdate(t:number, dt:number) {
     //     super.preUpdate(t, dt);
     // }
 
-    getPosition(): Phaser.Math.Vector2 {
+    getAvailableMovesArray(): Vector2[]{
+        const possibleMoves: Phaser.Math.Vector2[]=[]
+        this.dirVec.forEach((v) => {
+            const grid = v.add(this.getCurrentGridPosition());
+            if((grid.x>=0)&&(grid.x<=this.scene.maxTileX)&&
+            (grid.y>=0)&&(grid.y<=this.scene.maxTileY))
+            {   
+                possibleMoves.push(grid)
+            }             
+        });
+        return possibleMoves;
+    }
+
+    getAvailableMovesTupleArray():number[][]{
+        return this.getAvailableMovesArray().map((v)=>([v.x,v.y]))
+    }
+
+    isMoveAllowed(moveIntent: Vector2):boolean{
+        return this.getAvailableMovesArray().some((el)=>{
+            return JSON.stringify(el)===JSON.stringify(moveIntent)
+        })
+    }
+
+    setMoveIntent(moveIntent:Vector2){
+        if(!this.isMoveAllowed(moveIntent)) console.log("move not allowed")
+        this.moveIntentPos = moveIntent
+
+        //get direction
+        this.directionForSmartContract = this.computeMoveIntentDirection(
+            this.moveIntentPos)
+        
+        return this.directionForSmartContract
+    }
+
+    computeMoveIntentDirection(moveIntent:Vector2){
+        console.log("posB4contract")
+        console.log(this.posB4contract)
+        const moveIntentDir = moveIntent.subtract(this.posB4contract)
+        
+        if((moveIntentDir.x==0)&&(moveIntentDir.y==-1)){
+            return Direction.DOWN
+        }else if((moveIntentDir.x==-1)&&(moveIntentDir.y==0)){
+            return Direction.LEFT
+        }else if((moveIntentDir.x==0)&&(moveIntentDir.y==-1)){
+            return Direction.UP
+        }else if((moveIntentDir.x==1)&&(moveIntentDir.y==0)){
+            return Direction.RIGHT
+        }else{
+            return Direction.NONE
+        }
+        console.log(Direction.NONE)
+    }
+
+    contractSetPosition(x:number, y:number){
+        this.setVisible(this.alive)
+        this.setPosition(
+            this.scene?.ground?.tileToWorldX(x)+ this.offsetX,
+            this.scene?.ground?.tileToWorldY(y)
+        )
+        this.tilePos=this.scene.ground.worldToTileXY(this.x, this.y)
+        this.posB4contract=this.scene.ground.worldToTileXY(this.x, this.y)
+        this.moveIntentPos=this.scene.ground.worldToTileXY(this.x, this.y)
+        this.boardMoveCount=0
+
+        //remove previous overlays
+        this.overlays.forEach((o)=>{
+            o.destroy()
+        })
+        this.overlays=[]
+
+        //add square overlays for each possible move
+        this.getAvailableMovesArray().forEach((v)=>{
+            if(v!=null){
+                this.overlays.push(this.scene?.add.rectangle(0,0,
+                    GameScene.TILE_SIZE*GameScene.SCALEFACTOR,
+                    GameScene.TILE_SIZE*GameScene.SCALEFACTOR,
+                    0xffff00, 0.35
+                    ).setOrigin(0,0).setPosition(
+                        this.scene?.ground?.tileToWorldX(v.x),
+                        this.scene?.ground?.tileToWorldY(v.y)
+                    )
+                )
+            }
+        })
+    }
+
+    cancelMoveIntent(){
+        this.contractSetPosition(this.posB4contract.x, this.posB4contract.y)
+    }
+
+    getPosition(): Vector2 {
         return this.getBottomCenter();
     }
 
-    getCurrentGridPosition(): Phaser.Math.Vector2 {
-        const currentVector = this.getPosition();
-        const currentX = currentVector.x;
-        const currentY = currentVector.y;
-
-        const gridX = Math.floor(
-            ((currentX-this.originXoffset-this.offsetX) / (GameScene.TILE_SIZE* GameScene.SCALEFACTOR)));
-        const gridY = Math.floor(
-            ((currentY-this.originYoffset-this.offsetY-this.bodyOffset
-                ) / (GameScene.TILE_SIZE* GameScene.SCALEFACTOR)));
-        console.log(gridX)
-        return new Phaser.Math.Vector2(gridX, gridY);
+    getCurrentGridPosition(): Vector2 {
+        return this.scene.ground.worldToTileXY(this.x, this.y);
     }
-
-    //already available
-    // setPosition(position: Phaser.Math.Vector2): void {
-    //     this.setPosition(position);
-    // }
     
     stopAnimation(direction: Direction) {
         // const animationManager = this.anims.animationManager;
@@ -111,9 +200,17 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         return this.tilePos.clone();
     }
     
-    setTilePos(tilePosition: Phaser.Math.Vector2): void {
+    setTilePos(tilePosition: Vector2): void {
         this.tilePos = tilePosition.clone();
         console.log('player tile set to: '+ this.tilePos.x + ', ' + this.tilePos.y)
+    }
+
+
+    getBoardMoveCount():number{
+        return this.boardMoveCount;
+    }
+    setBoardMoveCount(count:number):void{
+        this.boardMoveCount = count;
     }
 
 }

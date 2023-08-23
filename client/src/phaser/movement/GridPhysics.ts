@@ -29,10 +29,17 @@ export class GridPhysics {
         private player: Player,
         private tileMap: Phaser.Tilemaps.Tilemap,
     ) {}
+    
+    // THERE IS NO TARGET POSITION. IT ONLY CHECKS IF UPDATE CROSSES BORDER FOR EACH MOVE
+    // Player TilePos Does not matter if there is no blocking effects
 
     movePlayer(direction: Direction) {
+        
+        //ensure no more moves after first move intent
+        if(this.player.getBoardMoveCount()!=0) return;
+
         this.lastMovementIntent = direction;
-        if(this.isMoving()) return;
+        if(this.isMoving()) return; //if direction key is held down, continue with update
         // if(this.isBlockingDirection(direction)){
         //     this.player.stopAnimation(direction);
         // } else {
@@ -57,8 +64,6 @@ export class GridPhysics {
     }
 
     private startMoving(direction: Direction): void {
-        console.log('startMoving')
-        console.log(this.player.entity + '-walk-' + this.directionToKey(direction))
         this.player.anims.play(
             this.player.entity + '-walk-' + this.directionToKey(direction)
             );
@@ -68,11 +73,9 @@ export class GridPhysics {
 
     private updatePlayerPosition(delta: number) {
         const pixelsToWalkThisUpdate = this.getPixelsToWalkThisUpdate(delta);
-        console.log('delta: ' + delta)
-        console.log('pixelsToWalkThisUpdate: ' + pixelsToWalkThisUpdate)
         if (!this.willCrossTileBorderThisUpdate(pixelsToWalkThisUpdate)) {
             this.movePlayerSprite(pixelsToWalkThisUpdate);
-        } else if (this.shouldContinueMoving()) {
+        } else if (this.shouldContinueMoving()) { //checks for this.movementDirection == this.lastMovementIntent
             this.movePlayerSprite(pixelsToWalkThisUpdate);
             this.updatePlayerTilePos();
         } else {
@@ -94,26 +97,15 @@ export class GridPhysics {
 
     private movePlayerSprite(pixelsToMove: number) {
         const directionVec = this.movementDirectionVectors[this.movementDirection].clone();
-        console.log('directionVec')
-        console.log(directionVec)
         const movementDistance = directionVec.multiply(new Vector2(pixelsToMove));
-        console.log('movementDistance')
-        console.log(movementDistance)
         
+        // new position is based on offsets from origin this.player.x so need to adjust
         const newX = this.player.getPosition().x + movementDistance.x
         const newY = (this.player.getPosition().y - 
         (GameScene.TILE_SIZE*GameScene.SCALEFACTOR) + movementDistance.y)
-
-        //const newPlayerPos = this.player.getPosition().add(movementDistance);
-        console.log('new X: '+ newX)
-        console.log('new Y: '+ newY)
-        //console.log('newPlayerPos: ' + newPlayerPos.x + ', ' + newPlayerPos.y)
         this.player.setPosition(newX,newY);
-
-        console.log(this.player.getPosition())
         this.tileSizePixelsWalked += pixelsToMove;
         this.tileSizePixelsWalked %= (GameScene.TILE_SIZE*GameScene.SCALEFACTOR);
-        console.log('tileSizePixelsWalked: ' + this.tileSizePixelsWalked)
     }
 
     private getPixelsToWalkThisUpdate(delta: number): number {
@@ -124,6 +116,7 @@ export class GridPhysics {
     private stopMoving(): void {
         this.player.stopAnimation(this.movementDirection);
         this.movementDirection = Direction.NONE;
+        this.player.setBoardMoveCount(this.player.getBoardMoveCount()+1);
     }
 
     private willCrossTileBorderThisUpdate(
