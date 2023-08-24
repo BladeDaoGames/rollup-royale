@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "anvil --host 0.0.0.0",
     "deploy": "forge build && forge create --rpc-url localhost:8545 --private-key $(grep PRIVATE_KEY .env | cut -d '=' -f2) src/Royale.sol:Royale --constructor-args $(grep TESTER1 .env | cut -d '=' -f2)",
+    "deployregistry": "forge build && forge create --rpc-url localhost:8545 --private-key $(grep PRIVATE_KEY .env | cut -d '=' -f2) src/BurnerAccountRegistry.sol:BurnerAccountRegistry",
     "creategame": "cast send $(grep ROYALE .env | cut -d '=' -f2) --private-key $(grep PRIVATE_KEY .env | cut -d '=' -f2) 'createGame(uint256)' 1ether --value 1ether",
     "creategame2": "cast send $(grep ROYALE .env | cut -d '=' -f2) --private-key $(grep KEY2 .env | cut -d '=' -f2) 'createGame(uint256)' 1ether --value 1ether",
     "deploy-create": "pnpm run deploy && pnpm run creategame",
