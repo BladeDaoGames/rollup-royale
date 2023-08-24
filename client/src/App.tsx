@@ -19,7 +19,7 @@ function App() {
 
   const [progress, setProgress] = useState(0);
   const progressBarValue = useAtomValue(createProgressBar)
-
+  
   useFetchRooms();
 
   return (
@@ -31,7 +31,7 @@ function App() {
           pt-0
           '>
 
-          {progressBarValue != 100 ? 
+          {!progressBarValue ? 
             <Progress
               labelProgress
               labelText

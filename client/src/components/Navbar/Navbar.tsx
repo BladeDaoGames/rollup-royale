@@ -1,6 +1,7 @@
 //import React from 'react';
 import { Navbar } from 'flowbite-react';
 import ConnectWalletButton from '../ConnectWalletButton/CWButton';
+import {SignUpButton} from '../ConnectWalletButton/SignUpButton';
 //import {VscFeedback} from 'react-icons/vsc';
 
 const CustomNavBar = () => {
@@ -21,6 +22,9 @@ const CustomNavBar = () => {
                     <div className="text-sm font-medium  text-prime2 md:text-background1 md:bg-lightbeige md:rounded-lg md:text-base md:px-4 md:py-2 md:text-center md:hover:bg-darkbeige">
                         Game Rules</div>
                 </Navbar.Link>
+            </Navbar.Collapse>
+            <Navbar.Collapse className="mr-2">
+                <SignUpButton />
             </Navbar.Collapse>
             <div className="flex">
                 <ConnectWalletButton/>
