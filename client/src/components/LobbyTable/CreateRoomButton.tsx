@@ -6,6 +6,7 @@ import royaleabi from '../../config/abis/royale.json';
 import {toBn} from "evm-bn";
 import { parseEther } from 'viem';
 import { useContractWrite, usePrepareContractWrite} from 'wagmi';
+import { Spinner } from 'flowbite-react';
 
 const CreateRoomButton = () => {
     const [openModal, setOpenModal] = useState<string | undefined>();
@@ -44,7 +45,7 @@ const CreateRoomButton = () => {
             console.log("create room success")
             props.setOpenModal(undefined);
         }
-    }, [isSuccess, isLoading, data])
+    }, [isSuccess, isLoading, data, address])
 
     return (
         <>
@@ -62,7 +63,11 @@ const CreateRoomButton = () => {
                             focus:ring-palegreen focus:border-palegreen
                             focus:border-2
                     ">
-                        {isConnected?`Create Game + `: 'Connect Wallet to Play'}</Button>
+                        {
+                            isLoading?<Spinner color="failure"/>
+                            :
+                            isConnected?`Create Game + `: 
+                        'Connect Wallet to Play'}</Button>
             
             
             <Modal show={props.openModal === 'createGameRoom'} onClose={() => props.setOpenModal(undefined)}
