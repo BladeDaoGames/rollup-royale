@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { addressShortener } from '../../utils/addressShortener';
 
@@ -22,7 +22,7 @@ const CWButton = () => {
     const shortAddress = addressShortener(address as string)
 
     const devPk = useAtomValue(createDevPrivateKey)
-
+    
     const handleConnect = useCallback(() => {
         if(!isConnected){
             //if in dev mode use dev pk
@@ -77,6 +77,12 @@ const CWButton = () => {
         }
     },[burnerKey, address, isConnected, burnerIsConnected])
 
+    useEffect(()=>{
+        if (import.meta.env.VITE_ENV == "dev"){
+            handleConnect();
+        }
+    },[])
+    
     return (
         <button type="button" 
             className="text-white bg-prime1
