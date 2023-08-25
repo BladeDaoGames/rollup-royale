@@ -679,7 +679,8 @@ contract Royale is Ownable {
         gameNotStarted(_roomId)
         gameNotAbandoned(_roomId)
         onlyGameCreator(_roomId)
-    {          
+    {   
+        games[_roomId].info.hasStarted = true;   
         // spawn items
         _spawnItems(_roomId);
         emit GameStarted(_roomId);
