@@ -1,5 +1,6 @@
 import {atom} from 'jotai';
 import {GameInfo} from '../components/GameRoom/GameTypes';
+import Phaser from 'phaser';
 
 type IRoom = {
     _roomId: number;
@@ -13,6 +14,8 @@ type IRoom = {
 }
 
 export const createProgressBar = atom<number>(0);
+export const createTxnBatchInterval = atom<number>(3);
+export const createTxnSender = atom<boolean>(false);
 
 export const createRoomAtom = atom<IRoom[]>([]);
 
