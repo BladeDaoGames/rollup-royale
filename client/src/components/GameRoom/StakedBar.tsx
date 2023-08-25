@@ -46,7 +46,7 @@ const StakedBar = () => {
             <div className="grid grid-flow-col
                 justify-stretch items-center 
                 mx-0 w-1/6
-                border border-white
+                border border-palered
                 py-2 px-4
                 text-right
                 rounded-md overflow-hidden
