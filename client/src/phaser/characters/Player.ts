@@ -37,6 +37,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     private boardMoveCount:number =0;
     private directionForSmartContract: Direction = Direction.NONE;
     private alive:boolean=true;
+    private renderMoveGuide:boolean=false;
 
     private originXoffset = GameScene.TILE_SIZE*GameScene.SCALEFACTOR;
     private originYoffset = GameScene.TILE_SIZE*GameScene.SCALEFACTOR;
@@ -74,11 +75,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.entity = entity;
         this.setDepth(3);
         this.anims.play(this.entity+'-idle-down');
-        console.log('player position at:'+ this.getPosition().x + ', ' + this.getPosition().y)
-        console.log('player map position at: '+this.x+","+this.y)
-
-        console.log("player to left")
-        console.log(this.getAvailableMovesArray())
+        // console.log("CURRENT GRID POSITION")
+        // console.log(this.getCurrentGridPosition())
+        // console.log(this.getAvailableMovesArray())
         //console.log('player tilePos at worldXY: '+ this.scene.ground.getTileAtWorldXY(x,y))
     }
 
@@ -89,11 +88,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     getAvailableMovesArray(): Vector2[]{
         const possibleMoves: Phaser.Math.Vector2[]=[]
         this.dirVec.forEach((v) => {
-            const grid = v.add(this.getCurrentGridPosition());
-            if((grid.x>=0)&&(grid.x<=this.scene.maxTileX)&&
-            (grid.y>=0)&&(grid.y<=this.scene.maxTileY))
+            const curX = this.getCurrentGridPosition().x;
+            const curY = this.getCurrentGridPosition().y;
+            const x = curX + v.x
+            const y = curY + v.y
+            if((x>=0)&&(x<=this.scene.maxTileX)&&
+            (y>=0)&&(y<=this.scene.maxTileY))
             {   
-                possibleMoves.push(grid)
+                possibleMoves.push(new Vector2(x,y))
             }             
         });
         return possibleMoves;
@@ -104,12 +106,17 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     isMoveAllowed(moveIntent: Vector2):boolean{
+        console.log("checking move allowed?")
+        console.log("player original pos: ")
+        console.log(this.posB4contract)
         return this.getAvailableMovesArray().some((el)=>{
             return JSON.stringify(el)===JSON.stringify(moveIntent)
         })
     }
 
     setMoveIntent(moveIntent:Vector2){
+        console.log("move intent")
+        console.log(moveIntent)
         if(!this.isMoveAllowed(moveIntent)) console.log("move not allowed")
         this.moveIntentPos = moveIntent
 
@@ -124,8 +131,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         console.log("posB4contract")
         console.log(this.posB4contract)
         const moveIntentDir = moveIntent.subtract(this.posB4contract)
-        console.log(moveIntent)
-        console.log(moveIntentDir)
         if((moveIntentDir.x==0)&&(moveIntentDir.y==1)){
             return Direction.DOWN
         }else if((moveIntentDir.x==-1)&&(moveIntentDir.y==0)){
@@ -166,10 +171,11 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                     ).setOrigin(0,0).setPosition(
                         this.scene?.ground?.tileToWorldX(v.x),
                         this.scene?.ground?.tileToWorldY(v.y)
-                    )
+                    ).setVisible(this.renderMoveGuide)
                 )
             }
         })
+
     }
 
     cancelMoveIntent(){
@@ -205,12 +211,23 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         console.log('player tile set to: '+ this.tilePos.x + ', ' + this.tilePos.y)
     }
 
-
     getBoardMoveCount():number{
         return this.boardMoveCount;
     }
     setBoardMoveCount(count:number):void{
         this.boardMoveCount = count;
+    }
+    
+    spawnUserPlayer():void{
+        this.alive=true
+        this.renderMoveGuide=true
+        this.cancelMoveIntent()
+    }
+
+    killPlayer():void{
+        this.alive = false
+        this.renderMoveGuide=false
+        this.cancelMoveIntent()
     }
 
 }
@@ -224,7 +241,7 @@ Phaser.GameObjects.GameObjectFactory.register('player',
         this.displayList.add(sprite)
         this.updateList.add(sprite)
 
-        this.scene.physics.world.enableBody(sprite, Phaser.Physics.Arcade.DYNAMIC_BODY)
+        //this.scene.physics.world.enableBody(sprite, Phaser.Physics.Arcade.DYNAMIC_BODY)
 
         // sprite.body.setSize(sprite.width * 0.5, sprite.height * 0.8)
 

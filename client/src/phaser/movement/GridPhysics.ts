@@ -24,11 +24,15 @@ export class GridPhysics {
     private tileSizePixelsWalked: number = 0;
 
     private lastMovementIntent = Direction.NONE;
-
+    player:Player
+    private tileMap!: Phaser.Tilemaps.Tilemap
     constructor(
-        private player: Player,
-        private tileMap: Phaser.Tilemaps.Tilemap,
-    ) {}
+        player: Player,
+        tileMap: Phaser.Tilemaps.Tilemap,
+    ) {
+        this.player=player
+        this.tileMap=tileMap
+    }
     
     // THERE IS NO TARGET POSITION. IT ONLY CHECKS IF UPDATE CROSSES BORDER FOR EACH MOVE
     // Player TilePos Does not matter if there is no blocking effects
@@ -36,7 +40,7 @@ export class GridPhysics {
     movePlayer(direction: Direction) {
         
         //ensure no more moves after first move intent
-        if(this.player.getBoardMoveCount()!=0) return;
+        //if(this.player?.getBoardMoveCount()!=0) return;
 
         this.lastMovementIntent = direction;
         if(this.isMoving()) return; //if direction key is held down, continue with update

@@ -3,7 +3,6 @@ import Phaser from 'phaser';
 
 const usePhaserGame = (config: Phaser.Types.Core.GameConfig) => {
     const phaserGameRef = useRef<Phaser.Game | null>(null);
-    
     useEffect(() => {
         if (phaserGameRef.current){
         return;
