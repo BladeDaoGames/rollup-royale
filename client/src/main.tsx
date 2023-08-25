@@ -7,12 +7,11 @@ import { WagmiConfig, createConfig, configureChains } from 'wagmi';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { publicProvider } from 'wagmi/providers/public';
 import { InjectedConnector } from 'wagmi/connectors/injected';
-import { foundry} from "@wagmi/chains";
-import { bladedao } from './network/supportedChains.ts';
+import { chainConfig } from './config/chainConfig.ts';
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   //[bladedao],
-  [foundry, bladedao],
+  [chainConfig.chaindetails],
   [publicProvider()],
 )
 
