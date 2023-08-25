@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import {createPlayerIds, createGameInfoAtom} from '../../atoms';
 import {useAtomValue} from 'jotai';
-import { Progress, Tooltip } from 'flowbite-react';
+import { TxnBatchTimer} from './TxnBatchTimer';
 
 const StakeAmtDiv = ({stakeamt})=>{
     return (<div className="flex
@@ -19,7 +19,7 @@ const StakedBar = () => {
     const playerInGame = playerId>=0
     const playerColor= playerId==0?"bg-prime3":playerId==1?"bg-yellow-300":playerId==2?"bg-palered":
     playerId==3?"bg-palegreen":"bg-greyness"
-    return (
+    return useMemo(()=>
         <div className="flex flex-row justify-start items-center
         text-white font-semibold my-1 mt-2
         ">
@@ -33,7 +33,7 @@ const StakedBar = () => {
                 rounded-lg text-center
                 ${playerColor} text-background1
                 `}>
-                    {`${playerInGame?"Player"+playerId+1:"Spectator"}`}
+                    {`${playerInGame?"Player"+(parseInt(playerId)+1):"Spectator"}`}
                 </span>
                 </div>
             
@@ -55,27 +55,10 @@ const StakedBar = () => {
             </div>
 
             
-                <div 
-                className="
-                    flex flex-col justify-start items-start
-                    px-2 py-1 ml-2 mr-1 grow
-                    border border-white
-                    rounded-md text-sm
-                    relative
-                    ">
-                {/* <Tooltip content="Time to next Move"
-                > */}
-                    <div className="text-sm">Time To Next Move . . .</div>
-                    <div className="mt-1 mr-1 mx-0 w-full h-2 
-                    rounded-md overflow-hidden
-                    bg-prime1/70 
-                    "/>
-                {/* </Tooltip> */}
-                    
-                </div>
+                <TxnBatchTimer />
 
         </div>
-    )
+    ,[gameinfo,address,playerIds])
 }
 
 export default StakedBar

@@ -65,7 +65,7 @@ interface PlayerStatusFunction {
 
 const gameStatusMapper = {
     "prestart": "Pre-Start",
-    "ongoing": "On-Going",
+    "ongoing": "Game Started",
     "paused": "Paused",
     "ended": "Ended"
 }
@@ -73,7 +73,10 @@ const gameStatusMapper = {
 const GameStatusBar = () => {
     const {gameStatus, playerStatus} = useGameAndPlayerStatus()
 
-    console.log("game status bar render")
+    console.log("player status: ")
+    console.log(playerStatus)
+    console.log("game status")
+    console.log(gameStatus)
     return (
         <div className="flex flex-row
             justify-between items-center
@@ -86,10 +89,13 @@ const GameStatusBar = () => {
                 text-white font-semibold text-base
                 ">
                 <span className="mx-2">Game Status:</span> 
-                <span className="px-4 py-1 w-full
-                    bg-lightbeige text-background1
+                <span className={`px-4 py-1 w-full
+                    ${gameStatus=="prestart"?"bg-lightbeige text-background1":
+                    gameStatus=="ongoing"?"bg-palegreen text-background1":
+                    gameStatus=="paused"?"bg-prime1 text-background1"
+                    :"bg-prime3 text-background1"} 
                     rounded-lg
-                    ">{gameStatusMapper[gameStatus as string]}</span>
+                    `}>{gameStatusMapper[gameStatus as string]}</span>
                 </div>
                 
                 {/* players status */}

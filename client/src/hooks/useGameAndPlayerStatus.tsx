@@ -1,4 +1,4 @@
-import {useCallback} from 'react';
+import {useCallback, useMemo} from 'react';
 import {useAtomValue} from 'jotai';
 import {createGameInfoAtom, 
     createPlayerReadiness, 
@@ -33,6 +33,12 @@ export const useGameAndPlayerStatus = () => {
             return "waiting"
         }else if(gameStatus=="prestart"&&ready){
             return "ready"
+        }else if(gameStatus=="ongoing"&&alive&&ready&&!pause){
+            return "ready"
+        }else if(gameStatus=="ongoing"&&alive&&!ready&&!pause){
+            return "waiting"
+        }else if(gameStatus=="ongoing"&&!alive&&!ready){
+            return "unavailable"
         }else if(gameStatus=="ongoing"&&!alive){
             return "dead"
         }else if(gameStatus=="ongoing"&&pause){
@@ -45,5 +51,5 @@ export const useGameAndPlayerStatus = () => {
         return "unavailable"
     },[gameStatus, ready, pause, alive])
     const playerStatus = alive.map((gs, i)=>{ return playerStatusFunction(gameStatus, ready[i], pause[i], alive[i])})
-    return {gameStatus, playerStatus}
+    return useMemo(()=>{ return {gameStatus, playerStatus}},[gameInfo, ready, alive, pause])
 }
