@@ -32,10 +32,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     private direction: Direction = Direction.DOWN;
     private tilePos: Vector2;
 
-    private posB4contract!: Vector2;
-    private moveIntentPos!:Vector2;
+    posB4contract!: Vector2;
+    moveIntentPos!:Vector2;
     private boardMoveCount:number =0;
-    private directionForSmartContract: Direction = Direction.NONE;
+    directionForSmartContract: Direction = Direction.NONE;
     private alive:boolean=true;
     private renderMoveGuide:boolean=false;
 
@@ -106,19 +106,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     isMoveAllowed(moveIntent: Vector2):boolean{
-        console.log("checking move allowed?")
-        console.log("player original pos: ")
-        console.log(this.posB4contract)
         return this.getAvailableMovesArray().some((el)=>{
             return JSON.stringify(el)===JSON.stringify(moveIntent)
         })
     }
 
     setMoveIntent(moveIntent:Vector2){
-        console.log("move intent")
-        console.log(moveIntent)
         if(!this.isMoveAllowed(moveIntent)) console.log("move not allowed")
-        this.moveIntentPos = moveIntent
+        this.moveIntentPos.x = moveIntent.x
+        this.moveIntentPos.y = moveIntent.y
 
         //get direction
         this.directionForSmartContract = this.computeMoveIntentDirection(
@@ -128,16 +124,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     computeMoveIntentDirection(moveIntent:Vector2){
-        console.log("posB4contract")
-        console.log(this.posB4contract)
-        const moveIntentDir = moveIntent.subtract(this.posB4contract)
-        if((moveIntentDir.x==0)&&(moveIntentDir.y==1)){
+        const DirX = moveIntent.x - this.posB4contract.x
+        const DirY = moveIntent.y - this.posB4contract.y
+        if((DirX==0)&&(DirY==1)){
             return Direction.DOWN
-        }else if((moveIntentDir.x==-1)&&(moveIntentDir.y==0)){
+        }else if((DirX==-1)&&(DirY==0)){
             return Direction.LEFT
-        }else if((moveIntentDir.x==0)&&(moveIntentDir.y==-1)){
+        }else if((DirX==0)&&(DirY==-1)){
             return Direction.UP
-        }else if((moveIntentDir.x==1)&&(moveIntentDir.y==0)){
+        }else if((DirX==1)&&(DirY==0)){
             return Direction.RIGHT
         }else{
             return Direction.NONE
@@ -153,6 +148,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.tilePos=this.scene.ground.worldToTileXY(this.x, this.y)
         this.posB4contract=this.scene.ground.worldToTileXY(this.x, this.y)
         this.moveIntentPos=this.scene.ground.worldToTileXY(this.x, this.y)
+        this.directionForSmartContract=Direction.NONE
         this.boardMoveCount=0
 
         //remove previous overlays
@@ -224,7 +220,12 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.cancelMoveIntent()
     }
 
-    killPlayer():void{
+    setPiecePosition(x:number, y:number):void{
+        this.alive=true
+        this.contractSetPosition(x,y)
+    }
+
+    removePiece():void{
         this.alive = false
         this.renderMoveGuide=false
         this.cancelMoveIntent()

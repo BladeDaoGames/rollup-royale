@@ -15,7 +15,9 @@ class GameSceneFlat extends Phaser.Scene {
     player4!: Player
     user!:Player
     ground!: Phaser.Tilemaps.TilemapLayer
-    private chest1!: Phaser.GameObjects.Sprite
+    chest5!: Phaser.GameObjects.Sprite
+    chest6!: Phaser.GameObjects.Sprite
+    chest7!: Phaser.GameObjects.Sprite
     private gridControls!: GridControls
     private userGridPhysics!: GridPhysics
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
@@ -23,6 +25,7 @@ class GameSceneFlat extends Phaser.Scene {
     readonly maxTileX = 9
     readonly maxTileY = 9
     private prevclicktime:number =new Date().getTime();
+    private pieceArray!: Array<Player|Phaser.GameObjects.Sprite>
     static readonly SCALEFACTOR = 3;
     static readonly TILE_SIZE = 16;
 
@@ -60,23 +63,36 @@ class GameSceneFlat extends Phaser.Scene {
         this.player1 = this.add.player(
             1,1, 'hs-cyan', 'tile000.png', 'player1')
         this.player1.scale = this.scalefactor
-        // //this.player1.killPlayer()
+        this.player1.removePiece()
 
         this.player2 = this.add.player(
             8,1, 's-yellow', 'tile000.png', 'player2')
         this.player2.scale = this.scalefactor
-        //this.player2.killPlayer()
+        this.player2.removePiece()
 
         this.player3 = this.add.player(
             1,8, 'm-red', 'tile000.png', 'player3')
         this.player3.scale = this.scalefactor
-        //this.player3.killPlayer()
+        this.player3.removePiece()
 
         this.player4 = this.add.player(
             8,8, 'op-cyan', 'tile000.png', 'player4')
         this.player4.scale = this.scalefactor
+        this.player4.removePiece()
         
-        this.chest1 = this.add.chest(5,5, 'chest', 'tile000.png', 'chest1')
+        this.chest5 = this.add.chest(4,4, 'chest', 'tile000.png', 'chest5')
+        this.chest5.removePiece()
+        this.chest6 = this.add.chest(5,4, 'chest', 'tile000.png', 'chest6')
+        this.chest6.removePiece()
+        this.chest7 = this.add.chest(5,5, 'chest', 'tile000.png', 'chest7')
+        this.chest7.removePiece()
+
+        this.pieceArray = [
+            this.player1, this.player2,
+            this.player3, this.player4,
+            this.chest5, this.chest6,
+            this.chest7
+        ]
 
         this.userGridPhysics = new GridPhysics(this.user, map)
         // give control to player1 physics
@@ -117,13 +133,18 @@ class GameSceneFlat extends Phaser.Scene {
         publishPhaserEvent("playersLoaded", "no data")
     }
 
+    setPiecePosition(pieceId:number, x:number, y:number){
+        this.pieceArray[pieceId].setPiecePosition(x,y)
+    }
+
+    removePiecePosition(pieceId:number){
+        this.pieceArray[pieceId].removePiece()
+    }
+
     setUserToPlayer(playerId:number){
-        const playerArray = [
-            this.player1, this.player2,
-            this.player3, this.player4]
-        this.user = playerArray[playerId];
+        this.user = this.pieceArray[playerId];
         this.user.spawnUserPlayer()
-        this.userGridPhysics.player = playerArray[playerId];
+        this.userGridPhysics.player = this.pieceArray[playerId];
         console.log("user set to: "+(playerId+1))
     }
     contractSetPlayerLoc(x:number,y:number){

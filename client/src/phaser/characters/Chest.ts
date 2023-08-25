@@ -18,6 +18,7 @@ declare global
 export default class Chest extends Phaser.Physics.Arcade.Sprite {
 
     private tilePos: Phaser.Math.Vector2
+    private alive:boolean=true;
     private originXoffset = GameScene.TILE_SIZE*GameScene.SCALEFACTOR;
     private originYoffset = GameScene.TILE_SIZE*GameScene.SCALEFACTOR;
     private offsetX = (GameScene.TILE_SIZE/ 2)*GameScene.SCALEFACTOR;
@@ -32,17 +33,37 @@ export default class Chest extends Phaser.Physics.Arcade.Sprite {
         
         super(scene, x, y, texture, frame);
 
-        this.setPosition(
-            this.originXoffset + this.offsetX + (
-                x * GameScene.TILE_SIZE* GameScene.SCALEFACTOR),
-            this.originYoffset + this.bodyOffset + (
-                y * GameScene.TILE_SIZE* GameScene.SCALEFACTOR),
-        );
+        // this.setPosition(
+        //     this.originXoffset + this.offsetX + (
+        //         x * GameScene.TILE_SIZE* GameScene.SCALEFACTOR),
+        //     this.originYoffset + this.bodyOffset + (
+        //         y * GameScene.TILE_SIZE* GameScene.SCALEFACTOR),
+        // );
+
+        this.contractSetPosition(x,y)
         
         this.entity = entity;
         this.setDepth(2);
         //this.anims.play(this.entity+'-idle-down');
         this.anims.play('chest-idle-down');
+    }
+
+    contractSetPosition(x:number, y:number){
+        this.alive=true
+        this.setVisible(this.alive)
+        this.setPosition(
+            this.scene?.ground?.tileToWorldX(x)+ this.offsetX,
+            this.scene?.ground?.tileToWorldY(y)+this.bodyOffset
+        )
+    }
+
+    setPiecePosition(x:number, y:number):void{
+        this.contractSetPosition(x,y)
+    }
+
+    removePiece():void{
+        this.alive=false
+        this.setVisible(this.alive)
     }
 
 }
