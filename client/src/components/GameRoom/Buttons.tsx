@@ -30,7 +30,7 @@ export const StakeAndEnterButton = ({room}:{room: number}) => {
     return (
         <Tooltip content="~ Stake and Enter Game ~">
             <Button 
-            disable={playerInGame}
+            disabled={playerInGame}
             className={`flex flex-row items-center justify-center py-2 
             border rounded-lg  
             ${
@@ -73,7 +73,7 @@ export const LeaveRoomButton = ({room}:{room: number}) =>{
     return (
         <Tooltip content="Leave Room Before Game Start">
             <Button 
-            disable={!gameStarted}
+            disabled={!gameStarted}
             className="py-2 border rounded-lg  
             border-prime3 text-background1 bg-prime3 hover:text-prime3 hover:bg-prime3/5
             "
@@ -111,7 +111,7 @@ export const ReadyUpButton = ({room}:{room: number})=>{
     return (
         <Tooltip content="Signal Ready Up To Let Owner Start Game">
             <Button 
-            disable={playerReady}
+            disabled={playerReady}
             className={`py-2 border rounded-lg 
             ${playerReady?
             
@@ -194,7 +194,7 @@ export const StartGameButton = ({room}:{room: number})=>{
     return (
         <Tooltip content="Only Owner Can Start Game">
             <Button 
-            disable={gameinfo?.hasStarted || !playerIsRoomOwner}
+            disabled={gameinfo?.hasStarted || !playerIsRoomOwner}
             className={`flex flex-row items-center justify-center py-2 
             border rounded-lg  
 
