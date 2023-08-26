@@ -1,4 +1,4 @@
-export type GameInfo {
+export type GameInfo = {
 
     gameAbandoned: boolean,
     gameCreator: string,
