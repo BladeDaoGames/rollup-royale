@@ -84,11 +84,12 @@ const CWButton = () => {
         if (import.meta.env.VITE_ENV == "dev"){
             handleConnect();
         }
-        // if not, then let them connect manually, 
-        //the handle connect will check for burner wallet
 
         // if they got registered flag from the signup then connect them automatically
-        if(burnerKeyRegisteredFlagCount>0) handleConnect();
+        //if(burnerKeyRegisteredFlagCount>0) handleConnect();
+
+        // in the end we decided just auto connect everyone
+        handleConnect();
 
     },[burnerKeyRegisteredFlagCount])
     
