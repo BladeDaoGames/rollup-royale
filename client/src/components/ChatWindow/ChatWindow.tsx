@@ -55,8 +55,8 @@ export const ChatInputBox = ({ sendANewMessage, room }: ChatInputBoxProps) => {
     }
 
     return (
-        <form className="flex-grow w-full
-            flex flex-row p-1 items-center
+        <form className="w-full
+            flex flex-row p-1 py-2 items-center
             border-prime2 border rounded-md
             overflow-hidden
             mt-1"
@@ -156,7 +156,7 @@ const ChatWindow = ({room, msgLimit }: {room: string, msgLimit: number}) => {
             {/* message window */}
             <div className="
                     py-1 px-2 w-auto
-                    h-4/5 max-h-4/5 bg-black/20 
+                    h-full bg-black/20 
                     overflow-y-auto
                     flex flex-col-reverse justify-start
                     

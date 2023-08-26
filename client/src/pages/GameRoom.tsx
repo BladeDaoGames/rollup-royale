@@ -24,6 +24,7 @@ import { useAccount } from 'wagmi';
 import {boardPositionToGameTileXY} from '../utils/gameCalculations'
 
 import {subscribePhaserEvent, unsubscribePhaserEvent} from '../phaser/EventsCenter';
+import ChatWindow from '../components/ChatWindow/ChatWindow';
 
 
 const GameRoom = () => {
@@ -252,19 +253,28 @@ const GameRoom = () => {
   
   return (
 
-    <div className="flex flex-row items-start justify-center border border-green-500 ">
+    <div className="flex flex-row 
+    flex-wrap
+    justify-center items-start 
+    w-full
+    ">
       {/* <button className="w-10 h-10 bg-red-700" onClick={()=>{console.log(gamescene.player1)}}/> */}
-      <TxnSenderHOC game={game} roomId={roomId}/>
-      <div className="w-full md:w-[768px] mx-auto
+      
+      {/* balancing div */}
+      <div className="flex-1 w-full max-w-[768px]">
+          <TxnSenderHOC game={game} roomId={roomId}/>
+        </div>
+
+      {/* main center container panel w-768px */}
+        <div className="justify-self-center w-full md:w-[768px]
               flex flex-col
               p-0 h-screen
               items-center
-              border border-green-400
           "
         >
-          <div className="w-[60vh]
 
-          ">
+          {/* game container is 60vh for square map*/}
+          <div className="w-[60vh]">
               {/* game status bar */}
               <GameStatusBar/>
               <FTstatusBar/>
@@ -297,9 +307,13 @@ const GameRoom = () => {
               </div>
 
             </div>
-
-            
         </div>
+
+        {/* chat window */}
+        <div className="flex-1 w-full max-w-[768px] h-[30vh] md:h-[90vh]">
+          <ChatWindow room={roomId?.toString()} msgLimit={100} />
+        </div>
+      
       </div>
   )
 }
