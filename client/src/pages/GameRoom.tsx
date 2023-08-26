@@ -153,21 +153,24 @@ const GameRoom = () => {
               //(Note if they get killed before their move intent fulfilled, 
               // their position will be empty and they will be removed from the game)
 
-              if(i<4){
+              //update if player has not logged in yet (first page refresh)
+              if(playerLoginCount<1){
+                  gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
+                  setPlayerLoginCount(()=>1)
+
+              // rule that applies to only the 4 players
+              } else if(i<4){
                 const moveIntentXY = {
                     x:gamescene?.pieceArray[i].moveIntentPos.x,
                     y:gamescene?.pieceArray[i].moveIntentPos.y
                   }
+                
+                //update only if move intent is same as returned position
+
                 // console.log(`player${i+1} returned pos: `, TileXY)
                 // console.log(`player${i+1} move intent: `, moveIntentXY)
-
-                //update only if move intent is same as returned position
-                // or if player has not logged in yet (first page refresh)
-                if(playerLoginCount<1){
-                    gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
-                    setPlayerLoginCount(()=>1)
-                } else if((moveIntentXY.x==TileXY.x)&&(moveIntentXY.y==TileXY.y)){
-                    gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
+                if((moveIntentXY.x==TileXY.x)&&(moveIntentXY.y==TileXY.y)){
+                  gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
                 }
               }
               
