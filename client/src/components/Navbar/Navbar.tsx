@@ -39,7 +39,7 @@ const CustomNavBar = () => {
             <Navbar.Collapse className="mr-2">
                 <Navbar.Link href="#">
                     <div className="text-sm font-medium  text-prime2 md:text-background1 md:bg-prime2 md:rounded-lg md:text-base md:px-4 md:py-2 md:text-center md:hover:bg-darkbeige">
-                        {`$BLADE: ${data?.formatted??"??"}`}</div>
+                        {`$BLADE: ${parseFloat(data?.formatted).toFixed(3)??"??"}`}</div>
                 </Navbar.Link>
             </Navbar.Collapse>
             <Navbar.Collapse className="mr-2">
