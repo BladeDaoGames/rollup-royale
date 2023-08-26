@@ -5,7 +5,6 @@ import Footer from './components/Footer/Footer';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Lobby from './pages/Lobby';
 import GameRoom from './pages/GameRoom';
-import { Progress } from 'flowbite-react';
 import useFetchRooms from './hooks/useFetchRooms';
 import {useAtomValue} from 'jotai';
 import { createProgressBar } from './atoms';
@@ -16,8 +15,6 @@ import { createProgressBar } from './atoms';
 // xl:bg-green-300
 // 2xl:bg-background1
 function App() {
-
-  const [progress, setProgress] = useState(0);
   const progressBarValue = useAtomValue(createProgressBar)
   
   useFetchRooms();
@@ -28,19 +25,23 @@ function App() {
         <main className='
           bg-[#34222E]
           flex flex-col min-h-screen
+          items-center
           pt-0
           '>
 
-          {!progressBarValue ? 
-            <Progress
-              labelProgress
-              labelText
-              progress={progressBarValue}
-              progressLabelPosition="inside"
-              size="lg"
-              textLabel="Game Setup..."
-              textLabelPosition="outside"
-            />
+          {progressBarValue <100? 
+            <div className="
+            mt-10
+            w-1/2 flex-col justify-start items-center
+            text-xs font-bold text-white
+            ">
+              <div className="my-2 mb-1 text-base">LoAdiNg GaME DatA...</div>
+              <div className="w-full bg-gray-200 rounded-md dark:bg-gray-700">
+                <div className="bg-prime2  text-background1 text-sm
+                text-center p-0.5 leading-none rounded-md" 
+                style={{width: `${progressBarValue}%`}}>{`${progressBarValue}%`}</div>
+              </div>
+            </div>
             :
           <Router>
               <Routes>
