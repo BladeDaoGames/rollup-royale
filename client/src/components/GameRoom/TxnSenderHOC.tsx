@@ -6,7 +6,8 @@ import { createGameSceneReadiness, createPlayerIds, createTxnQueue } from '../..
 import { useAccount } from 'wagmi';
 import { Direction } from '../../phaser/characters/Player';
 import { chainConfig } from '../../config/chainConfig';
-import { writeContract } from '@wagmi/core'
+import { writeContract } from '@wagmi/core';
+import { parseGwei } from 'viem';
 
 export const TxnSenderHOC = ({game, roomId}:{game:Phaser.Game, roomId:number}) => {
     const {address, isConnected} = useAccount()
@@ -55,7 +56,10 @@ export const TxnSenderHOC = ({game, roomId}:{game:Phaser.Game, roomId:number}) =
                                 dirMapping[dirForSmartContract as string] as number, 
                                 address,
                                 false
-                            ]
+                            ],
+                            maxFeePerGas: parseGwei('20'),
+                            maxPriorityFeePerGas: parseGwei('5'),
+
                         }).then(()=>{
                             setTxnQueue(()=>0)
                             console.log("txn complete")
