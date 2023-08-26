@@ -8,7 +8,7 @@ import { MockConnector } from 'wagmi/connectors/mock';
 
 import {createDevPrivateKey, createBurnerKeyRegisteredFlagCount} from '../../atoms';
 import { useAtomValue } from 'jotai';
-import { supportedChains } from '.';
+import { supportedChains } from '../../config/supportedChains';
 import { chainConfig } from '../../config/chainConfig';
 import {useBurnerKey} from '../../hooks/useBurnerKey';
 import {BiCopy} from 'react-icons/bi';
