@@ -20,7 +20,7 @@ export const TxnBatchTimer = () => {
             })
         }, 1000);
         return () => clearInterval(intervalId);
-    })
+    },[])
     return useMemo(()=>
         <div 
             className="
