@@ -43,3 +43,4 @@ export const createPlayerPauseVote = atom<Array<boolean>>([false,false,false,fal
 export const createPlayerOverallStatus = atom<Array<string>>(["waiting","waiting","waiting","waiting"])
 
 export const createDevPrivateKey = atom<string>(import.meta.env.VITE_DEVPK1 ?? "0x0")
+export const createBurnerKeyRegisteredFlagCount = atom<number>(0)

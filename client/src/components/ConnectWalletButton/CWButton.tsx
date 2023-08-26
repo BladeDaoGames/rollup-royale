@@ -6,7 +6,7 @@ import { createWalletClient, http, publicActions, toHex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { MockConnector } from 'wagmi/connectors/mock';
 
-import {createDevPrivateKey} from '../../atoms';
+import {createDevPrivateKey, createBurnerKeyRegisteredFlagCount} from '../../atoms';
 import { useAtomValue } from 'jotai';
 import { supportedChains } from '../../network/supportedChains.ts';
 import { chainConfig } from '../../config/chainConfig';
@@ -16,6 +16,7 @@ const CWButton = () => {
     const { address, isConnected } = useAccount()
     const { connect, connectors } = useConnect()
     const { disconnect } = useDisconnect()
+    const burnerKeyRegisteredFlagCount = useAtomValue(createBurnerKeyRegisteredFlagCount)
     const { burnerKey, burnerAddress, updateBurnerKey} = useBurnerKey();
     const burnerIsConnected = (address?.toLowerCase()==burnerAddress?.toLowerCase())&&(isConnected)
     
@@ -49,10 +50,11 @@ const CWButton = () => {
             if (burnerIsConnected) return
 
             //if burner wallet available, use burner to connect
-            if(!burnerKey){
+            if(burnerKey !==null){
+                console.log(`burnerkey is: ${burnerKey}`)
                 const viemAccount = privateKeyToAccount(burnerKey) 
                 const cachedClient = createWalletClient({
-                    viemAccount,
+                    account: viemAccount,
                     chain: chainConfig.chaindetails,
                     transport: http()
                 }).extend(publicActions) 
@@ -78,10 +80,17 @@ const CWButton = () => {
     },[burnerKey, address, isConnected, burnerIsConnected])
 
     useEffect(()=>{
+        // it is dev, auto connect
         if (import.meta.env.VITE_ENV == "dev"){
             handleConnect();
         }
-    },[])
+        // if not, then let them connect manually, 
+        //the handle connect will check for burner wallet
+
+        // if they got registered flag from the signup then connect them automatically
+        if(burnerKeyRegisteredFlagCount>0) handleConnect();
+
+    },[burnerKeyRegisteredFlagCount])
     
     return (
         <button type="button" 
