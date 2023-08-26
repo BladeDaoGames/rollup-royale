@@ -12,6 +12,7 @@ import { supportedChains } from '../../config/supportedChains';
 import { chainConfig } from '../../config/chainConfig';
 import {useBurnerKey} from '../../hooks/useBurnerKey';
 import {BiCopy} from 'react-icons/bi';
+import { Tooltip } from 'flowbite-react';
 
 const CWButton = () => {
     const { address, isConnected } = useAccount()
@@ -107,7 +108,9 @@ const CWButton = () => {
             >
             {isConnected ? 
             <div className="flex flex-row items-center">
-                <span>{shortAddress}</span>
+                <Tooltip content={address}>
+                    <span>{shortAddress}</span>
+                </Tooltip>
                 <BiCopy className="w-6 h-5 ml-2 text-center align-middle rounded-sm  hover:bg-orange-600 hover:drop-shadow-2xl hover:shadow-background1 hover:text-background1"
                 onClick={()=>{
                     navigator.clipboard.writeText(address as string)
