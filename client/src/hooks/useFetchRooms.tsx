@@ -11,7 +11,6 @@ const useFetchRooms = () => {
     const [progressBarValue, setProgressBarValue] = useAtom(createProgressBar)
     const fetchTimes = useRef<number>(0);
     //const fetchDone = useRef<boolean>(false);
-
     useEffect(()=>{
         //console.log(progressBarValue)
         if(progressBarValue<100){

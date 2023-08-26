@@ -73,10 +73,10 @@ const gameStatusMapper = {
 const GameStatusBar = () => {
     const {gameStatus, playerStatus} = useGameAndPlayerStatus()
 
-    console.log("player status: ")
-    console.log(playerStatus)
-    console.log("game status")
-    console.log(gameStatus)
+    if(import.meta.env.VITE_ENV=="dev")console.log("player status: ")
+    if(import.meta.env.VITE_ENV=="dev")console.log(playerStatus)
+    if(import.meta.env.VITE_ENV=="dev")console.log("game status")
+    if(import.meta.env.VITE_ENV=="dev")console.log(gameStatus)
     return (
         <div className="flex flex-row
             justify-between items-center

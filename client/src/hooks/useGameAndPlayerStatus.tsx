@@ -7,7 +7,7 @@ import {createGameInfoAtom,
 import { GameInfo } from '../components/GameRoom/GameTypes';
 
 export const useGameAndPlayerStatus = () => {
-    console.log("getting game and player status...")
+    if(import.meta.env.VITE_ENV=="dev")console.log("getting game and player status...")
     const gameInfo = useAtomValue(createGameInfoAtom)
     const ready = useAtomValue(createPlayerReadiness)
     const alive = useAtomValue(createPlayerAliveStatus)

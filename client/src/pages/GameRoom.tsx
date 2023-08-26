@@ -127,13 +127,13 @@ const GameRoom = () => {
   const playerInGame = playerId>=0
   const gamescene = game?.scene?.keys?.GameSceneFlat
 
-  console.log("game room render")
+  if(import.meta.env.VITE_ENV=="dev")console.log("game room render")
 
   // runs to position all pieces after every state refresh
   // runs first time and everytime pages freshes, player come into game, address change
   useEffect(()=>{
-    console.log("refreshing positions")
-    console.log(piecePositions)
+    if(import.meta.env.VITE_ENV=="dev")console.log("refreshing positions")
+    if(import.meta.env.VITE_ENV=="dev")console.log(piecePositions)
     // console.log(gameSceneReady)
     // console.log(gamescene?.player1)
     
@@ -178,11 +178,11 @@ const GameRoom = () => {
   
   //get current gameInfo and State in the room
   useEffect(()=>{
-    console.log("useGetGameInfo Hook.") // only once
+    if(import.meta.env.VITE_ENV=="dev")console.log("useGetGameInfo Hook.") // only once
     const unwatch = watchReadContracts(contractCallConfig, (data_)=>{
       // refreshes each time chain state changes
       console.log("chain state refreshed.")
-      console.log(data_)
+      if(import.meta.env.VITE_ENV=="dev")console.log(data_)
 
       // gameinfo data
       if(data_[0]?.status=="success"){
