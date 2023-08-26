@@ -11,8 +11,7 @@ import {createGameInfoAtom, createPlayerIds,
 } from '../../atoms';
 
 import { useAccount, useContractWrite } from 'wagmi';
-import RoyaleABI from '../../config/abis/Royale.json';
-import {ROYALE_ADDRESS} from '../../config/constants';
+import { chainConfig } from '../../config/chainConfig';
 import { parseEther } from 'viem';
 
 export const StakeAndEnterButton = ({room}:{room: number}) => {
@@ -20,8 +19,8 @@ export const StakeAndEnterButton = ({room}:{room: number}) => {
     const gameinfo = useAtomValue(createGameInfoAtom)
     const playerIds = useAtomValue(createPlayerIds)
     const { data, isLoading, isSuccess, write: writeJoinGame } = useContractWrite({
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'joinGame',
     })
 
@@ -63,8 +62,8 @@ export const LeaveRoomButton = ({room}:{room: number}) =>{
     const gameStarted =gameinfo?.hasStarted
 
     const { data, isLoading, isSuccess, write: writeLeaveGame } = useContractWrite({
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'leaveGame',
     })
 
@@ -103,8 +102,8 @@ export const ReadyUpButton = ({room}:{room: number})=>{
     const playerReady = playerId>=0 ? playerReadiness[playerId] : false
 
     const { data, isLoading, isSuccess, write: writeToggleReady } = useContractWrite({
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'toggleReady',
     })
 
@@ -147,8 +146,8 @@ export const PlayerPauseButton = ({room}:{room: number})=>{
     const playerPlayerPaused = playerId>=0 ? playerPauseVote[playerId] : false
 
     const { data, isLoading, isSuccess, write: writeTogglePause } = useContractWrite({
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'tooglePlayerPause',
     })
 
@@ -184,8 +183,8 @@ export const StartGameButton = ({room}:{room: number})=>{
     const {address} = useAccount()
     const gameinfo = useAtomValue(createGameInfoAtom)
     const { data, isLoading, isSuccess, write: writeStartGame } = useContractWrite({
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'startGame',
     })
 

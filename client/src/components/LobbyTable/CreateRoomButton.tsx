@@ -1,11 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {Button, Modal} from 'flowbite-react';
 import { useAccount } from 'wagmi';
-import { ROYALE_ADDRESS } from '../../config/constants';
-import royaleabi from '../../config/abis/royale.json';
-import {toBn} from "evm-bn";
+import { chainConfig } from '../../config/chainConfig';
 import { parseEther } from 'viem';
-import { useContractWrite, usePrepareContractWrite} from 'wagmi';
+import { useContractWrite} from 'wagmi';
 import { Spinner } from 'flowbite-react';
 
 const CreateRoomButton = () => {
@@ -14,8 +12,8 @@ const CreateRoomButton = () => {
     const {address, isConnected} = useAccount();
 
     const { data, isLoading, isSuccess, write } = useContractWrite({
-        address: ROYALE_ADDRESS,
-        abi: royaleabi.abi,
+        address: chainConfig?.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'createGame',
     })
 
@@ -26,8 +24,6 @@ const CreateRoomButton = () => {
         const boardwidth = e.currentTarget.boardcols.value;
         const gameplayernums = e.currentTarget.maxplayers.value;
         const minstake = parseEther(e.currentTarget.minstake.value);
-
-        console.log("Royale Address: "+ ROYALE_ADDRESS)
         // console.log("create room params")
         // console.log("roomname: "+ roomname)
         // console.log("board size: "+ boardheight+"x"+boardwidth)

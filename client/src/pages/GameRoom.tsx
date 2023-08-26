@@ -13,8 +13,7 @@ import FTstatusBar from '../components/GameRoom/FTstatusBar';
 import StakedBar from '../components/GameRoom/StakedBar';
 import { useParams } from 'react-router-dom';
 import { watchReadContracts } from '@wagmi/core';
-import RoyaleABI from '../config/abis/Royale.json';
-import {ROYALE_ADDRESS} from '../config/constants';
+import { chainConfig } from '../config/chainConfig';
 import { formatEther } from 'viem';
 import {useAtom, useSetAtom} from 'jotai';
 import { createGameInfoAtom, createPlayerIds, createPlayerFTs, 
@@ -79,44 +78,44 @@ const GameRoom = () => {
   const contractCallConfig = {
     contracts:[
       {
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'getGameInfo',
         args: [roomId]
       },{
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'getPlayerIds',
         args: [roomId]
       },{
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'getPlayerFTs',
         args: [roomId]
       },{
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'getPiecePositions',
         args: [roomId]
       },{
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'getPlayerLives',
         args: [roomId]
       },{
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'getPlayerReadiness',
         args: [roomId]
       },{
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'getPlayerPauseVote',
         args: [roomId]
       },
       // {
-      //   address: ROYALE_ADDRESS,
-      //   abi: RoyaleABI.abi,
+      //   address: chainConfig.royaleContractAddress,
+      //   abi: chainConfig.royaleAbi,
       //   functionName: 'getPlayerLastMoveTime',
       //   args: [roomId]
       // },

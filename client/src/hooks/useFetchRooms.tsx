@@ -1,8 +1,6 @@
 import {useEffect, useRef} from 'react';
 import { readContract } from '@wagmi/core';
 import { formatUnits } from 'viem';
-import RoyaleABI from '../config/abis/Royale.json';
-import {ROYALE_ADDRESS} from '../config/constants';
 import {useAtom, useSetAtom} from 'jotai';
 import { createTotalRoomsAtoom, createRoomAtom, createProgressBar } from '../atoms';
 
@@ -48,8 +46,8 @@ const useFetchRooms = () => {
                     .map(
                         async (_, roomId)=>{
                             return await await readContract({
-                                address: ROYALE_ADDRESS,
-                                abi: RoyaleABI.abi,
+                                address: chainConfig.royaleContractAddress,
+                                abi: chainConfig.royaleAbi,
                                 functionName: 'games',
                                 args: [roomId]
                             }).then((res) => {
@@ -77,8 +75,8 @@ const useFetchRooms = () => {
 
         async function getTotalRooms(){
             return await readContract({
-                address: ROYALE_ADDRESS,
-                abi: RoyaleABI.abi,
+                address: chainConfig.royaleContractAddress,
+                abi: chainConfig.royaleAbi,
                 functionName: 'getTotalGames',
             }).then((res)=>{
                 //set total rooms

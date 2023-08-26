@@ -1,8 +1,7 @@
 import React from 'react';
 import { useContractRead, useContractEvent} from 'wagmi';
 import { readContract } from '@wagmi/core';
-import RoyaleABI from '../../config/abis/Royale.json';
-import {ROYALE_ADDRESS} from '../../config/constants';
+import { chainConfig } from '../../config/chainConfig';
 import {useAtom, useAtomValue} from 'jotai';
 import {createTotalRoomsAtoom, createRoomAtom} from '../../atoms';
 import { addressShortener } from '../../utils/addressShortener';
@@ -66,15 +65,15 @@ const LobbyTableManual = () => {
     const [rooms, setRooms] = useAtom(createRoomAtom)
 
     const { data, isError, isLoading } = useContractRead({
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         functionName: 'getTotalGames',
     })
 
     // listen to new room events and update rooms state
     useContractEvent({
-        address: ROYALE_ADDRESS,
-        abi: RoyaleABI.abi,
+        address: chainConfig.royaleContractAddress,
+        abi: chainConfig.royaleAbi,
         eventName: 'GameCreated',
         async listener(log){
             //{_roomId: 2n, _creator: '0x90F79bf6EB2c4f870365E785982E1f101E93b906'}
@@ -83,8 +82,8 @@ const LobbyTableManual = () => {
             if(newRoomId > totalRooms) setTotalRooms(newRoomId) // first room at index 0 is placeholder
 
             await readContract({
-                address: ROYALE_ADDRESS,
-                abi: RoyaleABI.abi,
+                address: chainConfig.royaleContractAddress,
+                abi: chainConfig.royaleAbi,
                 functionName: 'games',
                 args: [newRoomId]
             }).then((res) => {
