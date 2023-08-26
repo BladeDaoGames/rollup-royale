@@ -27,6 +27,32 @@ export const bladedao = {
 
 } as const satisfies Chain
 
+export const bladeAltLayer = {
+  id: 4000005,
+  name: 'BladeAltLayer',
+  network: 'BladeAltLayer',
+  nativeCurrency: {
+      decimals: 18,
+      name: 'Blade',
+      symbol: 'BLADE',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://blade.alt.technology'],
+      webSocket: ['wss://blade.alt.technology'],
+    },
+    public: {
+      http: ['https://blade.alt.technology'],
+      webSocket: ['wss://blade.alt.technology'],
+    },
+  },
+
+  blockExplorers: {
+      default: { name: 'Bladescan', url: 'https://bladeexplorer.alt.technology' },
+  },
+
+} as const satisfies Chain
+
 // If you are deploying to chains other than anvil or Lattice testnet, add them here
 export const supportedChains: Chain[] = [bladedao, foundry];
 //export const supportedChains: MUDChain[] = [bladedao, foundry, latticeTestnet];
