@@ -72,7 +72,7 @@ export const LeaveRoomButton = ({room}:{room: number}) =>{
     return (
         <Tooltip content="Leave Room Before Game Start">
             <Button 
-            disabled={!gameStarted}
+            disabled={gameStarted}
             className="py-2 border rounded-lg  
             border-prime3 text-background1 bg-prime3 hover:text-prime3 hover:bg-prime3/5
             "
