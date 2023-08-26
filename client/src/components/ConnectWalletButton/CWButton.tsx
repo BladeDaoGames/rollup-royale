@@ -11,6 +11,7 @@ import { useAtomValue } from 'jotai';
 import { supportedChains } from '../../network/supportedChains.ts';
 import { chainConfig } from '../../config/chainConfig';
 import {useBurnerKey} from '../../hooks/useBurnerKey';
+import {BiCopy} from 'react-icons/bi';
 
 const CWButton = () => {
     const { address, isConnected } = useAccount()
@@ -51,7 +52,6 @@ const CWButton = () => {
 
             //if burner wallet available, use burner to connect
             if(burnerKey !==null){
-                console.log(`burnerkey is: ${burnerKey}`)
                 const viemAccount = privateKeyToAccount(burnerKey) 
                 const cachedClient = createWalletClient({
                     account: viemAccount,
@@ -95,7 +95,8 @@ const CWButton = () => {
     return (
         <button type="button" 
             className="text-white bg-prime1
-            hover:bg-prime2 focus:ring-2 focus:outline-none focus:ring-lightbeige 
+            hover:bg-prime2 hover:text-background1
+            focus:ring-2 focus:outline-none focus:ring-lightbeige 
             font-medium rounded-lg text-sm md:text-base
             px-4 py-2 text-center mr-3 md:mr-0
             max-w-[132px] md:max-w-none
@@ -103,7 +104,21 @@ const CWButton = () => {
 
             onClick={() => handleConnect()}
             >
-            {isConnected ? shortAddress : "Connect Wallet"}
+            {isConnected ? 
+            <div className="flex flex-row items-center">
+                <span>{shortAddress}</span>
+                <BiCopy className="
+                ml-2 h-5 w-6 rounded-sm
+                hover:bg-orange-600 hover:drop-shadow-2xl
+                hover:shadow-background1 hover:text-background1
+                align-middle text-center
+                "
+                onClick={()=>{
+                    navigator.clipboard.writeText(address as string)
+                }}
+                />
+                </div> 
+            : "Connect Wallet"}
             </button>
     )
 }
