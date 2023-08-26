@@ -3,6 +3,7 @@ import { readContract } from '@wagmi/core';
 import { formatUnits } from 'viem';
 import {useAtom, useSetAtom} from 'jotai';
 import { createTotalRoomsAtoom, createRoomAtom, createProgressBar } from '../atoms';
+import { chainConfig } from '../config/chainConfig';
 
 const useFetchRooms = () => {
     const setTotalRooms = useSetAtom(createTotalRoomsAtoom)
