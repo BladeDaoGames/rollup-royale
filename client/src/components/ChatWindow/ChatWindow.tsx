@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from 'react';
 import { db } from '../../config/firebase.config';
 import { addDoc, collection, serverTimestamp, FieldValue,
     onSnapshot, query, where, orderBy, limitToLast } from 'firebase/firestore';
-import DebouncedInput from './DebouncedInput';
+import DebouncedInput, {NormalInput} from './DebouncedInput';
 import { addressShortener } from '../../utils/addressShortener';
 
 import { useAccount } from 'wagmi';
@@ -52,6 +52,7 @@ export const ChatInputBox = ({ sendANewMessage, room }: ChatInputBoxProps) => {
             await sendANewMessage(newMessagePayload);
             setNewMessage("");
         }
+
     }
 
     return (
@@ -67,6 +68,9 @@ export const ChatInputBox = ({ sendANewMessage, room }: ChatInputBoxProps) => {
                     debounce={100}
                     onChange={(value) => isConnected?setNewMessage(String(value)):null}
                 />
+                {/* <NormalInput 
+                    value={newMessage ?? ""} 
+                    onChange={(e) => isConnected?setNewMessage(String(e.target.value)):null}/> */}
                 <button
                     type="submit"
                     //onClick={() => doSendMessage()}

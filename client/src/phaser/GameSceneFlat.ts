@@ -45,7 +45,7 @@ class GameSceneFlat extends Phaser.Scene {
 
         this.load.atlas('chest','/characters/chest.png', '/characters/chest.json')
 
-        this.cursors= this.input.keyboard.createCursorKeys()
+        //this.cursors= this.input.keyboard.createCursorKeys()
     }
 
     create(){
