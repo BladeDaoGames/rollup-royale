@@ -25,7 +25,7 @@ class GameSceneFlat extends Phaser.Scene {
     readonly maxTileX = 9
     readonly maxTileY = 9
     private prevclicktime:number =new Date().getTime();
-    private pieceArray!: Array<Player|Phaser.GameObjects.Sprite>
+    pieceArray!: Array<Player|Phaser.GameObjects.Sprite>
     static readonly SCALEFACTOR = 3;
     static readonly TILE_SIZE = 16;
 

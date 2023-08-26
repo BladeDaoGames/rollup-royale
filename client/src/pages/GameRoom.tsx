@@ -43,6 +43,7 @@ const GameRoom = () => {
   const [playerAliveStatus, setPlayerAliveStatus] = useAtom(createPlayerAliveStatus)
   const [playerReadyStatus, setPlayerReadyStatus] = useAtom(createPlayerReadiness)
   const [playerPauseVote, setPlayerPauseVote] = useAtom(createPlayerPauseVote)
+  const [playerLoginCount, setPlayerLoginCount] = useState(0)
   //const [playerLastMoveTime, setPlayerLastMoveTime] = useState<Array<number>>([0,0,0,0])
   
   const gameConfig = {
@@ -145,7 +146,31 @@ const GameRoom = () => {
             //assign position if position is not 255 (null)
             if(p!=255){
               const TileXY = boardPositionToGameTileXY(p)
-              gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
+
+              //FOR Players, we need to check if their move intent is different
+              //from their current position, if so, then don't update and wait for
+              //txn to fulfill their position
+              //(Note if they get killed before their move intent fulfilled, 
+              // their position will be empty and they will be removed from the game)
+
+              if(i<4){
+                const moveIntentXY = {
+                    x:gamescene?.pieceArray[i].moveIntentPos.x,
+                    y:gamescene?.pieceArray[i].moveIntentPos.y
+                  }
+                // console.log(`player${i+1} returned pos: `, TileXY)
+                // console.log(`player${i+1} move intent: `, moveIntentXY)
+
+                //update only if move intent is same as returned position
+                // or if player has not logged in yet (first page refresh)
+                if(playerLoginCount<1){
+                    gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
+                    setPlayerLoginCount(()=>1)
+                } else if((moveIntentXY.x==TileXY.x)&&(moveIntentXY.y==TileXY.y)){
+                    gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
+                }
+              }
+              
             }else{
               //if no item there, then remove item
               gamescene?.removePiecePosition(i)
@@ -169,8 +194,6 @@ const GameRoom = () => {
               userGameTileXY.x, userGameTileXY.y
                 )
           }
-          
-          return
         }
     }
     
