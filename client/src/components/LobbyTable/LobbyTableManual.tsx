@@ -159,7 +159,7 @@ const LobbyTableManual = () => {
                     {   //clone array to prevent setting true state
                         rooms?.map((x)=>x).reverse()?.map((r,i)=>{
                             if(r.status=="Ended") return;
-                            console.log(i, r._roomId)
+                            //console.log(i, r._roomId)
                             return <TableRow
                                         roomId={r._roomId}
                                         owner={r._creator}
