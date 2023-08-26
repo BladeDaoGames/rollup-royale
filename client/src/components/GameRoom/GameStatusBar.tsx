@@ -19,7 +19,7 @@ const PlayerStatusIcon = ({playerId, status}: PlayerStatusIcon )=>{
                     border rounded-md 
                     ${
                         status=="dead"?
-                        "bg-none border-prime3 text-prime3"
+                        "bg-none border-purple-500/80 text-purple-500/80"
                         :
                         status=="pause"?
                         "bg-alertred1 border-alertred1 text-background1"
