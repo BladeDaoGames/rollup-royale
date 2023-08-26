@@ -140,53 +140,15 @@ const GameRoom = () => {
     
     //executes if game is ready to be controlled
     if(gameSceneReady&&gamescene?.player1){
-
-        // execute to position all pieces
-        piecePositions.forEach((p,i)=>{
-            //assign position if position is not 255 (null)
-            if(p!=255){
-              const TileXY = boardPositionToGameTileXY(p)
-
-              //FOR Players, we need to check if their move intent is different
-              //from their current position, if so, then don't update and wait for
-              //txn to fulfill their position
-              //(Note if they get killed before their move intent fulfilled, 
-              // their position will be empty and they will be removed from the game)
-
-              //update if player has not logged in yet (first page refresh)
-              if(playerLoginCount<1){
-                  gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
-                  setPlayerLoginCount(()=>1)
-
-              // rule that applies to only the 4 players
-              } else if(i<4){
-                const moveIntentXY = {
-                    x:gamescene?.pieceArray[i].moveIntentPos.x,
-                    y:gamescene?.pieceArray[i].moveIntentPos.y
-                  }
-                
-                //update only if move intent is same as returned position
-
-                // console.log(`player${i+1} returned pos: `, TileXY)
-                // console.log(`player${i+1} move intent: `, moveIntentXY)
-                if((moveIntentXY.x==TileXY.x)&&(moveIntentXY.y==TileXY.y)){
-                  gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
-                }
-              }
-              
-            }else{
-              //if no item there, then remove item
-              gamescene?.removePiecePosition(i)
-            }
-        })
-
+        
+        //ascertain userId 
+        const userEntity = gamescene?.user?.entity
+        const userId = parseInt(userEntity?.substr(userEntity?.length - 1))??null
 
         // execute if player is in the game
         if(playerInGame){
-          //assign user to player if player is not tagged to user
-          const userEntity = gamescene?.user?.entity
-          const userId = parseInt(userEntity?.substr(userEntity?.length - 1))??null
           
+          //assign user to player if player is not tagged to user
           if(userId!=(playerId+1)){
             gamescene?.setUserToPlayer(playerId)
             // then set player to contract location to init yellow move guide
@@ -198,6 +160,45 @@ const GameRoom = () => {
                 )
           }
         }
+
+        // execute to position all pieces
+        piecePositions.forEach((p,i)=>{
+            //assign position if position is not 255 (null)
+            if(p!=255){
+              const TileXY = boardPositionToGameTileXY(p)
+              //if piece is not player update position
+              if(i != playerId){
+                gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
+              
+
+              // else if piece is player update only if returned position is same as intent
+              // or update if it is first time refreshing
+              }else if(playerInGame){
+                const moveIntentXY = {
+                  x:gamescene?.pieceArray[i].moveIntentPos.x,
+                  y:gamescene?.pieceArray[i].moveIntentPos.y
+                }
+                // console.log(`player${i+1} returned pos: `, TileXY)
+                // console.log(`player${i+1} move intent: `, moveIntentXY)
+
+                //update for first time to refresh intent
+                if((playerLoginCount<1)){
+                  gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
+                  setPlayerLoginCount(()=>1)
+                
+                  // update only if intent is same as returned position
+                } else if((moveIntentXY.x==TileXY.x)&&(moveIntentXY.y==TileXY.y)){
+                  gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
+                }
+
+              }
+
+            }else{
+              //if no item there, then remove item
+              gamescene?.removePiecePosition(i)
+            }
+        })
+
     }
     
   },[gameSceneReady, piecePositions, playerInGame, address])
