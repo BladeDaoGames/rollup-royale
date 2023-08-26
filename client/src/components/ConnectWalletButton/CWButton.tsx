@@ -8,7 +8,7 @@ import { MockConnector } from 'wagmi/connectors/mock';
 
 import {createDevPrivateKey, createBurnerKeyRegisteredFlagCount} from '../../atoms';
 import { useAtomValue } from 'jotai';
-import { supportedChains } from '../../network/supportedChains.ts';
+import { supportedChains } from '.';
 import { chainConfig } from '../../config/chainConfig';
 import {useBurnerKey} from '../../hooks/useBurnerKey';
 import {BiCopy} from 'react-icons/bi';
@@ -107,12 +107,7 @@ const CWButton = () => {
             {isConnected ? 
             <div className="flex flex-row items-center">
                 <span>{shortAddress}</span>
-                <BiCopy className="
-                ml-2 h-5 w-6 rounded-sm
-                hover:bg-orange-600 hover:drop-shadow-2xl
-                hover:shadow-background1 hover:text-background1
-                align-middle text-center
-                "
+                <BiCopy className="w-6 h-5 ml-2 text-center align-middle rounded-sm  hover:bg-orange-600 hover:drop-shadow-2xl hover:shadow-background1 hover:text-background1"
                 onClick={()=>{
                     navigator.clipboard.writeText(address as string)
                 }}

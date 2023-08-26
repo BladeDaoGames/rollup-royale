@@ -1,5 +1,5 @@
 import { foundry} from "@wagmi/chains";
-import { bladedao, bladeAltLayer } from '../network/supportedChains';
+import { bladedao, bladeAltLayer } from './supportedChains';
 import BurnerAccountRegistry from './abis/BurnerAccountRegistry.json'
 import Royale from './abis/Royale.json'
 

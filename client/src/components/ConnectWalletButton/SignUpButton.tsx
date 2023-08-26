@@ -6,7 +6,7 @@ import { createWalletClient, http, publicActions } from 'viem';
 import { privateKeyToAccount, generatePrivateKey  } from 'viem/accounts';
 import { MockConnector } from 'wagmi/connectors/mock';
 
-import { supportedChains } from '../../network/supportedChains';
+import { supportedChains } from '../../config/supportedChains';
 import { chainConfig } from '../../config/chainConfig';
 import { useMutation } from 'react-query';
 import { ethers } from 'ethers';
