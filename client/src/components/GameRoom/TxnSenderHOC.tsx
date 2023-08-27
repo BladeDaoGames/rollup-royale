@@ -3,7 +3,7 @@ import { createTxnSender } from '../../atoms';
 import { useAtom } from 'jotai';
 import Phaser from 'phaser';
 import { createGameSceneReadiness, createPlayerIds, createTxnQueue } from '../../atoms';
-import { useAccount } from 'wagmi';
+import { useAccount, useContractWrite } from 'wagmi';
 import { Direction } from '../../phaser/characters/Player';
 import { chainConfig } from '../../config/chainConfig';
 import { writeContract } from '@wagmi/core';
@@ -26,8 +26,14 @@ export const TxnSenderHOC = ({game, roomId}:{game:Phaser.Game, roomId:number}) =
         "right": 3,
         "none":4
     }
-    return useMemo(()=>{
-        // check if player in game and game is ready(queriable)
+    
+    const { data, isLoading, isSuccess, write:writeMovePlayer } = useContractWrite({
+        address: chainConfig.royaleContractAddress as `0x${string}`,
+        abi: chainConfig.royaleAbi,
+        functionName: 'movePlayer',
+    })
+
+    useEffect(()=>{
         if(playerInGame&&gamescene?.player1){
             //check if user is already assigned to player
             const userEntity = gamescene?.user?.entity
@@ -43,7 +49,7 @@ export const TxnSenderHOC = ({game, roomId}:{game:Phaser.Game, roomId:number}) =
                 const dirForSmartContract = gamescene?.user?.directionForSmartContract
                 //send txn as long as direction intent is not none
                 if((dirForSmartContract!="none") && (txnQueue==0)){
-                    setTxnQueue(()=>1)
+                    setTxnQueue((prev)=>prev+1)
                     const movePlayer= async()=>{
                         console.log("sending move txn...")
                         console.log(txnQueue)
@@ -61,18 +67,27 @@ export const TxnSenderHOC = ({game, roomId}:{game:Phaser.Game, roomId:number}) =
                             maxPriorityFeePerGas: parseGwei('5'),
 
                         }).then(()=>{
-                            setTxnQueue(()=>0)
+                            //setTxnQueue(()=>0)
                             console.log("txn complete")
                         })
                     }
-                    movePlayer()
+                    // movePlayer()
+
+                    writeMovePlayer({
+                        args:[
+                            roomId, 
+                            dirMapping[dirForSmartContract as string] as number, 
+                            address,
+                            false
+                        ],
+                    });
+                    console.log("txn sent.")
                 }
                 
             }
         }
-        
-
         setSendTxnFlag(false)
-        return(<></>)
     },[sendTxnFlag, gameSceneReady, playerInGame, gamescene, txnQueue])
+
+    return(<></>)
 }

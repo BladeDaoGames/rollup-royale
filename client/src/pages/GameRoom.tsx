@@ -18,7 +18,7 @@ import { formatEther } from 'viem';
 import {useAtom, useSetAtom} from 'jotai';
 import { createGameInfoAtom, createPlayerIds, createPlayerFTs, 
   createPlayerAliveStatus, createPlayerReadiness, createGameSceneReadiness,
-  createPlayerPauseVote} from '../atoms';
+  createPlayerPauseVote, createTxnQueue} from '../atoms';
 import { useAccount } from 'wagmi';
 import {boardPositionToGameTileXY} from '../utils/gameCalculations'
 
@@ -44,6 +44,7 @@ const GameRoom = () => {
   const [playerReadyStatus, setPlayerReadyStatus] = useAtom(createPlayerReadiness)
   const [playerPauseVote, setPlayerPauseVote] = useAtom(createPlayerPauseVote)
   const [playerLoginCount, setPlayerLoginCount] = useState(0)
+  const [ txnQueue, setTxnQueue] = useAtom(createTxnQueue)
   //const [playerLastMoveTime, setPlayerLastMoveTime] = useState<Array<number>>([0,0,0,0])
   
   const gameConfig = {
@@ -189,6 +190,8 @@ const GameRoom = () => {
                   // update only if intent is same as returned position
                 } else if((moveIntentXY.x==TileXY.x)&&(moveIntentXY.y==TileXY.y)){
                   gamescene?.setPiecePosition(i, TileXY.x, TileXY.y)
+                  // because chain has received txn and update state, we can release txn queue
+                  setTxnQueue(()=>0)
                 }
 
               }
