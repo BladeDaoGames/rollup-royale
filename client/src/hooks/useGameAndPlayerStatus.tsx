@@ -43,8 +43,10 @@ export const useGameAndPlayerStatus = () => {
             return "dead"
         }else if(gameStatus=="ongoing"&&pause){
             return "pause"
-        }else if(gameStatus=="ended"&&!alive){
+        }else if(gameStatus=="ended"&&!alive&&ready){
             return "dead"
+        }else if(gameStatus=="ended"&&alive){
+            return "winner"
         }else{
             return "unavailable"
         }

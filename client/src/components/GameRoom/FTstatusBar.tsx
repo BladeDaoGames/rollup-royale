@@ -20,6 +20,7 @@ interface FtBar {
 const PlayerFTBar = ({playerId, playerAddress, ft, bgColor, textColor, gameStatus, playerStatus}: FtBar)=>{
     const playerNum = playerId+1
     return(<div className={`${playerStatus=="unavailable"? "bg-greyness text-greyness":
+            playerStatus=="winner"?"bg-prime2 text-background1":
             gameStatus!="prestart"&&playerStatus=="waiting"&&ft==0? "bg-greyness text-greyness":
             playerStatus=="dead"?  "bg-purple-500/80 "+textColor:
             bgColor+" "+textColor

@@ -1,6 +1,7 @@
 import {BsHourglassSplit, BsHandThumbsUpFill} from 'react-icons/bs';
 import { CgUnavailable } from 'react-icons/cg';
 import {FaPause, FaSkull} from 'react-icons/fa';
+import {GiPodiumWinner} from 'react-icons/gi';
 import { Tooltip } from 'flowbite-react';
 import {useGameAndPlayerStatus} from '../../hooks/useGameAndPlayerStatus';
 
@@ -17,7 +18,10 @@ const PlayerStatusIcon = ({playerId, status}: PlayerStatusIcon )=>{
                     <div className={`
                     flex flex-row items-center
                     border rounded-md 
-                    ${
+                    ${  
+                        status=="winner"?
+                        "bg-none border-prime2 text-prime2/80"
+                        :
                         status=="dead"?
                         "bg-none border-purple-500/80 text-purple-500/80"
                         :
@@ -36,6 +40,9 @@ const PlayerStatusIcon = ({playerId, status}: PlayerStatusIcon )=>{
                     `}>
                         
                         {   
+                            status=="winner"?
+                            <GiPodiumWinner/>
+                            :
                             status=="dead"?
                             <FaSkull/>
                             :
