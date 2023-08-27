@@ -14,7 +14,7 @@ export const chainConfigs = {
     1013454: {
         config: bladedao,
         contracts: {
-            royale:"0xAb488369150aBA956a8fe2b997d3F47A370f634E",
+            royale:"0x1B1074A3c1885E222BDf4Abb293880ebD34E8959",
             registry:"0x8df74401bA860F551B138aaB344aDC89a15876A9",
         }
     },

@@ -351,7 +351,7 @@ contract Royale is Ownable {
                 // get random tile
                 uint8 random = _getUnoccupiedTile(_roomId, i);
                 // set tile to new item id
-                games[_roomId].board[random].occupantId = i;
+                games[_roomId].board[random].occupantId = i+1;
                 // set position to tile index
                 games[_roomId].positions[i] = random;
                 
@@ -729,11 +729,15 @@ contract Royale is Ownable {
             games[_roomId].positions[playerId-1] = newPosition;
             emit PlayerMoved(_roomId, (_useBurner?_player:msg.sender), newPosition);
 
-        } else if (games[_roomId].board[newPosition].occupantId > 3){ 
+        } else if (games[_roomId].board[newPosition].occupantId > 4){ 
             // if new position is occupied by item
                 // remove item position value
                 games[_roomId].positions[
-                    games[_roomId].board[newPosition].occupantId-1] = type(uint8).max;
+                    games[_roomId].board[newPosition].occupantId-1] = 0;
+                // remove item position from positions array
+                games[_roomId].positions[
+                    games[_roomId].board[newPosition].occupantId-1
+                    ] = type(uint8).max;
 
                 // if playerNewFT is 0, set Tile occupantId to 0 else set to player id
                 if(_updatePlayerFT(
@@ -741,10 +745,14 @@ contract Royale is Ownable {
                     ) == 0)
                 {
                     games[_roomId].board[newPosition].occupantId = 0;
+                    games[_roomId].positions[playerId-1] = type(uint8).max; //reset position to null
+                    games[_roomId].playerAlive[playerId-1] = false; //set player to dead
                     games[_roomId].info.playersCount--; //decrement player count
                     emit PlayerKilled(_roomId,  (_useBurner?_player:msg.sender));
                 }else{
-                    games[_roomId].board[newPosition].occupantId = playerId;
+                    games[_roomId].board[playerPosition].occupantId = 0; // set old position to 0
+                    games[_roomId].board[newPosition].occupantId = playerId; //move player to new tile
+                    games[_roomId].positions[playerId-1] = newPosition; //update player position
                     emit PlayerMoved(_roomId, (_useBurner?_player:msg.sender), newPosition);
                 }
 
@@ -754,7 +762,7 @@ contract Royale is Ownable {
                 // spawn new items
                 _spawnItems(_roomId);
 
-        } else if (games[_roomId].board[newPosition].occupantId <= 3) { 
+        } else if (games[_roomId].board[newPosition].occupantId <= 4) { 
             // if new position is occupied by player
 
                 // get player id of occupant
@@ -762,14 +770,20 @@ contract Royale is Ownable {
 
                 // if winnerId is playerId, set Occupan FT to 0 and set to dead
                 if (_getBattleResults(_roomId, playerId, occupantId) == playerId) {
-                    games[_roomId].playerFTs[occupantId-1] = 0;
-                    games[_roomId].playerAlive[occupantId-1] = false;
+                    games[_roomId].playerFTs[occupantId-1] = 0; //set occupant FT to 0
+                    games[_roomId].positions[occupantId-1] = type(uint8).max; //reset position to null
+                    games[_roomId].playerAlive[occupantId-1] = false; //set occupant to dead
                     games[_roomId].info.playersCount--; // reduce playercount
                     emit PlayerKilled(_roomId, games[_roomId].playerIds[occupantId-1]);
+
+                    games[_roomId].board[playerPosition].occupantId = 0; // set old position to 0
+                    games[_roomId].board[newPosition].occupantId = playerId; //move player to new tile
+                    games[_roomId].positions[playerId-1] = newPosition; //update player position
                     emit PlayerMoved(_roomId,  (_useBurner?_player:msg.sender), newPosition);
                 } else {
                     // else set player FT to 0 and set to dead
                     games[_roomId].playerFTs[playerId-1] = 0;
+                    games[_roomId].positions[playerId-1] = type(uint8).max; //reset position to null
                     games[_roomId].playerAlive[playerId-1] = false;
                     games[_roomId].info.playersCount--; // reduce playercount
                     emit PlayerKilled(_roomId,  (_useBurner?_player:msg.sender));
