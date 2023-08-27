@@ -46,7 +46,8 @@ const GameRoom = () => {
   const [playerLoginCount, setPlayerLoginCount] = useState(0)
   const [ txnQueue, setTxnQueue] = useAtom(createTxnQueue)
   //const [playerLastMoveTime, setPlayerLastMoveTime] = useState<Array<number>>([0,0,0,0])
-  
+  console.log("window inner width: ", window.innerWidth)
+  console.log("window inner height: ", window.innerHeight)
   const gameConfig = {
       type: Phaser.AUTO,
       parent: "phaser-div",
@@ -59,8 +60,10 @@ const GameRoom = () => {
           //height: 600,
           mode:  Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.Center.CENTER_BOTH,
-          width: '121%',
-          height: '121%',
+          width: (window.innerHeight>880)?'100%': (window.innerHeight>800)?((900-window.innerHeight)/15*2+100)+'%':((900-window.innerHeight)/15*2+115)+'%',
+          height: (window.innerHeight>880)?'100%':(window.innerHeight>800)?((900-window.innerHeight)/15*2+100)+'%':((900-window.innerHeight)/15*2+115)+'%',
+          // width: '100%',
+          // height: '100%',
           zoom: 1
           
       },
@@ -303,7 +306,8 @@ const GameRoom = () => {
         >
 
           {/* game container is 60vh for square map*/}
-          <div className="w-[60vh]">
+          <div className="w-[60vh]
+          ">
               {/* game status bar */}
               <GameStatusBar/>
               <FTstatusBar/>
