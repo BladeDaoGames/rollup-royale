@@ -542,9 +542,11 @@ contract Royale is Ownable {
         playerInGame[msg.sender] = roomId; // assume game length always game room id
 
         // set player at top left corner of board
-        uint8 x = MAP_WIDTH / 3;
-        uint8 y = MAP_HEIGHT / 3;
-        uint8 spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
+        // uint8 x = MAP_WIDTH / 3;
+        // uint8 y = MAP_HEIGHT / 3;
+        // uint8 spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
+        uint8 spawnTile =22;
+        
         // set player spawn
         games[roomId].board[spawnTile].occupantId = 1;
         games[roomId].positions[0] = spawnTile;
@@ -566,29 +568,32 @@ contract Royale is Ownable {
         games[_roomId].playerAlive[playerId-1] = true; // set player Alive
         playerInGame[msg.sender] = _roomId; // set player in game
 
-        uint8 x;
-        uint8 y;
+        // uint8 x;
+        // uint8 y;
         uint8 spawnTile;
 
         // if player is 2 set player at bottom right corner of board
         if (playerId == 1) {
-            x = MAP_WIDTH - (MAP_WIDTH / 3);
-            y = MAP_HEIGHT - (MAP_HEIGHT / 3);
-            spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
+            // x = MAP_WIDTH - (MAP_WIDTH / 3);
+            // y = MAP_HEIGHT - (MAP_HEIGHT / 3);
+            // spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
+            spawnTile=77;
         }
 
         // if player is 3 set player at bottom left corner of board
         if (playerId == 2) {
-            x = MAP_WIDTH / 3;
-            y = MAP_HEIGHT - (MAP_HEIGHT / 3);
-            spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
+            // x = MAP_WIDTH / 3;
+            // y = MAP_HEIGHT - (MAP_HEIGHT / 3);
+            // spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
+            spawnTile=27;
         }
 
         // if player is 4 set player at top right corner of board
         if (playerId == 3) {
-            x = MAP_WIDTH - (MAP_WIDTH / 3);
-            y = MAP_HEIGHT / 3;
-            spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
+            // x = MAP_WIDTH - (MAP_WIDTH / 3);
+            // y = MAP_HEIGHT / 3;
+            // spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
+            spawnTile=72;
         }
 
         // set player spawn
