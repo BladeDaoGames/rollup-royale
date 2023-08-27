@@ -59,8 +59,8 @@ const GameRoom = () => {
           //height: 600,
           mode:  Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.Center.CENTER_BOTH,
-          width: '100%',
-          height: '100%',
+          width: '121%',
+          height: '121%',
           zoom: 1
           
       },
