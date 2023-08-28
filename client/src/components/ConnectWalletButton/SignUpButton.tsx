@@ -20,6 +20,7 @@ export const SignUpButton = () => {
     const { address, isConnected } = useAccount();
     const { connect, isLoading: connectorIsLoading, pendingConnector } = useConnect()
     const { burnerKey, burnerAddress, updateBurnerKey} = useBurnerKey();
+    const hasBurnderKey = burnerKey !==null
     const { isLoading: isWagmiLoading, signTypedDataAsync } = useSignTypedData();
     const burnerIsConnected = (address?.toLowerCase()==burnerAddress?.toLowerCase())&&(isConnected)
     const setBurnerKeyRegisteredFlagCount = useSetAtom(createBurnerKeyRegisteredFlagCount)
@@ -190,7 +191,7 @@ export const SignUpButton = () => {
         <button type="button" 
             disabled={burnerIsConnected}
             className={`
-            ${burnerIsConnected?
+            ${hasBurnderKey?
             "text-background1 bg-palegreen hover:bg-whitegreen "
             :
             "text-white bg-prime1 hover:bg-prime2 "
@@ -201,7 +202,10 @@ export const SignUpButton = () => {
             max-w-[132px] md:max-w-none
             `}
 
-            onClick={()=>signup()}
+            onClick={()=>{
+                if(hasBurnderKey) return
+                signup()
+            }}
         >
             {
             (isWagmiLoading || connectorIsLoading)?
@@ -210,6 +214,7 @@ export const SignUpButton = () => {
             burnerIsConnected?"Using Burner: "
             :
             !isConnected?"Connect to Register A Burner=>":
+            hasBurnderKey?"Has Burner":
             "Register a burner Wallet"}
         </button>
     )
