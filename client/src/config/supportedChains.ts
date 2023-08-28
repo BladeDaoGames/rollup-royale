@@ -53,6 +53,27 @@ export const bladeAltLayer = {
 
 } as const satisfies Chain
 
+export const AltLayerGasLess = {
+  id: 41000021,
+  name: 'Epochless US 1',
+  network: 'Epochless US 1',
+  nativeCurrency: {
+      decimals: 18,
+      name: 'AltLayer',
+      symbol: 'ALT',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://epochless-jp.alt.technology/'],
+      webSocket: ['wss://epochless-jp.alt.technology/'],
+    },
+    public: {
+      http: ['https://epochless-jp.alt.technology/'],
+      webSocket: ['wss://epochless-jp.alt.technology/'],
+    },
+  },
+} as const satisfies Chain
+
 // If you are deploying to chains other than anvil or Lattice testnet, add them here
-export const supportedChains: Chain[] = [bladedao, bladeAltLayer];
+export const supportedChains: Chain[] = [bladedao, bladeAltLayer, AltLayerGasLess];
 //export const supportedChains: MUDChain[] = [bladedao, foundry, latticeTestnet];

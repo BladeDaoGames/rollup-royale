@@ -1,5 +1,5 @@
 import { foundry} from "@wagmi/chains";
-import { bladedao, bladeAltLayer } from './supportedChains';
+import { bladedao, bladeAltLayer, AltLayerGasLess } from './supportedChains';
 import BurnerAccountRegistry from './abis/BurnerAccountRegistry.json'
 import Royale from './abis/Royale.json'
 
@@ -16,6 +16,13 @@ export const chainConfigs = {
         contracts: {
             royale:"0x394D08ff29E5432C8e9a32DEf33F28B9f0bd84B6",
             registry:"0x8df74401bA860F551B138aaB344aDC89a15876A9",
+        }
+    },
+    41000021:{
+        config: AltLayerGasLess,
+        contracts: {
+            royale:"0x394D08ff29E5432C8e9a32DEf33F28B9f0bd84B6",
+            registry:"0xcA6e0D006659a344998a1E1FA8D3F3B8D3D30Fce",
         }
     },
     4000005:{
