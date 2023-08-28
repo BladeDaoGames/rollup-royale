@@ -34,14 +34,6 @@ export const SignUpButton = () => {
     
     const { isLoading, mutate: signup } = useMutation<void, any, void>({
         mutationFn: useCallback(async () => {
-            if(chain?.id!=chainConfig.chaindetails.chainId){
-
-                toast(`Current network not desired network: ${chainConfig.chaindetails.name} 
-                Switching to correct chain now. Pls check network you are in.
-                `, {icon: '🚨'})
-
-                await switchNetwork?.(chainConfig.chaindetails.chainId)
-            }
 
             if(import.meta.env.VITE_MODE == "web2"){
                 console.log("web2 mode.")
@@ -49,6 +41,15 @@ export const SignUpButton = () => {
                 setBurnerKeyRegisteredFlagCount((count)=>count+1)
                 toast.success("Burner Wallet Created!", {icon: '🎉'})
             }else{
+                if(chain?.id!=chainConfig.chaindetails.chainId){
+
+                    toast(`Current network not desired network: ${chainConfig.chaindetails.name} 
+                    Switching to correct chain now. Pls check network you are in.
+                    `, {icon: '🚨'})
+    
+                    await switchNetwork?.(chainConfig.chaindetails.chainId)
+                    return
+                }
                 // check if already have address in local storage
                 //quickfix: not checking if they link burner address to their wallet
                 if(burnerIsConnected) return
