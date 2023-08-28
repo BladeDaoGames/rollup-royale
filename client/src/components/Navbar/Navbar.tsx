@@ -5,12 +5,13 @@ import {SignUpButton} from '../ConnectWalletButton/SignUpButton';
 //import {VscFeedback} from 'react-icons/vsc';
 import {createDevPrivateKey} from '../../atoms';
 import { useSetAtom } from 'jotai';
-import { useAccount, useBalance } from 'wagmi';
+import { useAccount, useBalance, useNetwork } from 'wagmi';
 
 const CustomNavBar = () => {
     const setDevPk = useSetAtom(createDevPrivateKey);
     const { address, isConnected } = useAccount()
     const { data, isError, isLoading } = useBalance({address, cacheTime: 2_000,})
+    const { chain } = useNetwork()
     
     return (
         <Navbar className='top-0 left-0 z-20 w-full py-0 bg-background1'>
@@ -39,7 +40,7 @@ const CustomNavBar = () => {
             <Navbar.Collapse className="mr-2">
                 <Navbar.Link href="#">
                     <div className="text-sm font-medium  text-prime2 md:text-background1 md:bg-prime2 md:rounded-lg md:text-base md:px-4 md:py-2 md:text-center md:hover:bg-darkbeige">
-                        {`$BLADE: ${parseFloat(data?.formatted).toFixed(3)??"??"}`}</div>
+                        {`$${chain?.nativeCurrency.symbol}: ${parseFloat(data?.formatted).toFixed(3)??"??"}`}</div>
                 </Navbar.Link>
             </Navbar.Collapse>
             <Navbar.Collapse className="mr-2">

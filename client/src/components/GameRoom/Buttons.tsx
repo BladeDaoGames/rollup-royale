@@ -10,12 +10,13 @@ import {createGameInfoAtom, createPlayerIds,
     createPlayerReadiness, createPlayerPauseVote
 } from '../../atoms';
 
-import { useAccount, useContractWrite } from 'wagmi';
+import { useAccount, useContractWrite, useNetwork } from 'wagmi';
 import { chainConfig } from '../../config/chainConfig';
 import { parseEther } from 'viem';
 
 export const StakeAndEnterButton = ({room}:{room: number}) => {
     const {address} = useAccount()
+    const { chain } = useNetwork()
     const gameinfo = useAtomValue(createGameInfoAtom)
     const playerIds = useAtomValue(createPlayerIds)
     const { data, isLoading, isSuccess, write: writeJoinGame } = useContractWrite({
@@ -27,7 +28,7 @@ export const StakeAndEnterButton = ({room}:{room: number}) => {
     const playerInGame = playerIds.includes(address?.toLowerCase()??"unknown")
 
     return (
-        <Tooltip content="~ Stake and Enter Game ~">
+        <Tooltip content={`~ Stake $${chain?.nativeCurrency.symbol} and Enter Game ~`}>
             <Button 
             disabled={playerInGame}
             className={`flex flex-row items-center justify-center py-2 

@@ -1,16 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import {Button, Modal} from 'flowbite-react';
-import { useAccount } from 'wagmi';
 import { chainConfig } from '../../config/chainConfig';
 import { parseEther } from 'viem';
-import { useContractWrite} from 'wagmi';
+import { useAccount, useContractWrite, useNetwork} from 'wagmi';
 import { Spinner } from 'flowbite-react';
 
 const CreateRoomButton = () => {
     const [openModal, setOpenModal] = useState<string | undefined>();
     const props = { openModal, setOpenModal };
     const {address, isConnected} = useAccount();
-
+    const { chain } = useNetwork()
     const { data, isLoading, isSuccess, write } = useContractWrite({
         address: chainConfig?.royaleContractAddress,
         abi: chainConfig.royaleAbi,
@@ -103,7 +102,16 @@ const CreateRoomButton = () => {
                                 flex flex-row justify-between items-center
                                 w-full mx-2 my-1
                                 ">
-                                    <label className="mx-2 ml-0">Minimum Stake</label> 
+                                    <label className="mx-2 ml-0">Minimum 
+                                        <span className="bg-prime2 
+                                        border border-background1 rounded-md 
+                                        px-2 py-1 mx-1
+                                        text-white
+                                        ">
+                                            {`$${chain?.nativeCurrency.symbol}`}
+                                        </span>
+                                        Stake
+                                    </label> 
                                     <input type="number"
                                         defaultValue={0.1}
                                         step={0.01}
