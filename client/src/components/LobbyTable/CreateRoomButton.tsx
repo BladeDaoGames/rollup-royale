@@ -2,15 +2,16 @@ import React, {useState, useEffect} from 'react';
 import {Button, Modal} from 'flowbite-react';
 import { chainConfig } from '../../config/chainConfig';
 import { parseEther } from 'viem';
-import { useAccount, useContractWrite, useNetwork} from 'wagmi';
+import { useAccount, useContractWrite, usePrepareContractWrite, useNetwork} from 'wagmi';
 import { Spinner } from 'flowbite-react';
+import toast from 'react-hot-toast';
 
 const CreateRoomButton = () => {
     const [openModal, setOpenModal] = useState<string | undefined>();
     const props = { openModal, setOpenModal };
     const {address, isConnected} = useAccount();
     const { chain } = useNetwork()
-    const { data, isLoading, isSuccess, write } = useContractWrite({
+    const { data, isLoading, error, isSuccess, write } = useContractWrite({
         address: chainConfig?.royaleContractAddress,
         abi: chainConfig.royaleAbi,
         functionName: 'createGame',
@@ -38,9 +39,16 @@ const CreateRoomButton = () => {
     useEffect(() => {
         if (isSuccess && props.openModal === 'createGameRoom') {
             console.log("create room success")
+            toast.success("Room Created Successfully", 
+                {icon: '🎉', style:{}})
             props.setOpenModal(undefined);
+        } else if (error) {
+            console.log(error)
+            toast.error("Room Creation Failed", {icon: '🚨'})
         }
-    }, [isSuccess, isLoading, data, address])
+
+
+    }, [isSuccess, error, isLoading, data, address])
 
     return (
         <>

@@ -40,7 +40,9 @@ const CustomNavBar = () => {
             <Navbar.Collapse className="mr-2">
                 <Navbar.Link href="#">
                     <div className="text-sm font-medium  text-prime2 md:text-background1 md:bg-prime2 md:rounded-lg md:text-base md:px-4 md:py-2 md:text-center md:hover:bg-darkbeige">
-                        {`$${chain?.nativeCurrency.symbol}: ${parseFloat(data?.formatted).toFixed(3)??"??"}`}</div>
+                        {`$${chain?.nativeCurrency.symbol}: ${
+                            data?.formatted?parseFloat(data?.formatted).toFixed(3):"0"
+                            }`}</div>
                 </Navbar.Link>
             </Navbar.Collapse>
             <Navbar.Collapse className="mr-2">

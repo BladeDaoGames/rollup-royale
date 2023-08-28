@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 //import LobbyTable from './components/LobbyTable/LobbyTable';
@@ -8,6 +8,7 @@ import GameRoom from './pages/GameRoom';
 import useFetchRooms from './hooks/useFetchRooms';
 import {useAtomValue} from 'jotai';
 import { createProgressBar } from './atoms';
+import { Toaster } from 'react-hot-toast';
 
 // sm:bg-red-400 
 // md:bg-orange-400
@@ -52,6 +53,24 @@ function App() {
             }
           </main>
       <Footer />
+      <Toaster position="top-center" toastOptions={{
+        success:{
+          style:{
+            background: "#FEE9D7",
+            color: "#34222E",
+            border: "2px solid #53C576",
+            borderRadius: "0.375rem",
+          }
+        },
+        error:{
+          style:{
+            background: "#FEE9D7",
+            color: "#34222E",
+            border: "2px solid #C33030",
+            borderRadius: "0.375rem",
+          }
+        }
+      }}/>
     </>
   )
 }
