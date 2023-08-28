@@ -546,7 +546,7 @@ contract Royale is Ownable {
         // uint8 y = MAP_HEIGHT / 3;
         // uint8 spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
         uint8 spawnTile =22;
-        
+
         // set player spawn
         games[roomId].board[spawnTile].occupantId = 1;
         games[roomId].positions[0] = spawnTile;
@@ -573,27 +573,27 @@ contract Royale is Ownable {
         uint8 spawnTile;
 
         // if player is 2 set player at bottom right corner of board
-        if (playerId == 1) {
-            // x = MAP_WIDTH - (MAP_WIDTH / 3);
-            // y = MAP_HEIGHT - (MAP_HEIGHT / 3);
-            // spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
-            spawnTile=77;
-        }
-
-        // if player is 3 set player at bottom left corner of board
         if (playerId == 2) {
-            // x = MAP_WIDTH / 3;
+            // x = MAP_WIDTH - (MAP_WIDTH / 3);
             // y = MAP_HEIGHT - (MAP_HEIGHT / 3);
             // spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
             spawnTile=27;
         }
 
-        // if player is 4 set player at top right corner of board
+        // if player is 3 set player at bottom left corner of board
         if (playerId == 3) {
+            // x = MAP_WIDTH / 3;
+            // y = MAP_HEIGHT - (MAP_HEIGHT / 3);
+            // spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
+            spawnTile=72;
+        }
+
+        // if player is 4 set player at top right corner of board
+        if (playerId == 4) {
             // x = MAP_WIDTH - (MAP_WIDTH / 3);
             // y = MAP_HEIGHT / 3;
             // spawnTile = (x - 1) + ((y-1) * MAP_WIDTH);
-            spawnTile=72;
+            spawnTile=77;
         }
 
         // set player spawn
