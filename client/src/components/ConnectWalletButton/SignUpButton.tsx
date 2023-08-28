@@ -11,15 +11,19 @@ import { supportedChains } from '../../config/supportedChains';
 import { useMutation } from 'react-query';
 import { parseGwei } from 'viem';
 import { ethers } from 'ethers';
-import { useSignTypedData } from 'wagmi';
+import { useSignTypedData, useNetwork, useSwitchNetwork } from 'wagmi';
 import { readContracts, writeContract } from '@wagmi/core';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Spinner } from 'flowbite-react';
 import {createBurnerKeyRegisteredFlagCount} from '../../atoms';
 import { useSetAtom } from 'jotai';
+import toast from 'react-hot-toast';
 
 export const SignUpButton = () => {
     const { address, isConnected } = useAccount();
+    const { chain } = useNetwork();
+    const { chains, error:chainError, switchNetwork } = useSwitchNetwork();
+    
     const { connect, isLoading: connectorIsLoading, pendingConnector } = useConnect()
     if(import.meta.env.VITE_ENV == "devWeb3") localStorage.clear();
     const { burnerKey, burnerAddress, updateBurnerKey} = useBurnerKey();
@@ -28,14 +32,22 @@ export const SignUpButton = () => {
     const burnerIsConnected = (address?.toLowerCase()==burnerAddress?.toLowerCase())&&(isConnected)
     const setBurnerKeyRegisteredFlagCount = useSetAtom(createBurnerKeyRegisteredFlagCount)
     
-
     const { isLoading, mutate: signup } = useMutation<void, any, void>({
         mutationFn: useCallback(async () => {
-            console.log(`Burner Wallet is Connected: ${burnerIsConnected}`)
+            if(chain?.id!=chainConfig.chaindetails.chainId){
+
+                toast(`Current network not desired network: ${chainConfig.chaindetails.name} 
+                Switching to correct chain now. Pls check network you are in.
+                `, {icon: '🚨'})
+
+                await switchNetwork?.(chainConfig.chaindetails.chainId)
+            }
+
             if(import.meta.env.VITE_MODE == "web2"){
                 console.log("web2 mode.")
                 updateBurnerKey(()=>generatePrivateKey())
                 setBurnerKeyRegisteredFlagCount((count)=>count+1)
+                toast.success("Burner Wallet Created!", {icon: '🎉'})
             }else{
                 // check if already have address in local storage
                 //quickfix: not checking if they link burner address to their wallet
@@ -131,35 +143,28 @@ export const SignUpButton = () => {
                     });
                 }
                 // using viem way
-                let target="";
-                let targetAcct: PrivateKeyAccount;
-                if(import.meta.env.VITE_ENV == "devWeb3"){
-                    const targetAcct = privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
-                    target = targetAcct.address
-                }else{
-                    const privateKey = generatePrivateKey()
+                else{
+                    const privateKey = import.meta.env.VITE_ENV == "devWeb3"?
+                                "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80": //foundry dev pk
+                                generatePrivateKey()
                     const targetAcct = privateKeyToAccount(privateKey)
-                    target = targetAcct.address
-                }
+                    const target = targetAcct.address
 
-                
-                const data = await readContracts({
-                    contracts:[
-                        {
-                            address: chainConfig.registryContractAddress as `0x${string}`,
-                            abi: chainConfig.registryAbi,
-                            functionName: "eip712Domain",
-                        },
-                        {
-                            address: chainConfig.registryContractAddress as `0x${string}`,
-                            abi: chainConfig.registryAbi,
-                            functionName: "nonces",
-                            args:[target?.toString()]
-                        }
-                    ]
-                }).then(async (data)=>{
-                    console.log("nounce received")
-                    console.log(data)
+                    const data = await readContracts({
+                        contracts:[
+                            {
+                                address: chainConfig.registryContractAddress as `0x${string}`,
+                                abi: chainConfig.registryAbi,
+                                functionName: "eip712Domain",
+                            },
+                            {
+                                address: chainConfig.registryContractAddress as `0x${string}`,
+                                abi: chainConfig.registryAbi,
+                                functionName: "nonces",
+                                args:[target?.toString()]
+                            }
+                        ]
+                    })
                     const [{result: [, name, version, chainId, verifyingContract, ,]}, {result: _nonce}]= data
                     const nonce = parseInt(_nonce)+1;
                     const domain = {
@@ -168,7 +173,6 @@ export const SignUpButton = () => {
                         chainId: parseInt(chainId),
                         verifyingContract,
                     };
-                    
                     const types = {
                         User: [
                             { name: 'signer', type: 'address' },
@@ -176,7 +180,6 @@ export const SignUpButton = () => {
                             { name: 'target', type: 'address' },
                         ],
                     };
-                    
                     const message = {
                         signer: address,
                         nonce,
@@ -198,33 +201,25 @@ export const SignUpButton = () => {
 
                     // this part must prompt for correct chain id 
                     const signature = await signTypedDataAsync({ 
-                        domain, types, primaryType:"User", message}).then(async(sig)=>{
-                            console.log("signature")
-                            console.log(sig)
-                            console.log("target: "+target)
+                        domain, types, primaryType:"User", message})
 
-                            const { request:registerRequest } = await burnerClient.simulateContract({
-                                address: chainConfig.registryContractAddress as `0x${string}`,
-                                abi: chainConfig.registryAbi,
-                                functionName: "register",
-                                args:[sig, address, nonce],
-                                account:target,
-                            }).then(async(registerRq)=>{
-                                console.log("sendinging registration...")
-                                await burnerClient.writeContract(registerRequest).then(
-                                    (registerRq)=>{
-                                        console.log("sent registeration")
-                                        updateBurnerKey(()=>privateKey as `0x${string}`)
-                                        setBurnerKeyRegisteredFlagCount((count)=>count+1)
-                                        // connect to new PK
-                                        connect({connector: cachedConnector})
-                                })
-                            })
-
-                            
-                        })
-                })
-                console.log("called")
+                    const { request:registerRequest } = await burnerClient.simulateContract({
+                        address: chainConfig.registryContractAddress as `0x${string}`,
+                        abi: chainConfig.registryAbi,
+                        functionName: "register",
+                        args:[signature, address, nonce],
+                        account:target,
+                    })
+                    
+                    await burnerClient.writeContract(registerRequest).then(
+                            (registerRq)=>{
+                            console.log("sent registeration")
+                            updateBurnerKey(()=>privateKey as `0x${string}`)
+                            setBurnerKeyRegisteredFlagCount((count)=>count+1)
+                            // connect to new PK
+                            connect({connector: cachedConnector})
+                    })
+                }
             }
             
             }, [
@@ -238,10 +233,10 @@ export const SignUpButton = () => {
         onError(e: any) {
             console.error(e);
             //TODO: Toast fail
+            toast.error("Wallet Registration Error", {icon: '🚨'})
         },
     });
     
-
 
     return (
         <button type="button" 
