@@ -3,11 +3,13 @@ import React, {useCallback} from 'react';
 import { useAccount, useConnect } from 'wagmi';
 import { useBurnerKey } from '../../hooks/useBurnerKey';
 import { createWalletClient, http, publicActions } from 'viem';
-import { privateKeyToAccount, generatePrivateKey  } from 'viem/accounts';
+import { privateKeyToAccount, generatePrivateKey, PrivateKeyAccount  } from 'viem/accounts';
 import { MockConnector } from 'wagmi/connectors/mock';
 
 import { chainConfig } from '../../config/chainConfig';
+import { supportedChains } from '../../config/supportedChains';
 import { useMutation } from 'react-query';
+import { parseGwei } from 'viem';
 import { ethers } from 'ethers';
 import { useSignTypedData } from 'wagmi';
 import { readContracts, writeContract } from '@wagmi/core';
@@ -19,6 +21,7 @@ import { useSetAtom } from 'jotai';
 export const SignUpButton = () => {
     const { address, isConnected } = useAccount();
     const { connect, isLoading: connectorIsLoading, pendingConnector } = useConnect()
+    if(import.meta.env.VITE_ENV == "devWeb3") localStorage.clear();
     const { burnerKey, burnerAddress, updateBurnerKey} = useBurnerKey();
     const hasBurnderKey = burnerKey !==null
     const { isLoading: isWagmiLoading, signTypedDataAsync } = useSignTypedData();
@@ -30,6 +33,7 @@ export const SignUpButton = () => {
         mutationFn: useCallback(async () => {
             console.log(`Burner Wallet is Connected: ${burnerIsConnected}`)
             if(import.meta.env.VITE_MODE == "web2"){
+                console.log("web2 mode.")
                 updateBurnerKey(()=>generatePrivateKey())
                 setBurnerKeyRegisteredFlagCount((count)=>count+1)
             }else{
@@ -41,133 +45,185 @@ export const SignUpButton = () => {
                 if(!isConnected) return
 
                 // initate setup for registration
-                const provider = new StaticJsonRpcProvider(chainConfig.chaindetails.rpcUrls.default.http[0]);
-                
-                let burnerAccount = ethers.Wallet.createRandom();
 
-                burnerAccount = burnerAccount.connect(provider);
+                // use ethers js way
+                if(import.meta.env.VITE_REGISTRYWAY == "ethers"){
+                    const provider = new StaticJsonRpcProvider(chainConfig.chaindetails.rpcUrls.default.http[0]);
+                    
+                    let burnerAccount;
+                    if(import.meta.env.VITE_ENV == "devWeb3"){
+                        burnerAccount = new ethers.Wallet("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
+                    }else{
+                        burnerAccount = ethers.Wallet.createRandom();
+                    }
 
-                // const privateKey = generatePrivateKey()
-                // const targetAcct = privateKeyToAccount(privateKey)
-                // const target = targetAcct.address
-                const { address: target, privateKey } = burnerAccount;
-                const contract = new ethers.Contract(
-                    chainConfig.registryContractAddress,
-                    chainConfig.registryAbi,
-                    burnerAccount
-                );
+                    burnerAccount = burnerAccount.connect(provider);
 
-                // const data = await readContracts({
-                //     contracts:[
-                //         {
-                //             address: chainConfig.registryContractAddress as `0x${string}`,
-                //             abi: chainConfig.registryAbi,
-                //             functionName: "eip712Domain",
-                //         },
-                //         {
-                //             address: chainConfig.registryContractAddress as `0x${string}`,
-                //             abi: chainConfig.registryAbi,
-                //             functionName: "nonces",
-                //             args:[address?.toString()]
-                //         }
-                //     ]
-                // })
-                
-                //const [{result: [, name, version, chainId, verifyingContract, ,]}, {result: _nonce}]= data
-                const [[, name, version, chainId, verifyingContract], _nonce] = await Promise.all([
-                    contract.eip712Domain(),
-                    contract.nonces(address),
-                ]);
+                    
+                    const { address: target, privateKey } = burnerAccount;
+                    const contract = new ethers.Contract(
+                        chainConfig.registryContractAddress,
+                        chainConfig.registryAbi,
+                        burnerAccount
+                    );
+                    
+                    const [[, name, version, chainId, verifyingContract], _nonce] = await Promise.all([
+                        contract.eip712Domain(),
+                        contract.nonces(address),
+                    ]);
 
-                const nonce = parseInt(_nonce)+1;
-                const domain = {
-                    name,
-                    version,
-                    chainId: parseInt(chainId),
-                    verifyingContract,
-                };
-                
-                const types = {
-                    User: [
-                        { name: 'signer', type: 'address' },
-                        { name: 'nonce', type: 'uint256' },
-                        { name: 'target', type: 'address' },
-                    ],
-                };
-                
-                const message = {
-                    signer: address,
-                    nonce,
-                    target,
-                };
-                
-                const signature = await signTypedDataAsync({ 
-                    domain, types, primaryType:"User", message});
+                    const nonce = parseInt(_nonce)+1;
+                    const domain = {
+                        name,
+                        version,
+                        chainId: parseInt(chainId),
+                        verifyingContract,
+                    };
+                    
+                    const types = {
+                        User: [
+                            { name: 'signer', type: 'address' },
+                            { name: 'nonce', type: 'uint256' },
+                            { name: 'target', type: 'address' },
+                        ],
+                    };
+                    
+                    const message = {
+                        signer: address,
+                        nonce,
+                        target,
+                    };
+                    
+                    //this part must prompt for correct chain id 
+                    const signature = await signTypedDataAsync({ 
+                        domain, types, primaryType:"User", message});
+                    
+                    // await provider.getFeeData().then((res)=>{
+                    //     console.log("fee data")
+                    //     console.log(res.maxFeePerGas) //3298198084 
+                    // })
+                    console.log("address")
+                    console.log(target)
+                    await contract.register(signature, address, nonce, {
+                        gasLimit: 2100000,
+                    }).then((res)=>{
+                        console.log("registered!")
+                        updateBurnerKey(()=>privateKey as `0x${string}`)
+                        setBurnerKeyRegisteredFlagCount((count)=>count+1)
 
-                //targetAcct
-                // const burnerClient = createWalletClient({
-                //     account:targetAcct,
-                //     chain: chainConfig.chaindetails,
-                //     transport: http()
-                // }).extend(publicActions) 
+                        const viemAccount = privateKeyToAccount(privateKey as `0x${string}`) 
+                        const cachedClient = createWalletClient({
+                            account:viemAccount,
+                            chain: chainConfig.chaindetails,
+                            transport: http()
+                        }).extend(publicActions) 
+                    
+                        const cachedConnector = new MockConnector({
+                            chains: supportedChains,
+                            options: {
+                                walletClient: cachedClient,
+                            },
+                        })
 
-                // const cachedConnector = new MockConnector({
-                //     chains: supportedChains,
-                //     options: {
-                //         walletClient: burnerClient,
-                //     },
-                // })
+                        // connect to new PK
+                        connect({connector: cachedConnector})
 
-                // const { request:registerRequest } = await burnerClient.simulateContract({
-                //     address: chainConfig.registryContractAddress as `0x${string}`,
-                //     abi: chainConfig.registryAbi,
-                //     functionName: "register",
-                //     args:[signature, address, nonce],
-                //     account:targetAcct
-                // })
-                
-                // await burnerClient.writeContract(registerRequest).then(
-                //     (res)=>{
-                //         console.log("new code.")
-                //         updateBurnerKey(()=>privateKey as `0x${string}`)
-                //         setBurnerKeyRegisteredFlagCount((count)=>count+1)
-                //         // connect to new PK
-                //         connect({connector: cachedConnector})
-                // })
-                
-                // await provider.getFeeData().then((res)=>{
-                //     console.log("fee data")
-                //     console.log(res.maxFeePerGas) //3298198084 
-                // })
+                    });
+                }
+                // using viem way
+                let target="";
+                let targetAcct: PrivateKeyAccount;
+                if(import.meta.env.VITE_ENV == "devWeb3"){
+                    const targetAcct = privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
+                    target = targetAcct.address
+                }else{
+                    const privateKey = generatePrivateKey()
+                    const targetAcct = privateKeyToAccount(privateKey)
+                    target = targetAcct.address
+                }
 
                 
-                // await contract.register(signature, address, nonce, {
-                //     gasPrice: 0,
-                //     gasLimit: 2100000,
-                //     maxFeePerGas: 3398198084
-                // }).then((res)=>{
+                const data = await readContracts({
+                    contracts:[
+                        {
+                            address: chainConfig.registryContractAddress as `0x${string}`,
+                            abi: chainConfig.registryAbi,
+                            functionName: "eip712Domain",
+                        },
+                        {
+                            address: chainConfig.registryContractAddress as `0x${string}`,
+                            abi: chainConfig.registryAbi,
+                            functionName: "nonces",
+                            args:[target?.toString()]
+                        }
+                    ]
+                }).then(async (data)=>{
+                    console.log("nounce received")
+                    console.log(data)
+                    const [{result: [, name, version, chainId, verifyingContract, ,]}, {result: _nonce}]= data
+                    const nonce = parseInt(_nonce)+1;
+                    const domain = {
+                        name,
+                        version,
+                        chainId: parseInt(chainId),
+                        verifyingContract,
+                    };
+                    
+                    const types = {
+                        User: [
+                            { name: 'signer', type: 'address' },
+                            { name: 'nonce', type: 'uint256' },
+                            { name: 'target', type: 'address' },
+                        ],
+                    };
+                    
+                    const message = {
+                        signer: address,
+                        nonce,
+                        target,
+                    };
+                    //targetAcct
+                    const burnerClient = createWalletClient({
+                        account:targetAcct,
+                        chain: chainConfig.chaindetails,
+                        transport: http()
+                    }).extend(publicActions) 
 
-                //     updateBurnerKey(()=>privateKey as `0x${string}`)
-                //     setBurnerKeyRegisteredFlagCount((count)=>count+1)
+                    const cachedConnector = new MockConnector({
+                        chains: supportedChains,
+                        options: {
+                            walletClient: burnerClient,
+                        },
+                    })
 
-                //     const viemAccount = privateKeyToAccount(privateKey as `0x${string}`) 
-                //     const cachedClient = createWalletClient({
-                //         account:viemAccount,
-                //         chain: chainConfig.chaindetails,
-                //         transport: http()
-                //     }).extend(publicActions) 
-                
-                //     const cachedConnector = new MockConnector({
-                //         chains: supportedChains,
-                //         options: {
-                //             walletClient: cachedClient,
-                //         },
-                //     })
+                    // this part must prompt for correct chain id 
+                    const signature = await signTypedDataAsync({ 
+                        domain, types, primaryType:"User", message}).then(async(sig)=>{
+                            console.log("signature")
+                            console.log(sig)
+                            console.log("target: "+target)
 
-                //     // connect to new PK
-                //     connect({connector: cachedConnector})
+                            const { request:registerRequest } = await burnerClient.simulateContract({
+                                address: chainConfig.registryContractAddress as `0x${string}`,
+                                abi: chainConfig.registryAbi,
+                                functionName: "register",
+                                args:[sig, address, nonce],
+                                account:target,
+                            }).then(async(registerRq)=>{
+                                console.log("sendinging registration...")
+                                await burnerClient.writeContract(registerRequest).then(
+                                    (registerRq)=>{
+                                        console.log("sent registeration")
+                                        updateBurnerKey(()=>privateKey as `0x${string}`)
+                                        setBurnerKeyRegisteredFlagCount((count)=>count+1)
+                                        // connect to new PK
+                                        connect({connector: cachedConnector})
+                                })
+                            })
 
-                // });
+                            
+                        })
+                })
                 console.log("called")
             }
             
@@ -211,10 +267,10 @@ export const SignUpButton = () => {
             (isWagmiLoading || connectorIsLoading)?
                 <Spinner color="failure" />
             :
-            burnerIsConnected?"Using Burner: "
-            :
-            !isConnected?"Connect to Register A Burner=>":
+            burnerIsConnected?"Using Burner: ":
             hasBurnderKey?"Has Burner":
+            !isConnected?"Connect to Register A Burner=>":
+            
             "Register a burner Wallet"}
         </button>
     )
