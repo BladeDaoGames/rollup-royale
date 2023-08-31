@@ -26,10 +26,11 @@ export const chainConfigs = {
             registry:"0xcA6e0D006659a344998a1E1FA8D3F3B8D3D30Fce",
         }
     },
-    4000005:{
+    4000007:{
         config: bladeAltLayer,
         contracts: {
-            royale:"0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            royale:"0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+            implementation:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
             registry:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
         }
     }

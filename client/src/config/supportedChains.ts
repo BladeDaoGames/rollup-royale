@@ -28,7 +28,7 @@ export const bladedao = {
 } as const satisfies Chain
 
 export const bladeAltLayer = {
-  id: 4000005,
+  id: 4000007,
   name: 'BladeAltLayer',
   network: 'BladeAltLayer',
   nativeCurrency: {
