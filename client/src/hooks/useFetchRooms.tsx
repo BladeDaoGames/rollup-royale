@@ -41,37 +41,64 @@ const useFetchRooms = () => {
             // })
 
             // actual fetch
-            await Promise.all(
-                Array.apply(null, Array(newTotalRooms))
-                    .map(
-                        async (_, roomId)=>{
-                            return await await readContract({
-                                address: chainConfig.royaleContractAddress,
-                                abi: chainConfig.royaleAbi,
-                                functionName: 'games',
-                                args: [roomId]
-                            }).then((res) => {
-                                // console.log("room info")
-                                // console.log(res)
-                                return {
-                                    _roomId: roomId,
-                                    _creator: res?.gameCreator as string,
-                                    stake: parseFloat(formatUnits(res?.minStake, 18))/1.000??999 as number,
-                                    boardrow: 10,
-                                    boardcol: 10,
-                                    players: parseInt(res?.playersCount)??1,
-                                    maxplayers: 4,
-                                    status: res?.hasEnded ? "Ended" : !res?.hasStarted ? "Join" : "Spectate",
+            if(import.meta.env.VITE_ROOMLOADMODE === 'loop'){
+                await Promise.all(
+                    Array.apply(null, Array(newTotalRooms))
+                        .map(
+                            async (_, roomId)=>{
+                                return await readContract({
+                                    address: chainConfig.royaleContractAddress,
+                                    abi: chainConfig.royaleAbi,
+                                    functionName: 'games',
+                                    args: [roomId]
+                                }).then((res) => {
+                                    // console.log("room info")
+                                    // console.log(res)
+                                    return {
+                                        _roomId: roomId,
+                                        _creator: res?.gameCreator as string,
+                                        stake: parseFloat(formatUnits(res?.minStake, 18))/1.000??999 as number,
+                                        boardrow: 10,
+                                        boardcol: 10,
+                                        players: parseInt(res?.playersCount)??1,
+                                        maxplayers: 4,
+                                        status: res?.hasEnded ? "Ended" : !res?.hasStarted ? "Join" : "Spectate",
+                                    }
+                                    
+                                });
                                 }
-                                
-                            });
+                            )
+                        ).then((res)=>{
+                            setRooms(res)
+                            setProgressBarValue(()=>100)
+                        })
+            }else{
+                await readContract({
+                    address: chainConfig.royaleContractAddress,
+                    abi: chainConfig.royaleAbi,
+                    functionName: 'getGamesArray',
+                }).then((res)=>{
+                    // console.log("getting entire array: ")
+                    // console.log(res)
+
+                    setRooms(res?.map((room, i)=>{
+                        return {
+                            _roomId: i,
+                            _creator: room?.info?.gameCreator as string,
+                            stake: parseFloat(formatUnits(room?.info?.minStake, 18))/1.000??999 as number,
+                            boardrow: 10,
+                            boardcol: 10,
+                            players: parseInt(room?.info?.playersCount)??1,
+                            maxplayers: 4,
+                            status: room?.info?.hasEnded ? "Ended" : !room?.info?.hasStarted ? "Join" : "Spectate",
                             }
-                        )
-                    ).then((res)=>{
-                        setRooms(res)
-                        setProgressBarValue(()=>100)
-                    })
+                        })
+                    )
+                    setProgressBarValue(()=>100)
+    
+                })
             }
+        }
 
         async function getTotalRooms(){
             return await readContract({
@@ -80,6 +107,8 @@ const useFetchRooms = () => {
                 functionName: 'getTotalGames',
             }).then((res)=>{
                 //set total rooms
+                // console.log("total rooms:")
+                // console.log(res)
                 newTotalRooms = parseInt(res as BigInt);
                 setTotalRooms(newTotalRooms);
 

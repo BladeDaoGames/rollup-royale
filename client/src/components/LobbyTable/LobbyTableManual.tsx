@@ -85,9 +85,9 @@ const LobbyTableManual = () => {
                 address: chainConfig.royaleContractAddress,
                 abi: chainConfig.royaleAbi,
                 functionName: 'games',
-                args: [newRoomId]
+                args: [newRoomId] //this argument will return only 1 room
             }).then((res) => {
-                // console.log("room info")
+                // console.log("room info 2")
                 // console.log(res)
 
                 setRooms((prevRoomData)=>{
@@ -110,7 +110,7 @@ const LobbyTableManual = () => {
         },
     })
 
-    console.log('rendering rooms data...')
+    //console.log('rendering rooms data...')
     console.log("number of rooms:"+data??"NaN")
 
     return (
