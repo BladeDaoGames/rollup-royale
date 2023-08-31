@@ -1,13 +1,14 @@
 import { foundry} from "@wagmi/chains";
 import { bladedao, bladeAltLayer, AltLayerGasLess } from './supportedChains';
-import BurnerAccountRegistry from './abis/BurnerAccountRegistry.json'
-import Royale from './abis/Royale.json'
+import BurnerAccountRegistry from './abis/BurnerAccountRegistry.json';
+import Royale from './abis/Royale.json';
+import RRoyale from './abis/RRoyale.json';
 
 export const chainConfigs = {
     31337 : {
         config: foundry,
         contracts: {
-            royale:"0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            royale:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
             registry:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
         }
     },
@@ -39,5 +40,6 @@ export const chainConfig = {
     registryContractAddress: chainConfigs[import.meta.env.VITE_CHAIN_ID]?.contracts?.registry,
     registryAbi: BurnerAccountRegistry.abi,
     royaleContractAddress: chainConfigs[import.meta.env.VITE_CHAIN_ID]?.contracts?.royale,
-    royaleAbi: Royale.abi
+    //royaleAbi: Royale.abi
+    royaleAbi: RRoyale.abi
 }
