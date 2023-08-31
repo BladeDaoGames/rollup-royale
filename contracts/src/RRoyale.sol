@@ -196,10 +196,13 @@ contract RRoyale is
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         burnerWallet = _burnerWallet;
+        games.push(); //pad with a dummy game
+        games[0].info.hasEnded = true; // set dummy game to end
     }
 
     function _authorizeUpgrade(address newImplementation)
         internal
+        virtual
         override
         onlyOwner
     {}

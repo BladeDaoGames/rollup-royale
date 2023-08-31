@@ -3,7 +3,12 @@ pragma solidity ^0.8.18;
 
 
 library RoyaleBattleV1 {
-    // 0x0
+    uint8 public constant MAX_PLAYERS = 4;
+    uint8 public constant MAP_WIDTH = 10;
+    uint8 public constant MAP_HEIGHT = 10;
+    uint8 public constant TILE_COUNT = MAP_WIDTH * MAP_HEIGHT;
+    uint16 public constant starting_FT = 100;
+
     struct GameInfo {
         address gameCreator;
         uint8 playersCount;
@@ -24,14 +29,14 @@ library RoyaleBattleV1 {
 
     struct GameRoom {
         GameInfo info;
-        Tile[] board;
-        address[] playerIds;
-        uint16[] playerFTs;
-        uint8[] positions;
-        bool[] playerAlive;
-        bool[] playerReady;
-        bool[] playerPauseVote;
-        uint256[] playerLastMoveTime;
+        Tile[TILE_COUNT] board;
+        address[MAX_PLAYERS] playerIds;
+        uint16[MAX_PLAYERS] playerFTs;
+        uint8[MAX_PLAYERS*2-1] positions;
+        bool[MAX_PLAYERS] playerAlive;
+        bool[MAX_PLAYERS] playerReady;
+        bool[MAX_PLAYERS] playerPauseVote;
+        uint256[MAX_PLAYERS] playerLastMoveTime;
     }
 
     enum Dir { DOWN, LEFT, UP, RIGHT }
