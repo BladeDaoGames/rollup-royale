@@ -105,7 +105,7 @@ export const ReadyUpButton = ({room}:{room: number})=>{
     const { data, isLoading, isSuccess, write: writeToggleReady } = useContractWrite({
         address: chainConfig.royaleContractAddress,
         abi: chainConfig.royaleAbi,
-        functionName: 'toggleReady',
+        functionName: 'playerReadyUp',
     })
 
     return (

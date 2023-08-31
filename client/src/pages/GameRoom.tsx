@@ -46,8 +46,8 @@ const GameRoom = () => {
   const [playerLoginCount, setPlayerLoginCount] = useState(0)
   const [ txnQueue, setTxnQueue] = useAtom(createTxnQueue)
   //const [playerLastMoveTime, setPlayerLastMoveTime] = useState<Array<number>>([0,0,0,0])
-  console.log("window inner width: ", window.innerWidth)
-  console.log("window inner height: ", window.innerHeight)
+  // console.log("window inner width: ", window.innerWidth)
+  // console.log("window inner height: ", window.innerHeight)
   const gameConfig = {
       type: Phaser.AUTO,
       parent: "phaser-div",

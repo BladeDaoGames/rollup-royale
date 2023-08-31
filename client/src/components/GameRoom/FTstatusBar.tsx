@@ -44,7 +44,8 @@ const FTstatusBar = () => {
   const playerIds = useAtomValue(createPlayerIds)
   const playerFTs = useAtomValue(createPlayerFTs)
   const {gameStatus, playerStatus} = useGameAndPlayerStatus()
-
+  // console.log("player FTs")
+  // console.log(playerFTs)
   return (
     <div className="
     flex flex-row justify-between items-center
