@@ -41,13 +41,13 @@ export const SignUpButton = () => {
                 setBurnerKeyRegisteredFlagCount((count)=>count+1)
                 toast.success("Burner Wallet Created!", {icon: '🎉'})
             }else{
-                if(chain?.id!=chainConfig.chaindetails.chainId){
+                if(chain?.id!=chainConfig.chaindetails.id){
 
-                    toast(`Current network not desired network: ${chainConfig.chaindetails.name} 
+                    toast.error(`Current network not desired network: ${chainConfig.chaindetails.name} 
                     Switching to correct chain now. Pls check network you are in.
-                    `, {icon: '🚨'})
+                    `, {icon: '🚨', duration: 7000})
     
-                    await switchNetwork?.(chainConfig.chaindetails.chainId)
+                    await switchNetwork?.(chainConfig.chaindetails.id)
                     return
                 }
                 // check if already have address in local storage
@@ -65,11 +65,11 @@ export const SignUpButton = () => {
                     
                     let burnerAccount;
                     if(import.meta.env.VITE_ENV == "devWeb3"){
-                        burnerAccount = new ethers.Wallet("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
+                        burnerAccount = new ethers.Wallet("0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a");
                     }else{
                         burnerAccount = ethers.Wallet.createRandom();
                     }
-
+                    console.log("burner account: "+burnerAccount.address)
                     burnerAccount = burnerAccount.connect(provider);
 
                     
@@ -118,6 +118,7 @@ export const SignUpButton = () => {
                     console.log("address")
                     console.log(target)
                     await contract.register(signature, address, nonce, {
+                        gasPrice: 0,
                         gasLimit: 2100000,
                     }).then((res)=>{
                         console.log("registered!")
@@ -210,6 +211,7 @@ export const SignUpButton = () => {
                         functionName: "register",
                         args:[signature, address, nonce],
                         account:target,
+                        gasPrice: parseGwei('0')
                     })
                     
                     await burnerClient.writeContract(registerRequest).then(

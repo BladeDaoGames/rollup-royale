@@ -1,7 +1,8 @@
-//import React from 'react';
+import React from 'react';
 import { Navbar } from 'flowbite-react';
 import ConnectWalletButton from '../ConnectWalletButton/CWButton';
-import {SignUpButton} from '../ConnectWalletButton/SignUpButton';
+//import {SignUpButton} from '../ConnectWalletButton/SignUpButton';
+import {GaslessSignUpButton} from '../ConnectWalletButton/GaslessSignupButton';
 //import {VscFeedback} from 'react-icons/vsc';
 import {createDevPrivateKey} from '../../atoms';
 import { useSetAtom } from 'jotai';
@@ -46,7 +47,7 @@ const CustomNavBar = () => {
                 </Navbar.Link>
             </Navbar.Collapse>
             <Navbar.Collapse className="mr-2">
-                <SignUpButton />
+                <GaslessSignUpButton />
             </Navbar.Collapse>
             <div className="flex">
                 <ConnectWalletButton/>
