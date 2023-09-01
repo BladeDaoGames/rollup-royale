@@ -1,5 +1,5 @@
 import { foundry} from "@wagmi/chains";
-import { bladedao, bladeAltLayer, AltLayerGasLess } from './supportedChains';
+import { bladedao, bladeAltLayer, altLayerRegistryChain } from './supportedChains';
 import BurnerAccountRegistry from './abis/BurnerAccountRegistry.json';
 import Royale from './abis/Royale.json';
 import RRoyale from './abis/RRoyale.json';
@@ -9,7 +9,7 @@ export const chainConfigs = {
         config: foundry,
         contracts: {
             royale:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-            registry:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+            registry:"0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
         }
     },
     1013454: {
@@ -19,13 +19,6 @@ export const chainConfigs = {
             registry:"0x8df74401bA860F551B138aaB344aDC89a15876A9",
         }
     },
-    41000021:{
-        config: AltLayerGasLess,
-        contracts: {
-            royale:"0x394D08ff29E5432C8e9a32DEf33F28B9f0bd84B6",
-            registry:"0xcA6e0D006659a344998a1E1FA8D3F3B8D3D30Fce",
-        }
-    },
     4000007:{
         config: bladeAltLayer,
         contracts: {
@@ -33,7 +26,17 @@ export const chainConfigs = {
             implementation:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
             registry:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
         }
+    },
+
+    40002048:{
+        config: altLayerRegistryChain,
+        contracts: {
+            royale:"0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+            implementation:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+            registry:"0x0efE4fF06d0D01DdB7AE6e0a919D22B518a7CcbE",
+        }
     }
+
 }
 
 export const chainConfig = {
@@ -42,5 +45,7 @@ export const chainConfig = {
     registryAbi: BurnerAccountRegistry.abi,
     royaleContractAddress: chainConfigs[import.meta.env.VITE_CHAIN_ID]?.contracts?.royale,
     //royaleAbi: Royale.abi
-    royaleAbi: RRoyale.abi
+    royaleAbi: RRoyale.abi,
+    specificRegistryChainDetails: chainConfigs[40002048].config,
+    specificRegistryAddress:"0x0efE4fF06d0D01DdB7AE6e0a919D22B518a7CcbE",
 }
