@@ -153,9 +153,8 @@ export const GaslessSignUpButton = () => {
 
                 // connect to new PK
                 toast.success(`Burner Wallet Created! Switching back to Game Chain: ${chainConfig.chaindetails.id}`, {icon: '🎉'})
-                await switchNetwork({chainId: chainConfig.chaindetails.id}).then(()=>{
-                    connect({connector: cachedConnector});
-                })
+                await switchNetwork({chainId: chainConfig.chaindetails.id})
+                //connect({connector: cachedConnector});
             }
             
             

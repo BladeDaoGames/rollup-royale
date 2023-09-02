@@ -12,8 +12,8 @@ import { supportedChains } from './config/supportedChains';
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   //[bladedao],
-  //[chainConfig.chaindetails],
-  supportedChains,
+  [chainConfig.chaindetails],
+  //supportedChains,
   [publicProvider()],
 )
 

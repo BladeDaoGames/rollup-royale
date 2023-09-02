@@ -65,7 +65,7 @@ export const LeaveRoomButton = ({room}:{room: number}) =>{
     const { data, isLoading, isSuccess, write: writeLeaveGame } = useContractWrite({
         address: chainConfig.royaleContractAddress,
         abi: chainConfig.royaleAbi,
-        functionName: 'leaveGame',
+        functionName: 'leaveGameB4start',
     })
 
     // check if player in game first
