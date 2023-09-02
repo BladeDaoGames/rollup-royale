@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "./libraries/RoyaleBattleV1.sol";
+//import "./libraries/RoyaleBattleV1.sol";
 
 contract RRoyale is 
     Initializable,
@@ -25,9 +25,10 @@ contract RRoyale is
     bool spawnDefault = true;
 
     //array of all game rooms
-    RoyaleBattleV1.GameRoom[] public games;
+    GameRoom[] public games;
+    //RoyaleBattleV1.GameRoom[] public games;
     mapping(address => uint256) public playerInGame; //track player
-    //enum Dir { DOWN, LEFT, UP, RIGHT }
+    enum Dir { DOWN, LEFT, UP, RIGHT }
 
     struct GameInfo {
         address gameCreator;
@@ -282,6 +283,95 @@ contract RRoyale is
         return true;
     }
 
+    function _getUnoccupiedTile(uint256 _roomId, uint160 _seed) internal view returns (uint8) {
+        // get random tile
+        uint8 random = _getRandomTile(_seed);
+        //return random;
+        //if tile is occupied search again
+        if ((games[_roomId].board[random].occupantId != 0) || (games[_roomId].board[random].isWall)) {
+            return _getUnoccupiedTile(_roomId, _seed*3);
+        } else {
+            // return tile
+            return random;
+        }
+    }
+
+    function _getBattleResults(uint256 _roomId, uint8 playerIndex, uint8 occupantIndex) internal view returns (uint8) {
+        // get player ft
+        uint16 playerFT = games[_roomId].playerFTs[playerIndex];
+        // get occupant ft
+        uint16 occupantFT = games[_roomId].playerFTs[occupantIndex];
+        // get total FT
+        uint16 totalFT = playerFT + occupantFT;
+
+        // chance of player winning is playerFT / totalFT
+        uint256 chance = _percentDivide(uint256(playerFT), uint256(totalFT));
+
+        // get random number between 1 to 100
+        uint256 random = (_getRandomUint256(88) % 100) + 1;
+        
+        // if random number is less than chance, player wins
+        if (random <= chance) {
+            return playerIndex;
+        } else {
+            return occupantIndex;
+        }
+    }
+
+    function _getRandomUint256(uint160 _seed) internal view returns (uint256) {
+
+        //TODO: Use Alt Layer VRF here when available
+
+        return uint256(keccak256(
+                    abi.encodePacked(
+                        block.timestamp, 
+                        block.prevrandao,
+                        _seed
+                        )
+                    ));
+    }
+
+    // Math Utils
+
+    function _getItemFtDiff() internal view returns (int16){
+        // get random number between -50 to 50
+        int16 random = int16(int256(_getRandomUint256(888)%130))-65;
+        return random;
+    }
+
+    function _getIndexDiffFromDirection(Dir _direction) internal pure returns (int8){
+        if (_direction == Dir.UP) {
+            return int8(MAP_WIDTH);
+        } else if (_direction == Dir.DOWN) {
+            return int8(MAP_WIDTH) * -1;
+        } else if (_direction == Dir.LEFT) {
+            return -1;
+        } else if (_direction == Dir.RIGHT) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    function _percentDivide(uint256 a, uint256 b) internal pure returns (uint256) {
+        require(b != 0, "division by zero will result in infinity.");
+        return ((a * 1e18 * 100) / (b* 1e18));
+    }
+
+    function _getRandomTile(uint160 _seed) internal view returns (uint8) {
+        // get random number
+        uint8 random = uint8(_getRandomUint256(_seed) % TILE_COUNT);
+        // uint8 random = uint8(
+        //         uint256(keccak256(
+        //             abi.encodePacked(
+        //                 block.timestamp, 
+        //                 block.prevrandao
+        //                 )
+        //                 )) % TILE_COUNT
+        //             );
+        return random;
+    }
+
     function _returnFundsToAll(uint256 _roomId)
         internal returns (bool) {
         // for each player
@@ -346,7 +436,7 @@ contract RRoyale is
         return games.length;
     }
 
-    function getGameInfo(uint256 _roomId) public view returns (RoyaleBattleV1.GameInfo memory){
+    function getGameInfo(uint256 _roomId) public view returns (GameInfo memory){
         return games[_roomId].info;
     }
     
@@ -396,11 +486,217 @@ contract RRoyale is
         return games[_roomId].playerLastMoveTime;
     }
 
-    function getGamesArray() public view returns (RoyaleBattleV1.GameRoom[] memory){
+    function getGamesArray() public view returns (GameRoom[] memory){
         return games;
     }
-    // ===== SETTER FUNCTIONS =====
 
+
+    // ===== SETTER FUNCTIONS =====
+    function _spawnItem(uint256 _roomId, uint8 itemIndex, uint160 _seed) internal returns (bool) {
+        // get random tile
+        uint8 random = _getUnoccupiedTile(_roomId, _seed);
+        // set tile to new item id
+        games[_roomId].board[random].occupantId = itemIndex+1;
+        // set position to tile index
+        games[_roomId].positions[itemIndex] = random;
+        
+        // increment item count
+        games[_roomId].info.itemCount++;
+        emit ItemSpawned(_roomId, itemIndex+1, random);
+        return true;
+    }
+
+    function _spawnItems(uint256 _roomId) internal returns (bool) {
+        // get item count in game
+        uint8 itemCount;
+        for (uint8 i = 4; i < games[_roomId].positions.length; i++) {
+            if (games[_roomId].positions[i] != type(uint8).max) {
+                itemCount++;
+            }
+        }
+        //uint8 itemCount = game.info.itemCount;
+        // get number of players alive
+        uint8 playersAlive;
+        for (uint8 i = 0; i < games[_roomId].playerAlive.length; i++) {
+            if (games[_roomId].playerAlive[i] == true) {
+                playersAlive++;
+            }
+        }
+        //uint8 playersAlive = game.info.playersCount;
+        // get number of items to spawn (1 less than number of players on board)
+        int8 itemsToSpawn = int8(playersAlive) - int8(itemCount) - int8(1);
+        // correct if itemsToSpawn is negative
+        itemsToSpawn = itemsToSpawn > int8(0) ? itemsToSpawn : int8(0);
+        //for each item position in positions, look for empty item position to spawn item
+        for (uint8 i = 4; i < games[_roomId].positions.length; i++) {
+            // if position is max value (meaning it is empty)
+            if (games[_roomId].positions[i] == type(uint8).max) {
+
+                // if itemsToSpawn hits 0, break loop
+                if (itemsToSpawn <= 0) {
+                    break;
+                }
+                _spawnItem(_roomId, i, uint8(uint160(msg.sender)));
+                itemsToSpawn--;
+            }
+        }
+        return true;
+    }
+
+    function _killPlayer(uint256 _roomId, uint8 playerIndex) internal returns (uint8){
+        games[_roomId].playerAlive[playerIndex] = false;
+        games[_roomId].board[games[_roomId].positions[playerIndex]].occupantId = 0; // remove player from tile
+        games[_roomId].positions[playerIndex] = type(uint8).max; //reset position to null
+        games[_roomId].playerFTs[playerIndex] = 0; //reset player ft for UI
+        games[_roomId].info.playersCount--;
+        playerInGame[games[_roomId].playerIds[playerIndex]] = 0;
+        
+        emit PlayerKilled(_roomId,  games[_roomId].playerIds[playerIndex]);
+        return playerIndex;
+    }
+
+    function _updatePlayerFT(uint256 _roomId, uint8 playerIndex, int16 _ftDiff) internal returns (uint16) {
+        // get player ft
+        uint16 playerFT = games[_roomId].playerFTs[playerIndex];
+        // get final ft
+        int16 finalFT = int16(playerFT) + _ftDiff;
+        //int16 finalFT = 0;
+        //finalFT = finalFT < 0 ? int16(int8(0)) : finalFT; // if final ft is less than 0, set to 0
+        // if finalFT is 0, kill player
+        if (finalFT <= int16(0)) {
+            _killPlayer(_roomId, playerIndex);
+            finalFT=int16(0);
+        } else {
+            // set player ft
+            games[_roomId].playerFTs[playerIndex] = uint16(finalFT);
+        }
+        return uint16(finalFT);
+        // _killPlayer(_roomId, playerIndex);
+        // return uint16(uint8(0));
+    }
+
+    function _movePlayerToTileWithoutDying(uint256 _roomId, uint8 playerIndex, uint8 newPosition) 
+        internal returns (uint8) {
+        // set old position to 0
+        games[_roomId].board[
+            games[_roomId].positions[playerIndex]
+        ].occupantId = 0;
+
+        // set new position to player id
+        games[_roomId].board[newPosition].occupantId = playerIndex+1;
+        
+        // set player position to new position
+        games[_roomId].positions[playerIndex] = newPosition;
+
+        emit PlayerMoved(_roomId, games[_roomId].playerIds[playerIndex], newPosition);
+
+        return newPosition;
+    }
+
+    function _playerInteractWithItem(uint256 _roomId, uint8 playerIndex, uint8 itemIndex) 
+        internal returns (uint16) 
+    {   
+        // get item position
+        uint8 newPosition = games[_roomId].positions[itemIndex];
+        // remove item position from positions array
+        games[_roomId].positions[itemIndex] = type(uint8).max;
+
+        games[_roomId].board[newPosition].occupantId = 0; //remove item from tile
+        // reduce item count
+        games[_roomId].info.itemCount--;
+
+        // if playerNewFT is not 0, move player to the tile
+        // NOTE: updatePlayerFT will update player position/board and alive if he is killed
+        uint16 finalFT = _updatePlayerFT(_roomId, playerIndex, _getItemFtDiff());
+
+        if(finalFT != uint16(0)){_movePlayerToTileWithoutDying(_roomId, playerIndex, newPosition);
+        } //else case is covered by updatePlayerFT
+
+    
+        // spawn new items
+        _spawnItems(_roomId);
+        return finalFT;
+    }
+
+    function _playerInteractWithPlayer(uint256 _roomId, uint8 playerIndex, uint8 occupantIndex)
+        internal returns (uint8)
+    {
+        // get occupant position
+        uint8 newPosition = games[_roomId].positions[occupantIndex];
+        
+        // if winnerId is playerId, set Occupan FT to 0 and set to dead
+        if (_getBattleResults(_roomId, playerIndex, occupantIndex) == playerIndex) {
+            // kill occupant
+            _killPlayer(_roomId, occupantIndex);
+            // move player to new tile
+            _movePlayerToTileWithoutDying(_roomId, playerIndex, newPosition);
+            return playerIndex;
+        } else {
+            _killPlayer(_roomId, playerIndex);
+            return occupantIndex;
+        }
+    }
+
+    function _spawnPlayer(uint256 _roomId, uint8 playerIndex) internal returns (uint8){
+        // use random position when available
+        uint8 spawnTile;
+        if(playerIndex==0){
+            spawnTile=22;
+        }else if(playerIndex==1){
+            spawnTile=77;
+        }else if(playerIndex==2){
+            emit PlayerSpawned(_roomId, games[_roomId].playerIds[playerIndex], 27);
+            spawnTile=27;
+        }else if(playerIndex==3){
+            emit PlayerSpawned(_roomId, games[_roomId].playerIds[playerIndex], 72);
+            spawnTile=72;
+        }else{
+            spawnTile=0;
+        }
+        // set player spawn
+        games[_roomId].board[spawnTile].occupantId = playerIndex+1;
+        games[_roomId].positions[playerIndex] = spawnTile;
+        emit PlayerSpawned(_roomId, games[_roomId].playerIds[playerIndex], spawnTile);
+        return spawnTile;
+    }
+
+    function _movePlayerDir(uint256 _roomId, uint8 playerIndex, Dir _dir) 
+        internal returns (bool)
+    {
+        // get player position
+        uint8 playerPosition = games[_roomId].positions[playerIndex];
+
+        // calculate new position
+        uint8 newPosition = uint8(int8(playerPosition) + _getIndexDiffFromDirection(_dir));
+        // revert if new position is out of bounds
+        require(newPosition>=0 && newPosition <games[_roomId].board.length, "E14");
+
+
+        // if playerPosition is at left edge of board and direction is left, revert
+        if (playerPosition % MAP_WIDTH == 0 && _dir == Dir.LEFT) {
+            require(newPosition % MAP_WIDTH != MAP_WIDTH - 1, "E14");
+        }
+        // if playerPosition is at right edge of board and direction is right, revert
+        if (playerPosition % MAP_WIDTH == MAP_WIDTH - 1 && _dir == Dir.RIGHT) {
+            require(newPosition % MAP_WIDTH != 0, "E14");
+        }
+
+        // revert if new position is a wall
+        require(games[_roomId].board[newPosition].isWall == false, "E15");
+
+        // if new position is not occupied
+        if (games[_roomId].board[newPosition].occupantId == 0) {
+            _movePlayerToTileWithoutDying(_roomId, playerIndex, newPosition);
+        // if new position is occupied by item
+        } else if (games[_roomId].board[newPosition].occupantId > 4){ 
+            _playerInteractWithItem(_roomId, playerIndex, games[_roomId].board[newPosition].occupantId-1);
+        } else if (games[_roomId].board[newPosition].occupantId <= 4) { 
+            // if new position is occupied by player
+            _playerInteractWithPlayer(_roomId, playerIndex, games[_roomId].board[newPosition].occupantId-1); // returns winner index
+        }
+
+        return true;
+    }
 
     // ===== GAME FUNCTIONS =====
     function createGame(uint256 _minStake) external payable 
@@ -409,7 +705,7 @@ contract RRoyale is
         playerNotInGame
         returns (uint256 gameId)
     {
-        RoyaleBattleV1.GameRoom memory game;
+        GameRoom memory game;
 
         // set game info
         game.info.gameCreator = msg.sender;  //1. set game creator
@@ -434,7 +730,7 @@ contract RRoyale is
         playerInGame[msg.sender] = roomId; // assume game length always game room id
 
         // spawn player
-        RoyaleBattleV1.spawnPlayer(roomId, games[roomId], 0);
+        _spawnPlayer(roomId, 0);
 
         emit GameCreated(roomId, msg.sender);
         return roomId;
@@ -464,7 +760,7 @@ contract RRoyale is
         playerInGame[msg.sender] = _roomId; // set player in game
 
         // spawn player
-        RoyaleBattleV1.spawnPlayer(_roomId, games[_roomId], playerIndex);
+        _spawnPlayer(_roomId, playerIndex);
         
         emit PlayerJoined(_roomId, msg.sender);
         return msg.sender;
@@ -575,12 +871,12 @@ contract RRoyale is
     {
         games[_roomId].info.hasStarted = true;
         // spawn items
-        RoyaleBattleV1.spawItems(_roomId, games[_roomId]);
+        _spawnItems(_roomId);
         emit GameStarted(_roomId);
         return true;
     }
 
-    function movePlayer(uint256 _roomId, RoyaleBattleV1.Dir _dir, address _player, bool _useBurner) 
+    function movePlayer(uint256 _roomId, Dir _dir, address _player, bool _useBurner) 
         external 
         whenNotPaused 
         gameStarted(_roomId)
@@ -596,7 +892,7 @@ contract RRoyale is
         uint8 playerIndex = _getCallingPlayerId(_roomId, _player, _useBurner)-1; //already checked by playerIsInGame
 
         // handle move with library
-        RoyaleBattleV1.movePlayerDir(_roomId, games[_roomId], playerIndex, _dir, MAP_WIDTH);
+        _movePlayerDir(_roomId, playerIndex, _dir);
 
         // check if game is over then end game and distribute prize
         if (games[_roomId].info.playersCount == 1) {
