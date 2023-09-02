@@ -14,7 +14,7 @@ type IRoom = {
 }
 
 export const createProgressBar = atom<number>(0);
-export const createTxnBatchInterval = atom<number>(5);
+export const createTxnBatchInterval = atom<number>(4);
 export const createTxnSender = atom<boolean>(false);
 export const createTxnQueue = atom<number>(0);
 export const createGameSceneReadiness = atom<boolean>(false);
