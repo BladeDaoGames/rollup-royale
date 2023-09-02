@@ -14,6 +14,8 @@ type IRoom = {
 }
 
 export const createProgressBar = atom<number>(0);
+export const lobbyRoomPageCount = atom<number>(1);
+export const lobbyTextSearchInput = atom<string>("");
 export const createTxnBatchInterval = atom<number>(4);
 export const createTxnSender = atom<boolean>(false);
 export const createTxnQueue = atom<number>(0);
