@@ -289,7 +289,7 @@ contract RoyaleTest is Test {
         uint16[4] memory fts = rrHarnessRoyale.getPlayerFTs(1);
         console.logUint(fts[0]);
         console.logUint(fts[1]);
-        console.logAddress(rrHarnessRoyale.top10Wins(0));
+        console.log(rrHarnessRoyale.getTop10RanksByWinnings()[0].amount);
         return positions;
     }
 

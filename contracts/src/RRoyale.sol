@@ -29,8 +29,8 @@ contract RRoyale is
     //RoyaleBattleV1.GameRoom[] public games;
     mapping(address => uint256) public playerInGame; //track player
     mapping(address => UserStats) public userStats;
-    address[10] public top10Earned;
-    address[10] public top10Wins;
+    RankingRow[10] public top10Earned;
+    RankingRow[10] public top10Wins;
     enum Dir { DOWN, LEFT, UP, RIGHT }
 
     struct GameInfo {
@@ -69,6 +69,12 @@ contract RRoyale is
         uint256 totalGasEarned;
         uint256 totalGasLost;
     }
+
+    struct RankingRow {
+        address player;
+        uint256 amount;
+    }
+
     /*
     Board Layout
     00 01 02 03 04 05 06 07 08 09
@@ -194,6 +200,8 @@ contract RRoyale is
 
     event GameEnded(uint256 indexed _roomId, address indexed _winner);
     event RewardSent(uint256 indexed _roomId, address indexed _winner, uint256 indexed _reward);
+    event EarningsTopped(address indexed _player, uint256 _earnings);
+    event WinningsTopped(address indexed _player, uint256 _winnings);
 
     constructor() {
         _disableInitializers();
@@ -442,10 +450,16 @@ contract RRoyale is
                 userStats[winnerAddress].totalWins++;
                 userStats[winnerAddress].totalGasEarned += winnerFunds - games[_roomId].info.minStake;
 
-                if (userStats[winnerAddress].totalGasEarned > userStats[top10Earned[9]].totalGasEarned) 
-                {_insertIntoTop10EarnedSorted(winnerAddress);}
-                if (userStats[winnerAddress].totalWins > userStats[top10Wins[9]].totalWins)
-                {_insertIntoTop10WinsSorted(winnerAddress);}
+                if (userStats[winnerAddress].totalGasEarned > top10Earned[9].amount) 
+                {
+                    _insertIntoTop10EarnedSorted(winnerAddress);
+                    emit EarningsTopped(winnerAddress, userStats[winnerAddress].totalGasEarned);
+                }
+                if (userStats[winnerAddress].totalWins > top10Wins[9].amount)
+                {
+                    _insertIntoTop10WinsSorted(winnerAddress);
+                    emit WinningsTopped(winnerAddress, userStats[winnerAddress].totalWins);
+                }
 
                 break;
             }
@@ -458,11 +472,13 @@ contract RRoyale is
         uint256 winnerEarned = userStats[winner].totalGasEarned;
         uint256 i = 0;
         while (i < 10) {
-            if (winnerEarned > userStats[top10Earned[i]].totalGasEarned) {
+            if (winnerEarned > top10Earned[i].amount) {
                 for (uint256 j = 9; j > i; j--) {
-                    top10Earned[j] = top10Earned[j-1];
+                    top10Earned[j].player = top10Earned[j-1].player;
+                    top10Earned[j].amount = top10Earned[j-1].amount;
                 }
-                top10Earned[i] = winner;
+                top10Earned[i].player = winner;
+                top10Earned[i].amount = winnerEarned;
                 break;
             }
             i++;
@@ -473,11 +489,13 @@ contract RRoyale is
         uint256 winnerWins = userStats[winner].totalWins;
         uint256 i = 0;
         while (i < 10) {
-            if (winnerWins > userStats[top10Wins[i]].totalWins) {
+            if (winnerWins > top10Wins[i].amount) {
                 for (uint256 j = 9; j > i; j--) {
-                    top10Wins[j] = top10Wins[j-1];
+                    top10Wins[j].player = top10Wins[j-1].player;
+                    top10Wins[j].amount = top10Wins[j-1].amount;
                 }
-                top10Wins[i] = winner;
+                top10Wins[i].player = winner;
+                top10Wins[i].amount = winnerWins;
                 break;
             }
             i++;
@@ -541,6 +559,14 @@ contract RRoyale is
 
     function getGamesArray() public view returns (GameRoom[] memory){
         return games;
+    }
+
+    function getTop10RanksByEarnings() public view returns (RankingRow[10] memory){
+        return top10Earned;
+    }
+
+    function getTop10RanksByWinnings() public view returns (RankingRow[10] memory){
+        return top10Wins;
     }
 
 
