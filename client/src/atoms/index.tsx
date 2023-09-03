@@ -13,8 +13,15 @@ type IRoom = {
     status: string;
 }
 
+type RankingRow = {
+    player: string;
+    amount: number;
+}
+
 export const createProgressBar = atom<number>(0);
 export const lobbyRoomPageCount = atom<number>(1);
+export const winningsRankArray = atom<Array<RankingRow>>([]);
+export const earningsRankArray = atom<Array<RankingRow>>([]);
 export const lobbyTextSearchInput = atom<string>("");
 export const createTxnBatchInterval = atom<number>(4);
 export const createTxnSender = atom<boolean>(false);

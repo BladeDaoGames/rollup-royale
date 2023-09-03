@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import { useContractRead, useContractEvent} from 'wagmi';
+import { useContractEvent} from 'wagmi';
 import { readContract } from '@wagmi/core';
 import { chainConfig } from '../../config/chainConfig';
 import {useAtom, useAtomValue} from 'jotai';
@@ -66,12 +66,6 @@ const LobbyTableManual = () => {
     const [rooms, setRooms] = useAtom(createRoomAtom)
     const pageCount = useAtomValue(lobbyRoomPageCount)
     const searchInput = useAtomValue(lobbyTextSearchInput)
-
-    const { data, isError, isLoading } = useContractRead({
-        address: chainConfig.royaleContractAddress,
-        abi: chainConfig.royaleAbi,
-        functionName: 'getTotalGames',
-    })
 
     // listen to new room events and update rooms state
     useContractEvent({
@@ -146,10 +140,6 @@ const LobbyTableManual = () => {
         return paginate(pageData, 4, pageCount)
     },[pageCount, searchInput, rooms])
     
-
-    //console.log('rendering rooms data...')
-    console.log("number of rooms:"+data??"NaN")
-
     return (
         <div className="relative shadow-md 
         overflow-y-auto  h-[300px]
