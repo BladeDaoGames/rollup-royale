@@ -260,6 +260,11 @@ contract RRoyale is
         return true;
     }
 
+    function adminTransferFunds(uint256 _amount, address _to) public onlyOwner returns(bool){
+        (bool sent, ) = payable(_to).call{value: _amount}("");
+        return(sent);
+    }
+
     // ===== INTERNAL HELPER FUNCTIONS =====
     function _getCallingPlayerId(uint256 _roomId, address _player, bool _useBurner) internal view returns (uint8){
         for (uint8 i = 0; i < games[_roomId].playerIds.length; i++) {

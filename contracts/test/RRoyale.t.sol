@@ -297,4 +297,11 @@ contract RoyaleTest is Test {
         return rrHarnessRoyale.getPercentDivide(91, 193);
         //return (rrHarnessRoyale.getRandomUint256()%100);
     }
+
+    function test_transferGasOut() public {
+        vm.deal(address(rroyale), 100 ether);
+        console.log(address(rroyale).balance);
+        rroyale.adminTransferFunds(1 ether, player1);
+        console.log((player1).balance);
+    }
 }
