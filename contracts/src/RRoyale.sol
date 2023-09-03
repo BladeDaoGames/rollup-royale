@@ -28,6 +28,8 @@ contract RRoyale is
     GameRoom[] public games;
     //RoyaleBattleV1.GameRoom[] public games;
     mapping(address => uint256) public playerInGame; //track player
+    mapping(address => UserStats) public userStats;
+    address[10] top10;
     enum Dir { DOWN, LEFT, UP, RIGHT }
 
     struct GameInfo {
@@ -60,6 +62,12 @@ contract RRoyale is
         uint256[MAX_PLAYERS] playerLastMoveTime;
     }
 
+    struct UserStats {
+        uint256 totalWins;
+        uint256 totalLosses;
+        uint256 totalGasEarned;
+        uint256 totalGasLost;
+    }
     /*
     Board Layout
     00 01 02 03 04 05 06 07 08 09
@@ -424,6 +432,9 @@ contract RRoyale is
                 (bool sent, ) = winnerAddress.call{value: winnerFunds}("");
                 require(sent, "E16");
                 emit RewardSent(_roomId, winnerAddress, winnerFunds);
+                //update winner stats
+                userStats[winnerAddress].totalWins++;
+                userStats[winnerAddress].totalGasEarned += winnerFunds - games[_roomId].info.minStake;
                 break;
             }
         }
@@ -549,9 +560,14 @@ contract RRoyale is
         games[_roomId].positions[playerIndex] = type(uint8).max; //reset position to null
         games[_roomId].playerFTs[playerIndex] = 0; //reset player ft for UI
         games[_roomId].info.playersCount--;
-        playerInGame[games[_roomId].playerIds[playerIndex]] = 0;
+        emit PlayerKilled(_roomId, games[_roomId].playerIds[playerIndex]);
+
+        //update winner stats
+        userStats[games[_roomId].playerIds[playerIndex]].totalLosses++;
+        userStats[games[_roomId].playerIds[playerIndex]].totalGasLost += games[_roomId].info.minStake;
         
-        emit PlayerKilled(_roomId,  games[_roomId].playerIds[playerIndex]);
+        // allow player to join another game
+        playerInGame[games[_roomId].playerIds[playerIndex]] = 0;
         return playerIndex;
     }
 
