@@ -29,7 +29,8 @@ contract RRoyale is
     //RoyaleBattleV1.GameRoom[] public games;
     mapping(address => uint256) public playerInGame; //track player
     mapping(address => UserStats) public userStats;
-    address[10] top10;
+    address[10] public top10Earned;
+    address[10] public top10Wins;
     enum Dir { DOWN, LEFT, UP, RIGHT }
 
     struct GameInfo {
@@ -435,11 +436,47 @@ contract RRoyale is
                 //update winner stats
                 userStats[winnerAddress].totalWins++;
                 userStats[winnerAddress].totalGasEarned += winnerFunds - games[_roomId].info.minStake;
+
+                if (userStats[winnerAddress].totalGasEarned > userStats[top10Earned[9]].totalGasEarned) 
+                {_insertIntoTop10EarnedSorted(winnerAddress);}
+                if (userStats[winnerAddress].totalWins > userStats[top10Wins[9]].totalWins)
+                {_insertIntoTop10WinsSorted(winnerAddress);}
+
                 break;
             }
         }
 
         return _bootAllPlayers(_roomId);
+    }
+
+    function _insertIntoTop10EarnedSorted(address winner) internal {
+        uint256 winnerEarned = userStats[winner].totalGasEarned;
+        uint256 i = 0;
+        while (i < 10) {
+            if (winnerEarned > userStats[top10Earned[i]].totalGasEarned) {
+                for (uint256 j = 9; j > i; j--) {
+                    top10Earned[j] = top10Earned[j-1];
+                }
+                top10Earned[i] = winner;
+                break;
+            }
+            i++;
+        }
+    }
+
+    function _insertIntoTop10WinsSorted(address winner) internal {
+        uint256 winnerWins = userStats[winner].totalWins;
+        uint256 i = 0;
+        while (i < 10) {
+            if (winnerWins > userStats[top10Wins[i]].totalWins) {
+                for (uint256 j = 9; j > i; j--) {
+                    top10Wins[j] = top10Wins[j-1];
+                }
+                top10Wins[i] = winner;
+                break;
+            }
+            i++;
+        }
     }
 
     // ===== VIEW FUNCTIONS =====
