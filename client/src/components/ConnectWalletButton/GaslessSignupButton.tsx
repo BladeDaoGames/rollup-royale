@@ -28,7 +28,7 @@ export const GaslessSignUpButton = () => {
     const {disconnect} = useDisconnect();
     if(import.meta.env.VITE_ENV == "devWeb3") localStorage.clear();
     const { burnerKey, burnerAddress, updateBurnerKey} = useBurnerKey();
-    const hasBurnderKey = burnerKey !==null
+    const hasBurnerKey = burnerKey !==null
     const { isLoading: isWagmiLoading, signTypedDataAsync } = useSignTypedData();
     const burnerIsConnected = (address?.toLowerCase()==burnerAddress?.toLowerCase())&&(isConnected)
     const setBurnerKeyRegisteredFlagCount = useSetAtom(createBurnerKeyRegisteredFlagCount)
@@ -63,13 +63,9 @@ export const GaslessSignUpButton = () => {
 
                 // check if network need switch to registry chain
                 if(chain?.id!=chainConfig.specificRegistryChainDetails.id){
-
                     toast(`Currently not on Burner Registry Chain: ${chainConfig.specificRegistryChainDetails.name} 
                     Switching to correct chain now for registration...`, {icon: '🚨', duration: 5000})
-    
                     await switchNetwork({chainId: chainConfig.specificRegistryChainDetails.id});
-                    disconnect();
-                    return
                 }
 
                 // use ethers js way
@@ -154,7 +150,7 @@ export const GaslessSignUpButton = () => {
                 // connect to new PK
                 toast.success(`Burner Wallet Created! Switching back to Game Chain: ${chainConfig.chaindetails.id}`, {icon: '🎉'})
                 await switchNetwork({chainId: chainConfig.chaindetails.id})
-                //connect({connector: cachedConnector});
+                connect({connector: cachedConnector});
             }
             
             
@@ -177,12 +173,12 @@ export const GaslessSignUpButton = () => {
 
     return (
         <button type="button" 
-            disabled={burnerIsConnected}
+            disabled={burnerIsConnected || (!hasBurnerKey && !isConnected)}
             className={`
-            ${hasBurnderKey?
+            ${hasBurnerKey?
             "text-background1 bg-palegreen hover:bg-whitegreen "
             :
-            "text-white bg-prime1 hover:bg-prime2 "
+            "text-white bg-palered hover:bg-prime2 "
             }
             focus:ring-2 focus:outline-none focus:ring-lightbeige 
             font-medium rounded-lg text-xs md:text-base
@@ -191,19 +187,19 @@ export const GaslessSignUpButton = () => {
             `}
 
             onClick={()=>{
-                if(hasBurnderKey) return
+                if(hasBurnerKey) return
                 signup()
             }}
         >
             {
-            (isWagmiLoading || connectorIsLoading)?
+            (isWagmiLoading || connectorIsLoading || isLoading)?
                 <Spinner color="failure" />
             :
             burnerIsConnected?"Using Burner: ":
-            hasBurnderKey?"Has Burner":
-            !isConnected?"Connect to Register A Burner=>":
+            hasBurnerKey?"Has Burner":
+            !isConnected?"Connect to link Wallet to a Burner=>":
             
-            "Register a burner Wallet"}
+            <u>Click here to Register Burner and Link it to Current Wallet</u>}
         </button>
     )
 }
