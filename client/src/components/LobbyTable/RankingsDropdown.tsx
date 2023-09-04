@@ -161,13 +161,14 @@ export const RankingsDropdown = () => {
                 {!showRankings?null:
                     <div className="grid grid-cols-2 gap-1 m-1 px-3
                     flex-auto font-semibold text-white
-                    rounded-md bg-background1/80 
-                    z-20
+                    rounded-md bg-background1/90 
+                    z-20 pt-4 pb-2
+                    border-rbl-2 border-prime2
                     ">
                         <div className="
-                        p-1 m-1 my-3 rounded-md flex flex-col
+                        p-1 py-2.5 m-1 my-3 rounded-md flex flex-col
                         border border-prime2">
-                            <div className="px-1.5 my-1">Top 10 Earnings</div>
+                            <div className="px-1.5 my-1 text-prime1">Top 10 Earnings</div>
                             <div className="flex flex-row items-center justify-start
                                 px-1.5 text-xs my-2
                                 ">
@@ -192,7 +193,7 @@ export const RankingsDropdown = () => {
                         <div className="
                         p-1 m-1 my-3 rounded-md flex flex-col
                         border border-prime2">
-                            <div className="px-1.5 my-1">Top 10 Winnings</div>
+                            <div className="px-1.5 my-1 text-prime1">Top 10 Winnings</div>
                             <div className="flex flex-row items-center justify-start
                                 px-1.5 text-xs my-2
                                 ">
