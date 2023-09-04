@@ -28,7 +28,7 @@ export const bladedao = {
 } as const satisfies Chain
 
 export const bladeAltLayer = {
-  id: 4000005,
+  id: 4000007,
   name: 'BladeAltLayer',
   network: 'BladeAltLayer',
   nativeCurrency: {
@@ -53,10 +53,10 @@ export const bladeAltLayer = {
 
 } as const satisfies Chain
 
-export const AltLayerGasLess = {
-  id: 41000021,
-  name: 'Epochless US 1',
-  network: 'Epochless US 1',
+export const altLayerRegistryChain = {
+  id: 40002048,
+  name: 'AltlayerRegistry',
+  network: 'AltlayerRegistry',
   nativeCurrency: {
       decimals: 18,
       name: 'AltLayer',
@@ -64,16 +64,20 @@ export const AltLayerGasLess = {
   },
   rpcUrls: {
     default: {
-      http: ['https://epochless-jp.alt.technology/'],
-      webSocket: ['wss://epochless-jp.alt.technology/'],
+      http: ['https://zero-altitude-registry.alt.technology'],
+      webSocket: ['wss://zero-altitude-registry.alt.technology'],
     },
     public: {
-      http: ['https://epochless-jp.alt.technology/'],
-      webSocket: ['wss://epochless-jp.alt.technology/'],
+      http: ['https://zero-altitude-registry.alt.technology'],
+      webSocket: ['wss://zero-altitude-registry.alt.technology'],
     },
   },
-} as const satisfies Chain
 
+  blockExplorers: {
+      default: { name: 'ZeroAltitude', url: 'https://zero-altitude-registry-explorer.alt.technology/' },
+  },
+
+} as const satisfies Chain
 // If you are deploying to chains other than anvil or Lattice testnet, add them here
-export const supportedChains: Chain[] = [bladedao, bladeAltLayer, AltLayerGasLess];
+export const supportedChains: Chain[] = [bladeAltLayer, foundry, altLayerRegistryChain];
 //export const supportedChains: MUDChain[] = [bladedao, foundry, latticeTestnet];

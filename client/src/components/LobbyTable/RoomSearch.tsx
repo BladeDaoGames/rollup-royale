@@ -1,6 +1,14 @@
-import React from 'react';
+import React, {useMemo} from 'react';
+import {lobbyTextSearchInput} from '../../atoms';
+import {useSetAtom} from 'jotai';
 
 const RoomSearch = () => {
+    const setInputText = useSetAtom(lobbyTextSearchInput);
+    let inputHandler = (e) => {
+        //convert input text to lower case
+        var lowerCase = e.target.value.toLowerCase();
+        setInputText(lowerCase);
+    };
     return (
         <div className="relative ml-auto">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -17,7 +25,11 @@ const RoomSearch = () => {
                 w-[7.5rem] sm:w-auto
                 bg-greyness/80 placeholder:text-lightbeige/80
                 focus:ring-prime2 focus:border-prime2" 
-                placeholder="Search Room by Owner"/>
+                placeholder="Search Room by Owner"
+                
+                onChange={inputHandler}
+
+                />
             </div>
     )
 }

@@ -12,10 +12,11 @@ contract DeployUUPS is Script {
     RRoyale wrappedProxyV1;
 
     function run() public {
-        //vm.startBroadcast(vm.envUint("PRIVATE_KEY"));
+        vm.startBroadcast(vm.envUint("PRIVATE_KEY"));
         RRoyale implementationV1 = new RRoyale();
         console.log("implementation is: ");
         console.log(address(implementationV1));
+
         // deploy proxy contract and point it to implementation
         proxy = new UUPSProxy(address(implementationV1), "");
         console.log("proxy is: ");
@@ -23,10 +24,16 @@ contract DeployUUPS is Script {
         
         // wrap in ABI to support easier calls
         wrappedProxyV1 = RRoyale(address(proxy));
+        //implementationV1.initialize();
         wrappedProxyV1.initialize(msg.sender);
+
+        //as per https://forum.openzeppelin.com/t/security-advisory-initialize-uups-implementation-contracts/15301
+        //send transaction to implementation
+        //implementationV1.initialize(msg.sender);
+
         console.log("message sender is: ");
         console.log(msg.sender);
-        //vm.stopBroadcast();
+        vm.stopBroadcast();
 
         // new implementation
         // RRoyaleV2 implementationV2 = new RRoyaleV2();

@@ -1,9 +1,10 @@
-import React from 'react';
-import { useContractRead, useContractEvent} from 'wagmi';
+import React, {useMemo} from 'react';
+import { useContractEvent} from 'wagmi';
 import { readContract } from '@wagmi/core';
 import { chainConfig } from '../../config/chainConfig';
 import {useAtom, useAtomValue} from 'jotai';
-import {createTotalRoomsAtoom, createRoomAtom} from '../../atoms';
+import {createTotalRoomsAtoom, createRoomAtom, 
+    lobbyRoomPageCount, lobbyTextSearchInput} from '../../atoms';
 import { addressShortener } from '../../utils/addressShortener';
 import { Link } from 'react-router-dom';
 import { formatUnits } from 'viem';
@@ -63,12 +64,8 @@ const LobbyTableManual = () => {
 
     const [totalRooms, setTotalRooms] = useAtom(createTotalRoomsAtoom)
     const [rooms, setRooms] = useAtom(createRoomAtom)
-
-    const { data, isError, isLoading } = useContractRead({
-        address: chainConfig.royaleContractAddress,
-        abi: chainConfig.royaleAbi,
-        functionName: 'getTotalGames',
-    })
+    const pageCount = useAtomValue(lobbyRoomPageCount)
+    const searchInput = useAtomValue(lobbyTextSearchInput)
 
     // listen to new room events and update rooms state
     useContractEvent({
@@ -85,9 +82,9 @@ const LobbyTableManual = () => {
                 address: chainConfig.royaleContractAddress,
                 abi: chainConfig.royaleAbi,
                 functionName: 'games',
-                args: [newRoomId]
+                args: [newRoomId] //this argument will return only 1 room
             }).then((res) => {
-                // console.log("room info")
+                // console.log("room info 2")
                 // console.log(res)
 
                 setRooms((prevRoomData)=>{
@@ -110,9 +107,39 @@ const LobbyTableManual = () => {
         },
     })
 
-    console.log('rendering rooms data...')
-    console.log("number of rooms:"+data??"NaN")
+    const LobbyPageData = useMemo(()=>{
+        const pageData = rooms?.map((x)=>x).reverse()?.filter(
+            (el) => {
+                //if no input the return the original
+                if (searchInput === '') {
+                    return el;
+                }
+                //return the item which contains the user input
+                else {
+                    return el?._creator?.toLowerCase().includes(searchInput)
+                }
+            })?.map((r,i)=>{
+            if(r.status=="Ended") return;
+            //console.log(i, r._roomId)
+            return <TableRow
+                        roomId={r._roomId}
+                        owner={r._creator}
+                        stake={r.stake}
+                        boardc={r.boardcol}
+                        boardr={r.boardrow}
+                        playerCount={r.players}
+                        maxPlayers={r.maxplayers}
+                        status={r.status}
+                    />
+        })
+    
+        function paginate(array: (React.JSX.Element|undefined)[], page_size:number, page_number:number) {
+            return array.slice((page_number - 1) * page_size, page_number * page_size);
+        }
 
+        return paginate(pageData, 4, pageCount)
+    },[pageCount, searchInput, rooms])
+    
     return (
         <div className="relative shadow-md 
         overflow-y-auto  h-[300px]
@@ -156,22 +183,7 @@ const LobbyTableManual = () => {
                     </tr>
                 </thead>
                 <tbody className="divide-y">
-                    {   //clone array to prevent setting true state
-                        rooms?.map((x)=>x).reverse()?.map((r,i)=>{
-                            if(r.status=="Ended") return;
-                            //console.log(i, r._roomId)
-                            return <TableRow
-                                        roomId={r._roomId}
-                                        owner={r._creator}
-                                        stake={r.stake}
-                                        boardc={r.boardcol}
-                                        boardr={r.boardrow}
-                                        playerCount={r.players}
-                                        maxPlayers={r.maxplayers}
-                                        status={r.status}
-                                    />
-                        })
-                    }
+                    {LobbyPageData}
                 </tbody>
             </table>
         </div>
