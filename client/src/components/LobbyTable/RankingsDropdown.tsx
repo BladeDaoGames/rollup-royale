@@ -35,8 +35,8 @@ export const RankingsDropdown = () => {
     // start a listener on rankings views
     useEffect(()=>{
         const unwatch = watchReadContracts(contractCallConfig, (data_)=>{
-            console.log("rankings...")
-            console.log(data_)
+            // console.log("rankings...")
+            // console.log(data_)
             if(data_[0]?.status=="success"){
                 setEarningsRankings(
                     data_[0]?.result?.map((p:any)=>({

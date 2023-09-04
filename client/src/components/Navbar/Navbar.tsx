@@ -1,18 +1,16 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import { Navbar } from 'flowbite-react';
 import ConnectWalletButton from '../ConnectWalletButton/CWButton';
 //import {SignUpButton} from '../ConnectWalletButton/SignUpButton';
+import { BalanceButton } from './BalanceButton';
 import {GaslessSignUpButton} from '../ConnectWalletButton/GaslessSignupButton';
-//import {VscFeedback} from 'react-icons/vsc';
 import {createDevPrivateKey} from '../../atoms';
 import { useSetAtom } from 'jotai';
 import { useAccount, useBalance, useNetwork } from 'wagmi';
+import {chainConfig} from '../../config/chainConfig';
 
 const CustomNavBar = () => {
     const setDevPk = useSetAtom(createDevPrivateKey);
-    const { address, isConnected } = useAccount()
-    const { data, isError, isLoading } = useBalance({address, cacheTime: 2_000,})
-    const { chain } = useNetwork()
     
     return (
         <Navbar className='top-0 left-0 z-20 w-full py-0 bg-background1'>
@@ -39,11 +37,10 @@ const CustomNavBar = () => {
                 </Navbar.Link>
             </Navbar.Collapse>
             <Navbar.Collapse className="mr-2">
-                <Navbar.Link href="#">
-                    <div className="text-sm font-medium  text-prime2 md:text-background1 md:bg-prime2 md:rounded-lg md:text-base md:px-4 md:py-2 md:text-center md:hover:bg-darkbeige">
-                        {`${chain?.nativeCurrency.symbol??"Balance"}: ${
-                            data?.formatted?parseFloat(data?.formatted).toFixed(3):"0"
-                            }`}</div>
+                <Navbar.Link href={import.meta.env.VITE_FAUCETLINK || "https://blade-faucet.alt.technology/"}
+                target="_blank"
+                >
+                    <BalanceButton/>
                 </Navbar.Link>
             </Navbar.Collapse>
             <Navbar.Collapse className="mr-2">
@@ -53,9 +50,6 @@ const CustomNavBar = () => {
                 <ConnectWalletButton/>
                 <Navbar.Toggle className="fill-current text-prime2 hover:bg-prime2 hover:text-white" />
             </div>
-
-            
-            
         </Navbar>
     )
 }
