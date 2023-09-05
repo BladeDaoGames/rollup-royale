@@ -137,7 +137,7 @@ const LobbyTableManual = () => {
 
         return paginate(pageData, 4, pageCount)
     },[pageCount, searchInput, rooms])
-    return (
+    return useMemo(()=>(
         <div className="relative shadow-md 
         overflow-y-auto  h-[300px]
         bg-lightbeige
@@ -184,7 +184,7 @@ const LobbyTableManual = () => {
                 </tbody>
             </table>
         </div>
-    )
+    ),[LobbyPageData])
 }
 
 export default LobbyTableManual
