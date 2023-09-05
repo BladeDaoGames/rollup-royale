@@ -104,7 +104,7 @@ const LobbyTableManual = () => {
     const LobbyPageData = useMemo(()=>{
         const pageData = rooms?.map((x)=>x).reverse()?.filter(
             (el) => {
-                //if no input the return the original
+                //if no input then return the original
                 if (searchInput === '') {
                     return el;
                 }
@@ -112,8 +112,13 @@ const LobbyTableManual = () => {
                 else {
                     return el?._creator?.toLowerCase().includes(searchInput)
                 }
-            })?.map((r,i)=>{
-            if(r.status=="Ended" || r.status=="Abandoned") return;
+            })?.filter(
+                (r,i)=>{
+                    if(r.status=="Ended" || r.status=="Abandoned"){
+                        return;
+                    }else{return r;}
+            })?.map(
+                (r,i)=>{
             //console.log(i, r)
             return <TableRow
                         roomId={r._roomId}
@@ -126,14 +131,12 @@ const LobbyTableManual = () => {
                         status={r.status}
                     />
         })
-    
         function paginate(array: (React.JSX.Element|undefined)[], page_size:number, page_number:number) {
             return array.slice((page_number - 1) * page_size, page_number * page_size);
         }
 
         return paginate(pageData, 4, pageCount)
     },[pageCount, searchInput, rooms])
-    
     return (
         <div className="relative shadow-md 
         overflow-y-auto  h-[300px]
