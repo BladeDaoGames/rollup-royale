@@ -14,8 +14,10 @@ export const useGameAndPlayerStatus = () => {
     const pause = useAtomValue(createPlayerPauseVote)
     
     const gameStatusFunction = useCallback((gameinfo: GameInfo)=>{
-        const {hasStarted, gamePaused, hasEnded} = gameinfo
-        if(!hasStarted && !gamePaused && !hasEnded){
+        const {hasStarted, gamePaused, hasEnded, gameAbandoned } = gameinfo
+        if(gameAbandoned){
+            return "abandoned"
+        }else if(!hasStarted && !gamePaused && !hasEnded){
             return "prestart"
         }else if(hasStarted && !gamePaused && !hasEnded){
             return "ongoing"

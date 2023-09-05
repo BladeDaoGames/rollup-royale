@@ -8,6 +8,7 @@ import {createTotalRoomsAtoom, createRoomAtom,
 import { addressShortener } from '../../utils/addressShortener';
 import { Link } from 'react-router-dom';
 import { formatUnits } from 'viem';
+import { parseGameInfoObject } from '../../hooks/useFetchRooms';
 
 type RoomRowData ={
     roomId: number,
@@ -51,7 +52,9 @@ const TableRow = ({
                     <Link to={`/game/${roomId}`} className={
                             `rounded-lg text-white px-3 sm:px-6 py-1
                             ${status=="Join"?"bg-prime1 hover:bg-palegreen":
-                            "bg-prime3 hover: bg-gameblue"} 
+                            status=="Spectate"?"bg-prime3 hover:bg-gameblue":
+                            "bg-greyness hover: bg-greygreen"
+                        } 
                     `}>
                             {status}
                         </Link>
@@ -85,20 +88,11 @@ const LobbyTableManual = () => {
                 args: [newRoomId] //this argument will return only 1 room
             }).then((res) => {
                 // console.log("room info 2")
-                // console.log(res)
+                //console.log(res)
 
                 setRooms((prevRoomData)=>{
 
-                    prevRoomData[newRoomId] = {
-                        _roomId: newRoomId,
-                        _creator: res?.gameCreator,
-                        stake: parseFloat(formatUnits(res?.minStake,18))/1.000??999,
-                        boardrow: 10,
-                        boardcol: 10,
-                        players: parseInt(res?.playersCount)??1,
-                        maxplayers: 4,
-                        status: !res?.hasStarted ? "Join" : res?.hasEnded ? "Ended" : "Spectate",
-                    }
+                    prevRoomData[newRoomId] = parseGameInfoObject(res, newRoomId);
 
                     return [...prevRoomData];
 
@@ -119,8 +113,8 @@ const LobbyTableManual = () => {
                     return el?._creator?.toLowerCase().includes(searchInput)
                 }
             })?.map((r,i)=>{
-            if(r.status=="Ended") return;
-            //console.log(i, r._roomId)
+            if(r.status=="Ended" || r.status=="Abandoned") return;
+            //console.log(i, r)
             return <TableRow
                         roomId={r._roomId}
                         owner={r._creator}

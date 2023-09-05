@@ -5,6 +5,22 @@ import {useAtom, useSetAtom} from 'jotai';
 import { createTotalRoomsAtoom, createRoomAtom, createProgressBar } from '../atoms';
 import { chainConfig } from '../config/chainConfig';
 
+
+
+export const parseGameInfoObject= (roomInfo, roomId)=>{
+    return {
+        _roomId: roomId,
+        _creator: roomInfo?.gameCreator as string,
+        stake: parseFloat(formatUnits(roomInfo?.minStake, 18))/1.000??999 as number,
+        boardrow: 10,
+        boardcol: 10,
+        players: parseInt(roomInfo?.playersCount)??1,
+        maxplayers: 4,
+        status: roomInfo?.hasEnded ? "Ended" : roomInfo?.gameAbandoned ? "Abandoned" : 
+                !roomInfo?.hasStarted ? "Join" : "Spectate",
+    }
+}
+
 const useFetchRooms = () => {
     const setTotalRooms = useSetAtom(createTotalRoomsAtoom)
     const setRooms = useSetAtom(createRoomAtom)
@@ -53,17 +69,8 @@ const useFetchRooms = () => {
                                     args: [roomId]
                                 }).then((res) => {
                                     // console.log("room info")
-                                    // console.log(res)
-                                    return {
-                                        _roomId: roomId,
-                                        _creator: res?.gameCreator as string,
-                                        stake: parseFloat(formatUnits(res?.minStake, 18))/1.000??999 as number,
-                                        boardrow: 10,
-                                        boardcol: 10,
-                                        players: parseInt(res?.playersCount)??1,
-                                        maxplayers: 4,
-                                        status: res?.hasEnded ? "Ended" : !res?.hasStarted ? "Join" : "Spectate",
-                                    }
+                                    //console.log(res)
+                                    return parseGameInfoObject(res, roomId)
                                     
                                 });
                                 }
@@ -79,19 +86,10 @@ const useFetchRooms = () => {
                     functionName: 'getGamesArray',
                 }).then((res)=>{
                     // console.log("getting entire array: ")
-                    // console.log(res)
+                    //console.log(res)
 
                     setRooms(res?.map((room, i)=>{
-                        return {
-                            _roomId: i,
-                            _creator: room?.info?.gameCreator as string,
-                            stake: parseFloat(formatUnits(room?.info?.minStake, 18))/1.000??999 as number,
-                            boardrow: 10,
-                            boardcol: 10,
-                            players: parseInt(room?.info?.playersCount)??1,
-                            maxplayers: 4,
-                            status: room?.info?.hasEnded ? "Ended" : !room?.info?.hasStarted ? "Join" : "Spectate",
-                            }
+                        return parseGameInfoObject(room?.info, i)
                         })
                     )
                     setProgressBarValue(()=>100)
