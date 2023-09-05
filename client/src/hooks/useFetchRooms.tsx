@@ -86,7 +86,7 @@ const useFetchRooms = () => {
                     functionName: 'getGamesArray',
                 }).then((res)=>{
                     // console.log("getting entire array: ")
-                    console.log(res)
+                    //console.log(res)
 
                     setRooms(res?.map((room, i)=>{
                         return parseGameInfoObject(room?.info, i)
