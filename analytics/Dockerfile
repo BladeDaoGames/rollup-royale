@@ -4,4 +4,5 @@ FROM jupyter/minimal-notebook
 
 RUN pip install --upgrade pip \
     streamlit==1.26.0 \
-    web3==6.9.0
+    web3==6.9.0 \
+    python-dotenv==1.0.0
