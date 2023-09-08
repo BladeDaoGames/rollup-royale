@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  notebook:
+    image: web3anals
+    container_name: web3anals
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    ports:
+      - 8888:8888
+      - 8545:8545
+    
