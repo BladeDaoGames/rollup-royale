@@ -16,6 +16,7 @@ export default {
       prime2: '#DBB874',
       prime3: '#366ED8',
 
+      silver: '#C0C0C0',
       palered: '#E2434B',
       darkbeige: '#F9BF8F',
       lightbeige: '#FEE9D7',

@@ -17,10 +17,10 @@ const CustomNavBar = () => {
             <Navbar.Brand href={import.meta.env.VITE_HOSTSITE || "localhost:3000"}>
                 <img
                     alt="Loot Royale Logo"
-                    className="h-20 mr-3 fill-prime2"
-                    src="/brownlogo.jpg"
+                    className="h-[5.5rem] mx-2 my-2 fill-prime2"
+                    src="/SilverLogo.png"
                 />
-                <span className="text-2xl italic font-bold sm:text-3xl text-prime2">
+                <span className="text-2xl italic font-bold sm:text-3xl text-silver">
                     Loot Royale</span>
                 </Navbar.Brand>
                 
@@ -32,7 +32,7 @@ const CustomNavBar = () => {
 
             <Navbar.Collapse className="ml-auto mr-2">
                 <Navbar.Link href="#">
-                    <div className="text-sm font-medium  text-prime2 md:text-background1 md:bg-lightbeige md:rounded-lg md:text-base md:px-4 md:py-2 md:text-center md:hover:bg-darkbeige">
+                    <div className="text-sm font-medium  text-silver md:text-background1 md:bg-lightbeige md:rounded-lg md:text-base md:px-4 md:py-2 md:text-center md:hover:bg-darkbeige">
                         Game Rules</div>
                 </Navbar.Link>
             </Navbar.Collapse>
