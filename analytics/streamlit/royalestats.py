@@ -25,7 +25,7 @@ royaleCreateBlockNum = os.environ.get("ROYALE_CREATEBLOCK")
 # with open(os.path.join(os.getcwd(),"abi","RRoyale.json")) as royaleJson:
 #     royaleAbi = json.loads(royaleJson.read())['abi']
 royaleAbi = json.loads(
-    conn.read("rollup-royale-stats1/RRoyale", input_format="json", ttl=0)
+    conn.read("rollup-royale-stats1/RRoyale.json", input_format="json", ttl=0)
     )['abi']
 print(royaleAbi)
 
@@ -33,7 +33,7 @@ print(royaleAbi)
 # with open(os.path.join(os.getcwd(),"abi","BurnerAccountRegistry.json")) as registryJson:
 #     registryAbi = json.loads(registryJson.read())['abi']
 royaleAbi = json.loads(
-    conn.read("rollup-royale-stats1/BurnerAccountRegistry", input_format="json", ttl=600)
+    conn.read("rollup-royale-stats1/BurnerAccountRegistry.json", input_format="json", ttl=600)
     )['abi']
 
 st.title('Royale Stats')
