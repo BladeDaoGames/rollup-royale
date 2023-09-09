@@ -7,7 +7,9 @@ import pandas as pd
 import numpy as np
 from scan.scanner import getEventData
 from web3 import Web3, WebsocketProvider, AsyncHTTPProvider
-from st_files_connection import FilesConnection
+#from st_files_connection import FilesConnection
+from google.cloud import storage
+from google.oauth2 import service_account
 
 load_dotenv(find_dotenv())
 
@@ -21,18 +23,39 @@ royaleAddress = os.environ.get("ROYALE_ADDRESS")
 registryAddress = os.environ.get("REGISTRY_ADDRESS")
 royaleCreateBlockNum = os.environ.get("ROYALE_CREATEBLOCK")
 
+BUCKET_NAME = "rollup-royale-stats1"
+
+credentials_dict = {
+    "type": os.environ.get("type"),
+    "project_id": os.environ.get("project_id"),
+    "private_key_id": os.environ.get("private_key_id"),
+    "private_key": os.environ.get("private_key"),
+    "client_email": os.environ.get("client_email"),
+    "client_id": os.environ.get("client_id"),
+    "auth_uri": os.environ.get("auth_uri"),
+    "token_uri": os.environ.get("token_uri"),
+    "auth_provider_x509_cert_url": os.environ.get("auth_provider_x509_cert_url"),
+    "client_x509_cert_url": os.environ.get("client_x509_cert_url"),
+    "universe_domain": "googleapis.com"
+}
+credentials = service_account.Credentials.from_service_account_info(credentials_dict)
+storage_client = storage.Client(project=os.environ.get("project_id"), credentials=credentials)
+bucket = storage_client.bucket(BUCKET_NAME)
+
+
 # load abi
 # with open(os.path.join(os.getcwd(),"abi","RRoyale.json")) as royaleJson:
 #     royaleAbi = json.loads(royaleJson.read())['abi']
-royaleAbi =conn.read("rollup-royale-stats1/RRoyale.json", input_format="json", ttl=0)['abi']
-
-st.write("royaleABI")
-st.write(royaleAbi)
+with bucket.blob("RRoyale.json").open("r") as ry:
+    royaleAbi = json.loads(ry.read())['abi']
+#royaleAbi =conn.read("rollup-royale-stats1/RRoyale.json", input_format="json", ttl=0)['abi']
 
 # load registry abi
 # with open(os.path.join(os.getcwd(),"abi","BurnerAccountRegistry.json")) as registryJson:
 #     registryAbi = json.loads(registryJson.read())['abi']
-registryAbi = conn.read("rollup-royale-stats1/BurnerAccountRegistry.json", input_format="json", ttl=0)['abi']
+#registryAbi = conn.read("rollup-royale-stats1/BurnerAccountRegistry.json", input_format="json", ttl=0)['abi']
+with bucket.blob("BurnerAccountRegistry.json").open("r") as rr:
+    registryAbi = json.loads(rr.read())['abi']
 
 st.title('Royale Stats')
 loadSpinner = st.empty()
@@ -46,7 +69,8 @@ statsCols = statsContainer.columns(3)
 def loadDf(eventName:str):
     # load data from json
     try:
-        with open(eventName+".json") as royaleJson:
+        #with open(eventName+".json") as royaleJson:
+        with bucket.blob(eventName+".json").open("r") as royaleJson:
             datajson = json.loads(royaleJson.read())
         if datajson:
             return pd.DataFrame([event for _, d in datajson.get("blocks").items() for hash, 
@@ -124,7 +148,12 @@ def _compileBurners(players:pd.DataFrame, gEnded: pd.DataFrame, pKilled:pd.DataF
             new_players["burnerParent"] = "0x0"
             new_players[["totalWins", "totalLosses", "totalGasEarned", "totalGasLost"]] = 0
             players = pd.concat([players, new_players])
-            players.to_pickle("players.pkl")
+            
+            players.to_csv("players.csv", index=False)
+            # with bucket.blob("players.pkl").open("wt") as f:
+            #     players.to_pickle(f)
+            bucket.blob("players.csv").upload_from_filename("players.csv")
+            
             return players
         else:
             return players
@@ -143,7 +172,11 @@ def _compileBurners(players:pd.DataFrame, gEnded: pd.DataFrame, pKilled:pd.DataF
 
             players["burnerParent"] = "0x0"
             players[["totalWins", "totalLosses", "totalGasEarned", "totalGasLost"]] = 0
-            players.to_pickle("players.pkl")
+            
+            players.to_csv("players.csv", index=False)
+            # with bucket.blob("players.pkl").open("wt") as f:
+            #     players.to_pickle(f)
+            bucket.blob("players.csv").upload_from_filename("players.csv")
             return players
         else:
             return pd.DataFrame()
@@ -164,7 +197,10 @@ def _mapParentWallet(players:pd.DataFrame):
         if(r3.is_connected() and players["burners"].count() > 0):
             RegistryContract = r3.eth.contract(abi=registryAbi, address=registryAddress)
             players["burnerParent"] = players.apply(lambda x: getBurnerParent(x, RegistryContract),axis=1)
-            players.to_pickle("players.pkl")
+            players.to_csv("players.csv", index=False)
+            # with bucket.blob("players.pkl").open("wt") as f:
+            #     players.to_pickle(f)
+            bucket.blob("players.csv").upload_from_filename("players.csv")
             return players
         else:
             return pd.DataFrame()
@@ -190,7 +226,11 @@ def _getUserStatsFromContract(players:pd.DataFrame):
         players.drop_duplicates(subset="burners", inplace=True)
         players.sort_values(by=["totalGames"], ascending=False, inplace=True)
         players.reset_index(drop=True, inplace=True)
-        players.to_pickle("players.pkl")
+
+        players.to_csv("players.csv", index=False)
+        # with bucket.blob("players.pkl").open("wt") as f:
+        #     players.to_pickle(f)
+        bucket.blob("players.csv").upload_from_filename("players.csv")
         return players
     else:
         return pd.DataFrame()
@@ -222,7 +262,16 @@ def reProcessTotalData(gEnded: pd.DataFrame, pKilled:pd.DataFrame):
 
 # process data
 try:
-    players = pd.read_pickle("players.pkl")
+    #players = pd.read_pickle("players.pkl")
+    if(bucket.blob("players.csv").exists()):
+        #print("available players.pkl")
+        with bucket.blob("players.csv").open("rt") as pk:
+            players = pd.read_csv(pk)
+        #players = pd.read_pickle('gs://' + BUCKET_NAME + '/' "players.pkl")
+        #print(players.head())
+    else:
+        #print("no players.pkl")
+        players = pd.DataFrame()
 except:
     players = pd.DataFrame()
 players = pd.DataFrame() if st.session_state["clear"] else players

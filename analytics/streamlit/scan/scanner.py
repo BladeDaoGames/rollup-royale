@@ -8,6 +8,8 @@ from dotenv import load_dotenv, find_dotenv
 from web3.providers.rpc import HTTPProvider
 import json
 from tqdm import tqdm
+from google.cloud import storage
+from google.oauth2 import service_account
 
 load_dotenv(find_dotenv())
 
@@ -331,6 +333,24 @@ class JSONifiedState(EventScannerState):
             # How many second ago we saved the JSON file
             self.last_save = 0
 
+            credentials_dict = {
+                "type": os.environ.get("type"),
+                "project_id": os.environ.get("project_id"),
+                "private_key_id": os.environ.get("private_key_id"),
+                "private_key": os.environ.get("private_key"),
+                "client_email": os.environ.get("client_email"),
+                "client_id": os.environ.get("client_id"),
+                "auth_uri": os.environ.get("auth_uri"),
+                "token_uri": os.environ.get("token_uri"),
+                "auth_provider_x509_cert_url": os.environ.get("auth_provider_x509_cert_url"),
+                "client_x509_cert_url": os.environ.get("client_x509_cert_url"),
+                "universe_domain": "googleapis.com"
+            }
+            BUCKET_NAME = "rollup-royale-stats1"
+            credentials = service_account.Credentials.from_service_account_info(credentials_dict)
+            self.storage_client = storage.Client(project='loop-royale-8888', credentials=credentials)
+            self.bucket = self.storage_client.bucket(BUCKET_NAME)
+
         def reset(self):
             """Create initial state of nothing scanned."""
             self.state = {
@@ -341,15 +361,23 @@ class JSONifiedState(EventScannerState):
         def restore(self):
             """Restore the last scan state from a file."""
             try:
-                self.state = json.load(open(self.fname, "rt"))
-                print(f"Restored the state, previously {self.state['last_scanned_block']} blocks have been scanned")
+                #self.state = json.load(open(self.fname, "rt"))
+                if(self.bucket.blob(self.fname).exists()):
+                    with self.bucket.blob(self.fname).open("rt") as ry:
+                        self.state = json.load(ry)
+                    print(f"Restored the state, previously {self.state['last_scanned_block']} blocks have been scanned")
+                else:
+                    print("State starting from scratch")
+                    self.reset()
             except (IOError, json.decoder.JSONDecodeError):
                 print("State starting from scratch")
                 self.reset()
 
         def save(self):
             """Save everything we have scanned so far in a file."""
-            with open(self.fname, "wt") as f:
+            # with open(self.fname, "wt") as f:
+            #     json.dump(self.state, f)
+            with self.bucket.blob(self.fname).open("wt") as f:
                 json.dump(self.state, f)
             self.last_save = time.time()
 
