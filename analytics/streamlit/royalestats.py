@@ -12,17 +12,18 @@ load_dotenv(find_dotenv())
 
 # load environment variables
 rpc_url = os.environ.get("RPC_URL")
+print(rpc_url)
 registry_rpc_url = os.environ.get("REGISTRY_RPC")
 royaleAddress = os.environ.get("ROYALE_ADDRESS")
 registryAddress = os.environ.get("REGISTRY_ADDRESS")
 royaleCreateBlockNum = os.environ.get("ROYALE_CREATEBLOCK")
 
 # load abi
-with open(os.path.join("abi","RRoyale.json")) as royaleJson:
+with open(os.path.join(os.getcwd(),"abi","RRoyale.json")) as royaleJson:
     royaleAbi = json.loads(royaleJson.read())['abi']
 
 # load registry abi
-with open(os.path.join("abi","BurnerAccountRegistry.json")) as registryJson:
+with open(os.path.join(os.getcwd(),"abi","BurnerAccountRegistry.json")) as registryJson:
     registryAbi = json.loads(registryJson.read())['abi']
 
 
