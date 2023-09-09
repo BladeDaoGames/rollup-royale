@@ -7,8 +7,11 @@ import pandas as pd
 import numpy as np
 from scan.scanner import getEventData
 from web3 import Web3, WebsocketProvider, AsyncHTTPProvider
+from st_files_connection import FilesConnection
 
 load_dotenv(find_dotenv())
+
+conn = st.experimental_connection('gcs', type=FilesConnection)
 
 # load environment variables
 rpc_url = os.environ.get("RPC_URL")
@@ -19,13 +22,19 @@ registryAddress = os.environ.get("REGISTRY_ADDRESS")
 royaleCreateBlockNum = os.environ.get("ROYALE_CREATEBLOCK")
 
 # load abi
-with open(os.path.join(os.getcwd(),"abi","RRoyale.json")) as royaleJson:
-    royaleAbi = json.loads(royaleJson.read())['abi']
+# with open(os.path.join(os.getcwd(),"abi","RRoyale.json")) as royaleJson:
+#     royaleAbi = json.loads(royaleJson.read())['abi']
+royaleAbi = json.loads(
+    conn.read("rollup-royale-stats1/RRoyale", input_format="json", ttl=0)
+    )['abi']
+print(royaleAbi)
 
 # load registry abi
-with open(os.path.join(os.getcwd(),"abi","BurnerAccountRegistry.json")) as registryJson:
-    registryAbi = json.loads(registryJson.read())['abi']
-
+# with open(os.path.join(os.getcwd(),"abi","BurnerAccountRegistry.json")) as registryJson:
+#     registryAbi = json.loads(registryJson.read())['abi']
+royaleAbi = json.loads(
+    conn.read("rollup-royale-stats1/BurnerAccountRegistry", input_format="json", ttl=600)
+    )['abi']
 
 st.title('Royale Stats')
 loadSpinner = st.empty()
