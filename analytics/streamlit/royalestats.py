@@ -13,7 +13,7 @@ from google.oauth2 import service_account
 
 load_dotenv(find_dotenv())
 
-conn = st.experimental_connection('gcs', type=FilesConnection)
+#conn = st.experimental_connection('gcs', type=FilesConnection)
 
 # load environment variables
 rpc_url = os.environ.get("RPC_URL")
