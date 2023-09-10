@@ -74,7 +74,8 @@ const gameStatusMapper = {
     "prestart": "Pre-Start",
     "ongoing": "Game Started",
     "paused": "Paused",
-    "ended": "Ended"
+    "ended": "Ended",
+    "abandoned": "Abandoned"
 }
 
 const GameStatusBar = () => {
@@ -99,8 +100,9 @@ const GameStatusBar = () => {
                 <span className={`px-4 py-1 w-full
                     ${gameStatus=="prestart"?"bg-lightbeige text-background1":
                     gameStatus=="ongoing"?"bg-palegreen text-background1":
-                    gameStatus=="paused"?"bg-prime1 text-background1"
-                    :"bg-prime3 text-background1"} 
+                    gameStatus=="paused"?"bg-prime1 text-background1":
+                    gameStatus=="abandoned"? "bg-purple-500/80 text-background1":
+                    "bg-prime3 text-background1"} 
                     rounded-lg
                     `}>{gameStatusMapper[gameStatus as string]}</span>
                 </div>

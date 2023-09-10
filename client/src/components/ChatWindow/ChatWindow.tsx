@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from 'react';
 import { db } from '../../config/firebase.config';
 import { addDoc, collection, serverTimestamp, FieldValue,
-    onSnapshot, query, where, orderBy, limitToLast } from 'firebase/firestore';
+    onSnapshot, query, where, orderBy, limitToLast, limit } from 'firebase/firestore';
 import DebouncedInput, {NormalInput} from './DebouncedInput';
 import { addressShortener } from '../../utils/addressShortener';
 
@@ -106,7 +106,7 @@ const ChatWindow = ({room, msgLimit }: {room: string, msgLimit: number}) => {
             const queryMessages = msgLimit>0 ? query(messageRef, 
                 where("room", "==", room),
                 orderBy("createdAt", "desc"),
-                limitToLast(msgLimit)
+                limit(msgLimit)
                 )
                 :
                 query(messageRef,

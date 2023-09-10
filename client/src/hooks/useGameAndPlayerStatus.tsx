@@ -14,9 +14,13 @@ export const useGameAndPlayerStatus = () => {
     const pause = useAtomValue(createPlayerPauseVote)
     
     const gameStatusFunction = useCallback((gameinfo: GameInfo)=>{
-        const {hasStarted, gamePaused, hasEnded} = gameinfo
-        if(!hasStarted && !gamePaused && !hasEnded){
+        const {hasStarted, gamePaused, hasEnded, gameAbandoned } = gameinfo
+        if(gameAbandoned){
+            return "abandoned"
+        }else if(!hasStarted && !gamePaused && !hasEnded){
             return "prestart"
+        }else if(!hasStarted && gamePaused && !hasEnded){
+            return "paused"
         }else if(hasStarted && !gamePaused && !hasEnded){
             return "ongoing"
         }else if(hasStarted && gamePaused && !hasEnded){
@@ -29,10 +33,23 @@ export const useGameAndPlayerStatus = () => {
     const gameStatus = gameStatusFunction(gameInfo as GameInfo)
     
     const playerStatusFunction = useCallback((gameStatus:string, ready:boolean, pause:boolean, alive:boolean)=>{
-        if(gameStatus=="prestart" && !ready){
+        
+        if(gameStatus=="prestart"&& pause){
+            return "pause"
+        } else if(gameStatus=="prestart" && !ready){
             return "waiting"
         }else if(gameStatus=="prestart"&&ready){
             return "ready"
+        }else if(gameStatus=="paused"&&alive&&ready&&!pause){
+            return "ready"
+        }else if(gameStatus=="paused"&&alive&&!ready&&!pause){
+            return "waiting"
+        }else if(gameStatus=="paused"&&!alive&&!ready){
+            return "unavailable"
+        }else if(gameStatus=="paused"&&!alive){
+            return "dead"
+        }else if(gameStatus=="paused"&&pause){
+            return "pause"
         }else if(gameStatus=="ongoing"&&alive&&ready&&!pause){
             return "ready"
         }else if(gameStatus=="ongoing"&&alive&&!ready&&!pause){

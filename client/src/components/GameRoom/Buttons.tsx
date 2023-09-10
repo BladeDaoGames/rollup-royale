@@ -149,7 +149,7 @@ export const PlayerPauseButton = ({room}:{room: number})=>{
     const { data, isLoading, isSuccess, write: writeTogglePause } = useContractWrite({
         address: chainConfig.royaleContractAddress,
         abi: chainConfig.royaleAbi,
-        functionName: 'tooglePlayerPause',
+        functionName: 'playerTogglePause',
     })
 
     return (

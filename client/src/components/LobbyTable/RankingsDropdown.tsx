@@ -191,7 +191,7 @@ export const RankingsDropdown = () => {
                             }
                         </div>
                         <div className="
-                        p-1 m-1 my-3 rounded-md flex flex-col
+                        p-1 py-2.5 m-1 my-3 rounded-md flex flex-col
                         border border-prime2">
                             <div className="px-1.5 my-1 text-prime1">Top 10 Winnings</div>
                             <div className="flex flex-row items-center justify-start
