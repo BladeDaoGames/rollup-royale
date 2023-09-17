@@ -27,6 +27,10 @@ contract DeployUUPS is Script {
         //implementationV1.initialize();
         wrappedProxyV1.initialize(msg.sender);
 
+        //set vrf contract address
+        wrappedProxyV1.setVRFAddress(0xbDAF40FbfEA4596f129bD11d273c3Eb64d3B4c62);
+        wrappedProxyV1.setUseVRF(true);
+
         //as per https://forum.openzeppelin.com/t/security-advisory-initialize-uups-implementation-contracts/15301
         //send transaction to implementation
         //implementationV1.initialize(msg.sender);

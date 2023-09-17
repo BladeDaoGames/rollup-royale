@@ -2,11 +2,12 @@
 pragma solidity ^0.8.18;
 
 //import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 //import "./libraries/RoyaleBattleV1.sol";
+import "./interfaces/IAutomataVRFCoordinator.sol";
 
 contract RRoyale is 
     Initializable,
@@ -22,7 +23,10 @@ contract RRoyale is
     address public burnerWallet;
     bool public useBurnerWallet = false;
     uint8 public houseFee = 2;
+    bool public useVRF = false;
+    address public vrfCoordinator;
     bool spawnDefault = true;
+    
 
     //array of all game rooms
     GameRoom[] public games;
@@ -273,6 +277,14 @@ contract RRoyale is
         return(sent);
     }
 
+    function setUseVRF(bool _useVRF) public onlyOwner {
+        useVRF = _useVRF;
+    }
+
+    function setVRFAddress(address _vrfCoordinator) public onlyOwner {
+        vrfCoordinator = _vrfCoordinator;
+    }
+
     // ===== INTERNAL HELPER FUNCTIONS =====
     function _getCallingPlayerId(uint256 _roomId, address _player, bool _useBurner) internal view returns (uint8){
         for (uint8 i = 0; i < games[_roomId].playerIds.length; i++) {
@@ -343,6 +355,18 @@ contract RRoyale is
     function _getRandomUint256(uint160 _seed) internal view returns (uint256) {
 
         //TODO: Use Alt Layer VRF here when available
+        if(useVRF){
+            return uint256(
+                keccak256(
+                    abi.encodePacked(
+                        block.timestamp, 
+                        block.prevrandao,
+                        _seed,
+                        IAutomataVRFCoordinator(vrfCoordinator).getLatestRandomness()
+                        )
+                    )
+            );
+        }
 
         return uint256(keccak256(
                     abi.encodePacked(
@@ -567,6 +591,10 @@ contract RRoyale is
 
     function getTop10RanksByWinnings() public view returns (RankingRow[10] memory){
         return top10Wins;
+    }
+
+    function testVRF() public view returns (uint256){
+        return IAutomataVRFCoordinator(vrfCoordinator).getLatestRandomness();
     }
 
 
