@@ -22,8 +22,8 @@ export const chainConfigs = {
     4000007:{
         config: bladeAltLayer,
         contracts: {
-            royale:"0x36C02dA8a0983159322a80FFE9F24b1acfF8B570",
-            implementation:"0x5eb3Bc0a489C5A8288765d2336659EbCA68FCd00",
+            royale:"0xBe31315B61fCCDa4c5060F204ca206d79E3420Fd",
+            implementation:"0x3D7EEb1aE770D1b2C4d3336106Eb99293E360Fb7",
             registry:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
         }
     },
