@@ -41,7 +41,8 @@ export const createGameInfoAtom = atom<GameInfo>({
                                         itemCount: 0,
                                         minStake: 0,
                                         playersCount: 0,
-                                        totalStaked: 0
+                                        totalStaked: 0,
+                                        winner: "0x0"
                                     });
 
 export const createPlayerIds = atom<Array<string>>(["0x0", "0x0","0x0","0x0",])

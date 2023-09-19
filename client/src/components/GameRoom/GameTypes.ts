@@ -8,6 +8,6 @@ export type GameInfo = {
     itemCount: number,
     minStake: number,
     playersCount: number,
-    totalStaked: number
-
+    totalStaked: number,
+    winner: string
 }
