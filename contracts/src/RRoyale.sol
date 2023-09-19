@@ -850,7 +850,6 @@ contract RRoyale is
 
     function joinGame(uint256 _roomId) external payable 
         whenNotPaused 
-        //enoughFunds(msg.value, _minStake) //NOT NEEDED BECAUSE TRANSACTION WILL REVERT
         playerNotInGame
         joinable(_roomId)
         returns (address)
@@ -860,7 +859,8 @@ contract RRoyale is
 
         // set game info
         games[_roomId].info.playersCount++; // increment player count
-        games[_roomId].info.totalStaked += games[_roomId].info.minStake; //TODO: return excess from msg.value; // add to total staked
+        require(msg.value >=games[_roomId].info.minStake , "E2");
+        games[_roomId].info.totalStaked += games[_roomId].info.minStake; //TODO: return excess from msg.value;
         
         // update array indexes
         uint8 playerIndex = games[_roomId].info.playersCount-1; // get player id
