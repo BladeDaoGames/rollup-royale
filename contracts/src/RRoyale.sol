@@ -438,7 +438,8 @@ contract RRoyale is
             // set playerIn Game to 0
             if(playerInGame[games[_roomId].playerIds[i]] == _roomId) {
                 playerInGame[games[_roomId].playerIds[i]] = 0;
-                games[_roomId].playerIds[i] = address(0);
+                //Note: not reseting player addresses to 0, as it is used to track player participation in UI
+                //games[_roomId].playerIds[i] = address(0);
             }
         }
         return true;
@@ -655,6 +656,7 @@ contract RRoyale is
         games[_roomId].board[games[_roomId].positions[playerIndex]].occupantId = 0; // remove player from tile
         games[_roomId].positions[playerIndex] = type(uint8).max; //reset position to null
         games[_roomId].playerFTs[playerIndex] = 0; //reset player ft for UI
+        //Note: Player Index not reset to 0, as it is used to track player participation in UI
         games[_roomId].info.playersCount--;
         emit PlayerKilled(_roomId, games[_roomId].playerIds[playerIndex]);
 
