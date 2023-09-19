@@ -1,4 +1,4 @@
-import {useEffect, useState, useMemo, useRef} from 'react';
+import React, {useEffect, useState, useMemo, useRef} from 'react';
 import Phaser from 'phaser';
 import GameSceneFlat from '../phaser/GameSceneFlat';
 import usePhaserGame from '../phaser/usePhaserGame';
@@ -320,7 +320,7 @@ const GameRoom = () => {
               overflow-hidden
               "/>
 
-              <div className="flex flex-row items-center justify-between py-2 ">
+              <div className="flex flex-row gap-1 items-center justify-center py-2 ">
 
               {/* start game */}
               <StartGameButton room={roomId}/>

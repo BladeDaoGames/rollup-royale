@@ -4,6 +4,9 @@ import {FaPause, FaSkull} from 'react-icons/fa';
 import {GiPodiumWinner} from 'react-icons/gi';
 import { Tooltip } from 'flowbite-react';
 import {useGameAndPlayerStatus} from '../../hooks/useGameAndPlayerStatus';
+import { useAtomValue } from 'jotai';
+import { createGameInfoAtom } from '../../atoms';
+import { addressShortener } from '../../utils/addressShortener';
 
 
 interface PlayerStatusIcon {
@@ -80,6 +83,7 @@ const gameStatusMapper = {
 
 const GameStatusBar = () => {
     const {gameStatus, playerStatus} = useGameAndPlayerStatus()
+    const gameinfo = useAtomValue(createGameInfoAtom)
 
     if(import.meta.env.VITE_ENV=="dev")console.log("player status: ")
     if(import.meta.env.VITE_ENV=="dev")console.log(playerStatus)
@@ -96,15 +100,19 @@ const GameStatusBar = () => {
                 justify-start items-center 
                 text-white font-semibold text-base
                 ">
-                <span className="mx-2">Game Status:</span> 
+                <span className="mx-2">{`${gameStatus=="ended"?"Winner:":"Game Status:"}`}</span> 
                 <span className={`px-4 py-1 w-full
                     ${gameStatus=="prestart"?"bg-lightbeige text-background1":
                     gameStatus=="ongoing"?"bg-palegreen text-background1":
                     gameStatus=="paused"?"bg-prime1 text-background1":
                     gameStatus=="abandoned"? "bg-purple-500/80 text-background1":
-                    "bg-prime3 text-background1"} 
+                    "bg-prime2 text-background1"} 
                     rounded-lg
-                    `}>{gameStatusMapper[gameStatus as string]}</span>
+                    `}>{
+                    gameStatus=="ended"?
+                    addressShortener(gameinfo?.winner)??"0x0"
+                    :gameStatusMapper[gameStatus as string]
+                    }</span>
                 </div>
                 
                 {/* players status */}

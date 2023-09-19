@@ -50,7 +50,7 @@ export const StakeAndEnterButton = ({room}:{room: number}) => {
                 {   isLoading?<Spinner color="failure"/>:
                     <>
                         <BiMoneyWithdraw className="w-8 h-6"/>
-                        <GiEntryDoor className="w-8 h-6"/>
+                        <GiExitDoor className="w-8 h-6"/>
                     </>
                 }
             </Button>
@@ -85,7 +85,7 @@ export const LeaveRoomButton = ({room}:{room: number}) =>{
             >
             {
                 isLoading?<Spinner color="success"/>:
-                <GiExitDoor className="w-12 h-6"/>
+                <GiEntryDoor className="w-12 h-6"/>
             }
             
             </Button>
