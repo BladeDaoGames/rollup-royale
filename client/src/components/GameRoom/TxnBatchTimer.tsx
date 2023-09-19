@@ -1,12 +1,15 @@
-import {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {createTxnBatchInterval, createTxnSender} from '../../atoms';
 import {useAtomValue, useSetAtom} from 'jotai';
+import { useGameAndPlayerStatus } from '../../hooks/useGameAndPlayerStatus';
 
 export const TxnBatchTimer = () => {
     const batchInterval = useAtomValue(createTxnBatchInterval)
     const setTxnSendFlag = useSetAtom(createTxnSender)
     const [timePassed, setTimePassed] = useState<number>(0)
     const progress = timePassed/batchInterval * 100
+    const {gameStatus} = useGameAndPlayerStatus()
+
     useEffect(()=>{
         const intervalId = setInterval(()=>{
             setTimePassed((t)=>
@@ -32,17 +35,24 @@ export const TxnBatchTimer = () => {
                 ">
             {/* <Tooltip content="Time to next Move"
             > */}
-                <div className="text-sm">Time To Next Move . . .</div>
+                <div className="text-sm">Time To Next Move</div>
                 <div className="mt-1 mr-1 mx-0 w-full h-2 
                 rounded-md overflow-hidden flex justify-start items-start
                 border border-white
-                "><span className={`
-                ${progress>=100?"bg-palegreen":"bg-prime1"} 
+                ">
+                    <span className={`
+                ${gameStatus=="ongoing"?
+                    progress>=100?"bg-palegreen":"bg-prime1":
+                gameStatus=="prestart"?"bg-lightbeige":
+                gameStatus=="paused"?"bg-prime1":
+                gameStatus=="ended"?"bg-prime2":
+                "bg-purple-500/80"} 
                 h-full`} 
-                style={{width: `${progress}%`}}
-                /></div>
+                style={{width: `${gameStatus=="ongoing"?progress:"100"}%`}}
+                />
+                </div>
             {/* </Tooltip> */}
                 
             </div>
-        ,[batchInterval, progress])
+        ,[batchInterval, progress, gameStatus])
     }
