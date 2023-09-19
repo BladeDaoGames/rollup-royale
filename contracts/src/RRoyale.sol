@@ -863,7 +863,15 @@ contract RRoyale is
         games[_roomId].info.totalStaked += games[_roomId].info.minStake; //TODO: return excess from msg.value;
         
         // update array indexes
-        uint8 playerIndex = games[_roomId].info.playersCount-1; // get player id
+        uint8 playerIndex = games[_roomId].info.playersCount-1; // assume id is player count
+        // loop through playerIds to find first empty index
+        for (uint8 i = 0; i < games[_roomId].playerIds.length; i++) {
+            if (games[_roomId].playerIds[i] == address(0)) {
+                playerIndex = i;
+                break;
+            }
+        }
+
         games[_roomId].playerIds[playerIndex] = msg.sender; // set player id
         games[_roomId].playerFTs[playerIndex] = starting_FT; // set player FT
         games[_roomId].playerAlive[playerIndex] = true; // set player Alive
