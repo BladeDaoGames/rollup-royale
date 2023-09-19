@@ -1,18 +1,12 @@
 import React, { useMemo } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import {createPlayerIds, createGameInfoAtom} from '../../atoms';
 import {useAtomValue} from 'jotai';
 import { TxnBatchTimer} from './TxnBatchTimer';
 
-const StakeAmtDiv = ({stakeamt})=>{
-    return (<div className="flex
-        justify-center items-center
-        ">
-            {stakeamt}</div>)
-}
-
 const StakedBar = () => {
     const {address} = useAccount()
+    const { chain, chains } = useNetwork()
     const gameinfo = useAtomValue(createGameInfoAtom)
     const playerIds = useAtomValue(createPlayerIds)
     const playerId = playerIds.indexOf(address?.toLowerCase() as string)
@@ -40,7 +34,7 @@ const StakedBar = () => {
             <div className="w-1/5 mx-0 px-0
             text-right pr-3.5
             ">
-                Total Staked Gas:
+                {`Total Staked $${chain?.nativeCurrency.symbol??"Gas"}:`}
             </div>
 
             <div className="grid grid-flow-col
