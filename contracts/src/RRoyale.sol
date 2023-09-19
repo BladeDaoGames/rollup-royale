@@ -47,7 +47,7 @@ contract RRoyale is
         bool hasEnded;
         bool gamePaused;
         bool gameAbandoned;
-        //address winner;
+        address winner;
     }
 
     struct Tile {
@@ -464,6 +464,7 @@ contract RRoyale is
         for (uint8 i=0; i<games[_roomId].playerAlive.length; i++) {
             if (games[_roomId].playerAlive[i] == true) { //TODO: here it is assuming first alive is winner
                 address winnerAddress = games[_roomId].playerIds[i];
+                games[_roomId].info.winner = winnerAddress; //update winner address to room data
                 // emit game over event
                 emit GameEnded(_roomId, winnerAddress);
                 //send winner staked funds
