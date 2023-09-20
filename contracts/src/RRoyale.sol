@@ -422,11 +422,14 @@ contract RRoyale is
         internal returns (bool) {
         // for each player
         for (uint8 i=0; i<games[_roomId].playerIds.length; i++) {
-            // return funds to all players
-            (bool sent, ) = games[_roomId].playerIds[i].call{value:
-                games[_roomId].info.minStake
-            }("");
-            require(sent, "E16");
+
+            if(playerInGame[games[_roomId].playerIds[i]] == _roomId){
+                // return funds to all players
+                (bool sent, ) = games[_roomId].playerIds[i].call{value:
+                    games[_roomId].info.minStake* (100-houseFee) / 100
+                }("");
+                require(sent, "E16");
+            }
         }
         return true;
     }
@@ -953,7 +956,8 @@ contract RRoyale is
         }
 
         // return player funds
-        (bool sent, ) = msg.sender.call{value: games[_roomId].info.minStake}("");
+        uint256 fund2Return = games[_roomId].info.minStake* (100-houseFee) / 100;
+        (bool sent, ) = msg.sender.call{value: fund2Return}("");
         require(sent, "E16");
 
         // Update gameroom info
@@ -1025,7 +1029,4 @@ contract RRoyale is
         games[_roomId].playerLastMoveTime[playerIndex] = block.timestamp;
         return true;
     }
-
-
-
 }
