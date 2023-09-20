@@ -3,10 +3,12 @@ import {Button, Modal} from 'flowbite-react';
 import { chainConfig } from '../../config/chainConfig';
 import { parseEther } from 'viem';
 import { useAccount, useContractWrite, usePrepareContractWrite, useNetwork} from 'wagmi';
+import { readContract } from '@wagmi/core';
 import { Spinner } from 'flowbite-react';
 import toast from 'react-hot-toast';
 import {lobbyRoomPageCount} from '../../atoms';
 import { useSetAtom } from 'jotai';
+import { ContractErrorMap } from '../../config/constants';
 
 const CreateRoomButton = () => {
     const [openModal, setOpenModal] = useState<string | undefined>();
@@ -32,11 +34,28 @@ const CreateRoomButton = () => {
         // console.log("board size: "+ boardheight+"x"+boardwidth)
         // console.log("max players: "+ gameplayernums)
         console.log("minimum stake: "+ minstake)
+
+        await readContract({
+            address: chainConfig.royaleContractAddress,
+            abi: chainConfig.royaleAbi,
+            functionName: 'playerInGame',
+            args: [address]
+        }).then((res) => {
+            //console.log(parseInt(res))
+            if(parseInt(res)>0){
+                toast.error(`Can't create game. \nYou are already in Room ${parseInt(res)}`, {icon: '🚨'})
+                props.setOpenModal(undefined);
+                setRoomPageCount(1);
+                return;
+            }
+
+            write({
+                args: [minstake.toString()],
+                value: minstake,
+            })
+        });
         
-        write({
-            args: [minstake.toString()],
-            value: minstake,
-        })
+        
     }
 
     useEffect(() => {
@@ -48,6 +67,13 @@ const CreateRoomButton = () => {
             setRoomPageCount(1);
         } else if (error) {
             console.log(error)
+            const error_code = error?.details?.split(": revert ")[1]
+            if(error_code in ContractErrorMap){
+                toast.error(ContractErrorMap[error_code], {icon: '🚨'})
+            }
+
+            props.setOpenModal(undefined);
+            setRoomPageCount(1);
             toast.error("Room Creation Failed", {icon: '🚨'})
         }
 
