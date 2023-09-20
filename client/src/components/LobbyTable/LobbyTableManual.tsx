@@ -121,6 +121,7 @@ const LobbyTableManual = () => {
                 (r,i)=>{
             //console.log(i, r)
             return <TableRow
+                        key={i}
                         roomId={r._roomId}
                         owner={r._creator}
                         stake={r.stake}
