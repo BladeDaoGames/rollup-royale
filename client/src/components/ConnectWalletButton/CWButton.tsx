@@ -28,6 +28,7 @@ const CWButton = () => {
     const devPk = useAtomValue(createDevPrivateKey)
     
     const handleConnect = useCallback(() => {
+        console.log("current address: ", address)
         if(!isConnected){
             //if in dev mode use dev pk
             if (import.meta.env.VITE_ENV == "dev"){
@@ -82,7 +83,8 @@ const CWButton = () => {
             disconnect()
             return
         }
-    },[burnerKey, address, isConnected, burnerIsConnected])
+    },[devPk, connect, connectors, disconnect, burnerKey, 
+        address, isConnected, burnerIsConnected])
 
     useEffect(()=>{
         // it is dev, auto connect
@@ -96,7 +98,8 @@ const CWButton = () => {
         // in the end we decided just auto connect everyone if not connected
         !isConnected?handleConnect():null;
 
-    },[burnerKeyRegisteredFlagCount])
+    },[burnerKeyRegisteredFlagCount, handleConnect])
+
     return useMemo(()=>(
         <div className="flex flex-row flex-nowrap
         text-white
@@ -142,7 +145,7 @@ const CWButton = () => {
             </button>
             :null}
         </div>
-    ),[isConnected, address, burnerKey, burnerIsConnected])
+    ),[isConnected, address, burnerKey, burnerIsConnected, handleConnect])
 }
 
 export default CWButton
