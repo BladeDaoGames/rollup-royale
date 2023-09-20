@@ -49,8 +49,7 @@ export const StakeAndEnterButton = ({room}:{room: number}) => {
             >
                 {   isLoading?<Spinner color="failure"/>:
                     <>
-                        <BiMoneyWithdraw className="w-8 h-6"/>
-                        <GiExitDoor className="w-8 h-6"/>
+                        <BiMoneyWithdraw className="w-12 h-6"/>
                     </>
                 }
             </Button>
@@ -214,8 +213,8 @@ export const StartGameButton = ({room}:{room: number})=>{
                 {
                 isLoading?<Spinner color="failure"/>:
                 <>
-                <BsPlayFill className="w-8 h-6 mx-0"/>
-                <GiHighPunch className="w-8 h-6 mx-0"/>
+                <BsPlayFill className="w-6 h-6 mx-0"/>
+                <GiHighPunch className="w-6 h-6 mx-0"/>
                 </>
                 }
             </Button>

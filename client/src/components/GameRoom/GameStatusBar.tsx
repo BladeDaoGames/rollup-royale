@@ -1,3 +1,4 @@
+import React from 'react';
 import {BsHourglassSplit, BsHandThumbsUpFill} from 'react-icons/bs';
 import { CgUnavailable } from 'react-icons/cg';
 import {FaPause, FaSkull} from 'react-icons/fa';
