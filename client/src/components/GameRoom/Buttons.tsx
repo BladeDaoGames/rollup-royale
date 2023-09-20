@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Button, Tooltip } from 'flowbite-react';
 import { BsPlayFill, BsFillPauseFill, BsFillHandThumbsUpFill} from 'react-icons/bs';
 import {BiMoneyWithdraw} from 'react-icons/bi';
@@ -11,21 +11,54 @@ import {createGameInfoAtom, createPlayerIds,
 } from '../../atoms';
 
 import { useAccount, useContractWrite, useNetwork } from 'wagmi';
+import { readContract } from '@wagmi/core';
 import { chainConfig } from '../../config/chainConfig';
 import { parseEther } from 'viem';
+import toast from 'react-hot-toast';
+import { ContractErrorMap } from '../../config/constants';
 
 export const StakeAndEnterButton = ({room}:{room: number}) => {
     const {address} = useAccount()
     const { chain } = useNetwork()
     const gameinfo = useAtomValue(createGameInfoAtom)
     const playerIds = useAtomValue(createPlayerIds)
-    const { data, isLoading, isSuccess, write: writeJoinGame } = useContractWrite({
+    const { data, isLoading, error, isSuccess, write: writeJoinGame } = useContractWrite({
         address: chainConfig.royaleContractAddress,
         abi: chainConfig.royaleAbi,
         functionName: 'joinGame',
     })
 
     const playerInGame = playerIds.includes(address?.toLowerCase()??"unknown")
+
+    useEffect(() => {
+        const playerInGameRoom = async () => {
+            const playerIds = await readContract({
+                address: chainConfig.royaleContractAddress,
+                abi: chainConfig.royaleAbi,
+                functionName: 'playerInGame',
+                args: [address]
+            }).then((res) => {
+                //console.log(parseInt(res))
+                if(parseInt(res)>0){
+                    toast.error(`Can't Join Game.\nYou are currently in Room ${parseInt(res)}`, {icon: '🚨'})
+                    return;
+                }
+            });
+        }
+
+        if (isSuccess) {
+            toast.success("Game Joined SuccessFully", {icon: '👍'})
+        } else if (error) {
+            console.log(error)
+            const error_code = error?.details?.split(": revert ")[1]
+            if(error_code in ContractErrorMap){
+                toast.error(ContractErrorMap[error_code], {icon: '🚨'})
+                playerInGameRoom();
+            }else{
+                toast.error("Game Entry Failed", {icon: '🚨'})
+            }
+        }
+    }, [isSuccess, error, isLoading, data, address])
 
     return (
         <Tooltip content={`~ Stake $${chain?.nativeCurrency.symbol} and Enter Game ~`}>
