@@ -94,13 +94,26 @@ export const LeaveRoomButton = ({room}:{room: number}) =>{
     const gameinfo = useAtomValue(createGameInfoAtom)
     const gameStarted =gameinfo?.hasStarted
 
-    const { data, isLoading, isSuccess, write: writeLeaveGame } = useContractWrite({
+    const { data, isLoading, error, isSuccess, write: writeLeaveGame } = useContractWrite({
         address: chainConfig.royaleContractAddress,
         abi: chainConfig.royaleAbi,
         functionName: 'leaveGameB4start',
     })
 
-    // check if player in game first
+    useEffect(() => {
+
+        if (isSuccess) {
+            toast.success("Left Game SuccessFully", {icon: '👍'})
+        } else if (error) {
+            console.log(error)
+            const error_code = error?.details?.split(": revert ")[1]
+            if(error_code in ContractErrorMap){
+                toast.error(ContractErrorMap[error_code], {icon: '🚨'})
+            }else{
+                toast.error("Game Leave Failed", {icon: '🚨'})
+            }
+        }
+    }, [isSuccess, error, isLoading, data])
 
     return (
         <Tooltip content="Leave Room Before Game Start">
@@ -134,12 +147,26 @@ export const ReadyUpButton = ({room}:{room: number})=>{
     const playerId = playerIds.indexOf(address?.toLowerCase() as string)
     const playerReady = playerId>=0 ? playerReadiness[playerId] : false
 
-    const { data, isLoading, isSuccess, write: writeToggleReady } = useContractWrite({
+    const { data, isLoading, error, isSuccess, write: writeToggleReady } = useContractWrite({
         address: chainConfig.royaleContractAddress,
         abi: chainConfig.royaleAbi,
         functionName: 'playerReadyUp',
     })
 
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success("Ready Up Set!", {icon: '👍'})
+        } else if (error) {
+            console.log(error)
+            const error_code = error?.details?.split(": revert ")[1]
+            if(error_code in ContractErrorMap){
+                toast.error(ContractErrorMap[error_code], {icon: '🚨'})
+            }else{
+                toast.error("Ready Failed :(", {icon: '🚨'})
+            }
+        }
+    }, [isSuccess, error, isLoading, data])
+    
     return (
         <Tooltip content="Signal Ready Up To Let Owner Start Game">
             <Button 
@@ -178,11 +205,25 @@ export const PlayerPauseButton = ({room}:{room: number})=>{
     const playerId = playerIds.indexOf(address?.toLowerCase() as string)
     const playerPlayerPaused = playerId>=0 ? playerPauseVote[playerId] : false
 
-    const { data, isLoading, isSuccess, write: writeTogglePause } = useContractWrite({
+    const { data, isLoading, error, isSuccess, write: writeTogglePause } = useContractWrite({
         address: chainConfig.royaleContractAddress,
         abi: chainConfig.royaleAbi,
         functionName: 'playerTogglePause',
     })
+
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success("Pause Success", {icon: '👍'})
+        } else if (error) {
+            console.log(error)
+            const error_code = error?.details?.split(": revert ")[1]
+            if(error_code in ContractErrorMap){
+                toast.error(ContractErrorMap[error_code], {icon: '🚨'})
+            }else{
+                toast.error("Pause Failed :(", {icon: '🚨'})
+            }
+        }
+    }, [isSuccess, error, isLoading, data])
 
     return (
         <Tooltip content="Vote For Game Pause">
@@ -215,14 +256,28 @@ export const PlayerPauseButton = ({room}:{room: number})=>{
 export const StartGameButton = ({room}:{room: number})=>{
     const {address} = useAccount()
     const gameinfo = useAtomValue(createGameInfoAtom)
-    const { data, isLoading, isSuccess, write: writeStartGame } = useContractWrite({
+    const { data, isLoading, error, isSuccess, write: writeStartGame } = useContractWrite({
         address: chainConfig.royaleContractAddress,
         abi: chainConfig.royaleAbi,
         functionName: 'startGame',
     })
 
-    // check if player is room owner
     const playerIsRoomOwner = (gameinfo?.gameCreator.toLowerCase() == address?.toLowerCase()??"unknown")
+
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success("Game Start Success!", {icon: '👍'})
+        } else if (error) {
+            console.log(error)
+            const error_code = error?.details?.split(": revert ")[1]
+            if(error_code in ContractErrorMap){
+                toast.error(ContractErrorMap[error_code], {icon: '🚨'})
+            }else{
+                toast.error("Game Start Failed :(", {icon: '🚨'})
+            }
+        }
+    }, [isSuccess, error, isLoading, data])
+
     return (
         <Tooltip content="Only Owner Can Start Game">
             <Button 
