@@ -17,7 +17,13 @@ interface PlayerStatusIcon {
 
 const PlayerStatusIcon = ({playerId, status}: PlayerStatusIcon )=>{
     return (
-        <Tooltip content={`Waiting Player ${playerId}`} 
+        <Tooltip content={`${status=="waiting"?"Waiting Player "+`${playerId}`
+                :status=="ready"?"Player "+`${playerId} Ready`
+                :status=="pause"?"Player "+`${playerId} Paused`
+                :status=="dead"?"Player "+`${playerId} Dead`
+                :status=="winner"?"Player "+`${playerId} is Winner!`
+                :"Status NA"
+                }`} 
                 placement="bottom">
                     <div className={`
                     flex flex-row items-center
