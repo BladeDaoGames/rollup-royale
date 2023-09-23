@@ -161,13 +161,13 @@ const LobbyTableManual = () => {
                     bg-greygreen
                     ">
                         <th scope="col" className="pl-4 pr-3 py-3">
-                            Room Id
+                            Room
                         </th>
                         <th scope="col" className="px-6 py-3">
                             Room Owner
                         </th>
-                        <th scope="col" className="px-6 py-3">
-                            Stake (ETH)
+                        <th scope="col" className="px-6 py-3 font-normal text-sm">
+                            Stake(BLADE)
                         </th>
                         <th scope="col" className="px-6 py-3">
                             Board
