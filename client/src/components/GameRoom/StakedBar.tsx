@@ -33,7 +33,7 @@ const StakedBar = () => {
                 </div>
             
             <div className="w-1/5 mx-2 px-0
-            text-right pr-3.5
+            text-right pr-3.5 font-light text-sm
             ">
                 {`Total Staked $${chain?.nativeCurrency.symbol??"Gas"}:`}
             </div>
