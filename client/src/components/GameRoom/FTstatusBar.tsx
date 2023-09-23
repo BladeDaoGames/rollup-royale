@@ -50,10 +50,12 @@ const FTstatusBar = () => {
     <div className="
     flex flex-row justify-between items-center
     text-white font-semibold my-1 mt-2
+    w-full
     ">
     
     <div className="mx-2 w-2/5 pr-4
       flex justify-between items-center
+      
     ">
       <span>Room Owner: </span> <span className="mx-1">
       {addressShortener(gameInfo?.gameCreator as string)}</span>

@@ -99,15 +99,16 @@ const GameStatusBar = () => {
     return (
         <div className="flex flex-row
             justify-between items-center
-            z-20
+            z-10 w-full
             ">
 
                 {/* game status */}
                 <div className="flex flex-row 
                 justify-start items-center 
                 text-white font-semibold text-base
+                w-2/5 mx-2
                 ">
-                <span className="mx-2">{`${gameStatus=="ended"?"Winner:":"Game Status:"}`}</span> 
+                <span className="mr-2">{`${gameStatus=="ended"?"Winner:":"Game Status:"}`}</span> 
                 <span className={`px-4 py-1 w-full
                     ${gameStatus=="prestart"?"bg-lightbeige text-background1":
                     gameStatus=="ongoing"?"bg-palegreen text-background1":

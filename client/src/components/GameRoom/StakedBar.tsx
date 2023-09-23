@@ -16,10 +16,11 @@ const StakedBar = () => {
     return useMemo(()=>
         <div className="flex flex-row justify-start items-center
         text-white font-semibold my-1 mt-2
+        w-full
         ">
 
             {/* player indicator */}
-            <div className="mx-2 mr-4 w-1/5
+            <div className="ml-2 w-1/5
                 flex justify-start items-center
                 ">
                 <span>You are: </span> 
@@ -31,7 +32,7 @@ const StakedBar = () => {
                 </span>
                 </div>
             
-            <div className="w-1/5 mx-0 px-0
+            <div className="w-1/5 mx-2 px-0
             text-right pr-3.5
             ">
                 {`Total Staked $${chain?.nativeCurrency.symbol??"Gas"}:`}

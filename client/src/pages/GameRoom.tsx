@@ -293,7 +293,8 @@ const GameRoom = () => {
       {/* <button className="w-10 h-10 bg-red-700" onClick={()=>{console.log(gamescene.player1)}}/> */}
       
       {/* balancing div */}
-      <div className="flex-1 w-full max-w-[768px]">
+      <div className="
+      ">
           <TxnSenderHOC game={game} roomId={roomId}/>
         </div>
 
@@ -302,12 +303,15 @@ const GameRoom = () => {
               flex flex-col
               p-0 h-screen
               items-center
+              px-8
           "
         >
 
           {/* game container is 60vh for square map*/}
-          <div className="w-[60vh]
-          ">
+          {/* <div className="w-[60vh]
+          border border-blue-500
+          overflow-x-hidden
+          "> */}
               {/* game status bar */}
               <GameStatusBar/>
               <FTstatusBar/>
@@ -339,11 +343,14 @@ const GameRoom = () => {
 
               </div>
 
-            </div>
+            {/* </div> */}
         </div>
 
         {/* chat window */}
-        <div className="flex-1 w-full max-w-[768px] h-[30vh] md:h-[90vh]">
+        <div className="w-full
+        min-w-[400px] max-w-[500px]
+        h-[30vh] md:h-[90vh]
+        ">
           <ChatWindow room={roomId?.toString()} msgLimit={100} />
         </div>
       
