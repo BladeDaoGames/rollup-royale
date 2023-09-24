@@ -31,7 +31,7 @@ const CustomNavBar = () => {
 
 
             <Navbar.Collapse className="ml-auto mr-2">
-                <Navbar.Link href="#">
+                <Navbar.Link href={import.meta.env.VITE_GAMERULESLINK} target="_blank">
                     <div className="text-sm font-medium  text-silver md:text-background1 md:bg-lightbeige md:rounded-lg md:text-base md:px-4 md:py-2 md:text-center md:hover:bg-darkbeige">
                         Game Rules</div>
                 </Navbar.Link>
