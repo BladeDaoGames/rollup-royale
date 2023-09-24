@@ -95,7 +95,7 @@ export const ChatInputBox = ({ sendANewMessage, room }: ChatInputBoxProps) => {
 const ChatWindow = ({room, msgLimit }: {room: string, msgLimit: number}) => {
 
     const { address } = useAccount();
-    const messageRef = collection(db, "messages");
+    const messageRef = collection(db, import.meta.env.VITE_FB_COLLECTION);
     const chatBoxRef = useRef<HTMLDivElement>(null);
 
     /** State to control new messages */
