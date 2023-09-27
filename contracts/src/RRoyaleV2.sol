@@ -9,7 +9,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 //import "./libraries/RoyaleBattleV1.sol";
 import "./interfaces/IAutomataVRFCoordinator.sol";
 
-contract RRoyale is 
+contract RRoyaleV2 is 
     Initializable,
     PausableUpgradeable,
     OwnableUpgradeable,
