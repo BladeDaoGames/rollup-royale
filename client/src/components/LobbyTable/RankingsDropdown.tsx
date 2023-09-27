@@ -2,11 +2,8 @@ import React, {useEffect, useMemo, useState} from 'react';
 import { Dropdown } from 'flowbite-react';
 import { BsChevronDown } from 'react-icons/bs';
 import { useNetwork } from 'wagmi';
-import { watchReadContracts } from '@wagmi/core';
-import { chainConfig } from '../../config/chainConfig';
 import {earningsRankArray, winningsRankArray} from '../../atoms';
 import { useAtomValue } from 'jotai';
-import { formatEther, formatUnits } from 'viem';
 import { addressShortener } from '../../utils/addressShortener';
 
 

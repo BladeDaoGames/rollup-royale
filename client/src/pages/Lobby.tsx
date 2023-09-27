@@ -3,6 +3,7 @@ import LobbyTable from '../components/LobbyTable/LobbyTableManual';
 import TableBrowserPanel from '../components/LobbyTable/TableBrowserPanel';
 import ChatWindow from '../components/ChatWindow/ChatWindow';
 import {RankingsDropdown} from '../components/LobbyTable/RankingsDropdown';
+import { UtilsBar } from '../components/LobbyTable/UtilsBar';
 import { useRankingsValues } from '../hooks/useRankingsValues';
 
 const Lobby = () => {
@@ -14,6 +15,7 @@ const Lobby = () => {
             p-0 h-screen
         ">  
             {/* < RankingsDropdown /> */}
+            < UtilsBar />
             <LobbyTable/>
             <TableBrowserPanel />
             
