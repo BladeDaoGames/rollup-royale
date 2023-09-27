@@ -102,8 +102,7 @@ const GameStatusBar = () => {
 
     const gameWinner = gameinfo?.winner
     useEffect(()=>{
-        console.log("game winner: ")
-        if(!(gameWinner=="0x0")){
+        if(!(parseInt(gameWinner)==0)){
             toast.success(
             <div className="break-normal whitespace-normal">
                     Game Has Ended. 

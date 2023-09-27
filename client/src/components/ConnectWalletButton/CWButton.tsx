@@ -28,7 +28,6 @@ const CWButton = () => {
     const devPk = useAtomValue(createDevPrivateKey)
     
     const handleConnect = useCallback(() => {
-        console.log("current address: ", address)
         //if(!isConnected){
             //if in dev mode use dev pk
             if (import.meta.env.VITE_ENV == "dev"){
