@@ -29,7 +29,7 @@ const CWButton = () => {
     
     const handleConnect = useCallback(() => {
         console.log("current address: ", address)
-        if(!isConnected){
+        //if(!isConnected){
             //if in dev mode use dev pk
             if (import.meta.env.VITE_ENV == "dev"){
                 const viemAccount = privateKeyToAccount(devPk)
@@ -79,10 +79,12 @@ const CWButton = () => {
             // else connect normally with metamask injected
             connect({ connector: connectors[0] })
             return
-        } else {
-            disconnect()
-            return
-        }
+        //} 
+        
+        // else {
+        //     disconnect()
+        //     return
+        // }
     },[devPk, connect, connectors, disconnect, burnerKey, 
         address, isConnected, burnerIsConnected])
 
@@ -96,9 +98,10 @@ const CWButton = () => {
         //if(burnerKeyRegisteredFlagCount>0) handleConnect();
 
         // in the end we decided just auto connect everyone if not connected
-        !isConnected?handleConnect():null;
+        handleConnect();
+        //!isConnected?handleConnect():null;
 
-    },[burnerKeyRegisteredFlagCount, handleConnect])
+    },[burnerKeyRegisteredFlagCount, handleConnect, isConnected])
 
     return useMemo(()=>(
         <div className="flex flex-row flex-nowrap

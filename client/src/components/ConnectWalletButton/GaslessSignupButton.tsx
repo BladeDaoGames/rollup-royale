@@ -1,5 +1,5 @@
 
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { useBurnerKey } from '../../hooks/useBurnerKey';
 import { createWalletClient, http, publicActions } from 'viem';
@@ -24,7 +24,7 @@ export const GaslessSignUpButton = () => {
     const { chain } = useNetwork();
     //const { chains, error:chainError, switchNetwork } = useSwitchNetwork();
     
-    const { connect, isLoading: connectorIsLoading, pendingConnector } = useConnect();
+    const { connect, isLoading: connectorIsLoading, pendingConnector, connectors } = useConnect();
     const {disconnect} = useDisconnect();
     if(import.meta.env.VITE_ENV == "devWeb3") localStorage.clear();
     const { burnerKey, burnerAddress, updateBurnerKey} = useBurnerKey();
@@ -35,6 +35,7 @@ export const GaslessSignUpButton = () => {
     
     const { isLoading, mutate: signup } = useMutation<void, any, void>({
         mutationFn: useCallback(async () => {
+            console.log("signing up for burner wallet...")
             // if(chain?.id!=chainConfig.chaindetails.id){
 
             //     toast.error(`Current network not desired network: ${chainConfig.chaindetails.name} 
@@ -55,8 +56,31 @@ export const GaslessSignUpButton = () => {
                 // check if already have address in local storage
                 //quickfix: not checking if they link burner address to their wallet
                 if(burnerIsConnected) return
+
+                // if he has burner but not connect it, then connect it
+                if(hasBurnerKey){
+                    const viemAccount = privateKeyToAccount(burnerKey) 
+                    const cachedClient = createWalletClient({
+                        account: viemAccount,
+                        chain: chainConfig.chaindetails,
+                        transport: http()
+                    }).extend(publicActions) 
                 
-                // if not connected to wallet then cannot run
+                    const cachedConnector = new MockConnector({
+                        chains: supportedChains,
+                        options: {
+                            flags:{
+                                isAuthorized:true,
+                            },
+                            walletClient: cachedClient,
+                        },
+                    })
+                    // connect to new PK
+                    connect({connector: cachedConnector})
+                    return;
+                }
+                
+                // if not connected to wallet connect for them
                 if(!isConnected) return
 
                 // initate setup for registration
@@ -170,13 +194,25 @@ export const GaslessSignUpButton = () => {
         },
     });
     
+    useEffect(()=>{
+        if(!isConnected){
+            connect({ connector: connectors[0] });
+        }
+        if(!burnerIsConnected){
+            signup();
+        }
+    },[])
+    
 
     return (
         <button type="button" 
-            disabled={burnerIsConnected || (!hasBurnerKey && !isConnected)}
+            
             className={`
-            ${hasBurnerKey?
+            ${burnerIsConnected?
             "text-background1 bg-palegreen hover:bg-whitegreen "
+            :
+            hasBurnerKey?
+            "text-background1 bg-prime1 hover:bg-orange-500"
             :
             "text-white bg-palered hover:bg-prime2 "
             }
