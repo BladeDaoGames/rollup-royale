@@ -10,6 +10,7 @@ export const chainConfigs = {
         contracts: {
             royale:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
             registry:"0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+            multicall: "0xca11bde05977b3631167028862be2a173976ca11"
         }
     },
     1013454: {
@@ -17,6 +18,7 @@ export const chainConfigs = {
         contracts: {
             royale:"0x6951354310E37Bd0E5B3e8f18DD883F186042835",
             registry:"0x8df74401bA860F551B138aaB344aDC89a15876A9",
+            multicall: "0xca11bde05977b3631167028862be2a173976ca11"
         }
     },
     4000007:{
@@ -25,6 +27,7 @@ export const chainConfigs = {
             royale:"0x22Bf06C60B81fe61AE949c7DACa40cc1Ab0882cc",
             implementation:"0x3067eC3166c4CFcd9d286dD4A3DE77949d187DCd",
             registry:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+            multicall: "0xca11bde05977b3631167028862be2a173976ca11"
         }
     },
 
@@ -34,6 +37,7 @@ export const chainConfigs = {
             royale:"0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
             implementation:"0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
             registry:"0x4Ef5147e5C6E5c23eC72C38E3F581c4c0A3695b1",
+            multicall: "0xca11bde05977b3631167028862be2a173976ca11"
         }
     }
 
