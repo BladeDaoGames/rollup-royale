@@ -17,6 +17,7 @@ import { Toaster } from 'react-hot-toast';
 // 2xl:bg-background1
 function App() {
   const progressBarValue = useAtomValue(createProgressBar)
+  //const progressBarValue = 100
   
   useFetchRooms();
 
