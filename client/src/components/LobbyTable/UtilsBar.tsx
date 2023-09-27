@@ -71,7 +71,13 @@ export const UtilsBar = () => {
                 onClick={()=>{getRoomIdInput()}}
                 ><span className="mr-1">{`Let me join room =>`} </span>
                 <input type="text" id="room-router"
-                className="mx-1 text-black text-xs py-0.5 w-[70px]" />
+                className="mx-1 text-black text-xs py-0.5 w-[70px]" 
+                onKeyUp={event => {
+                    if (event.key === 'Enter') {
+                        getRoomIdInput()
+                    }
+                }}
+                />
                 </button>
                 
             </div>
