@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {BsHourglassSplit, BsHandThumbsUpFill} from 'react-icons/bs';
 import { CgUnavailable } from 'react-icons/cg';
 import {FaPause, FaSkull} from 'react-icons/fa';
@@ -8,6 +8,8 @@ import {useGameAndPlayerStatus} from '../../hooks/useGameAndPlayerStatus';
 import { useAtomValue } from 'jotai';
 import { createGameInfoAtom } from '../../atoms';
 import { addressShortener } from '../../utils/addressShortener';
+import {toast} from 'react-hot-toast';
+import { useNavigate,  Link } from 'react-router-dom';
 
 
 interface PlayerStatusIcon {
@@ -91,11 +93,30 @@ const gameStatusMapper = {
 const GameStatusBar = () => {
     const {gameStatus, playerStatus} = useGameAndPlayerStatus()
     const gameinfo = useAtomValue(createGameInfoAtom)
+    const navigate = useNavigate()
 
     if(import.meta.env.VITE_ENV=="dev")console.log("player status: ")
     if(import.meta.env.VITE_ENV=="dev")console.log(playerStatus)
     if(import.meta.env.VITE_ENV=="dev")console.log("game status")
     if(import.meta.env.VITE_ENV=="dev")console.log(gameStatus)
+
+    const gameWinner = gameinfo?.winner
+    useEffect(()=>{
+        console.log("game winner: ")
+        if(!(gameWinner=="0x0")){
+            toast.success(
+            <div className="break-normal whitespace-normal">
+                    Game Has Ended. 
+                    <br/>
+                    Winner is: <span className="font-bold text-prime2">
+                        <u>{addressShortener(gameWinner)}</u></span>
+                    <br/>Return to lobby by clicking the game logo on top left or 
+                    <span className="ml-1 font-bold text-prime2"
+                    onClick={()=>{navigate("/")}}
+                    ><button><u> HERE.</u></button></span>
+            </div>,{icon: "🏆", duration:5500})
+        }
+    },[gameWinner])
     return (
         <div className="flex flex-row
             justify-between items-center
