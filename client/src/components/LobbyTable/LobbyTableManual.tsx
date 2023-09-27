@@ -1,6 +1,6 @@
-import React, {useMemo} from 'react';
-import { useContractEvent} from 'wagmi';
-import { readContract } from '@wagmi/core';
+import React, {useEffect, useMemo} from 'react';
+import { useContractEvent, useAccount} from 'wagmi';
+import { readContract, watchContractEvent } from '@wagmi/core';
 import { chainConfig } from '../../config/chainConfig';
 import {useAtom, useAtomValue} from 'jotai';
 import {createTotalRoomsAtoom, createRoomAtom, 
@@ -9,6 +9,7 @@ import { addressShortener } from '../../utils/addressShortener';
 import { Link } from 'react-router-dom';
 import { formatUnits } from 'viem';
 import { parseGameInfoObject } from '../../hooks/useFetchRooms';
+import { useNavigate } from "react-router-dom";
 
 type RoomRowData ={
     roomId: number,
@@ -69,16 +70,20 @@ const LobbyTableManual = () => {
     const [rooms, setRooms] = useAtom(createRoomAtom)
     const pageCount = useAtomValue(lobbyRoomPageCount)
     const searchInput = useAtomValue(lobbyTextSearchInput)
+    const {address} = useAccount();
+    const navigate = useNavigate();
+    // new listener effect to listen to contract events
 
-    // listen to new room events and update rooms state
-    useContractEvent({
-        address: chainConfig.royaleContractAddress,
-        abi: chainConfig.royaleAbi,
-        eventName: 'GameCreated',
-        async listener(log){
-            //{_roomId: 2n, _creator: '0x90F79bf6EB2c4f870365E785982E1f101E93b906'}
+    useEffect(()=>{
+        const unwatch = watchContractEvent({
+            address: chainConfig.royaleContractAddress,
+            abi: chainConfig.royaleAbi,
+            eventName: 'GameCreated',
+        }, async (log)=>{
             const newRoomId = parseInt(log[0]?.args?._roomId)
-            console.log("room: " + (newRoomId??"NaN")+"created")
+            const creator = log[0]?.args?._creator
+            console.log(address)
+            console.log("room: " + (newRoomId??"NaN")+"created by: "+creator)
             if(newRoomId > totalRooms) setTotalRooms(newRoomId) // first room at index 0 is placeholder
 
             await readContract({
@@ -97,9 +102,47 @@ const LobbyTableManual = () => {
                     return [...prevRoomData];
 
                 })
+
+                if(creator == address){
+                    navigate(`/game/${newRoomId}`)
+                }
             })
-        },
-    })
+        });
+        return ()=>{
+            unwatch();
+        }
+    }, [])
+
+    // listen to new room events and update rooms state
+    // useContractEvent({
+    //     address: chainConfig.royaleContractAddress,
+    //     abi: chainConfig.royaleAbi,
+    //     eventName: 'GameCreated',
+    //     async listener(log){
+    //         //{_roomId: 2n, _creator: '0x90F79bf6EB2c4f870365E785982E1f101E93b906'}
+    //         const newRoomId = parseInt(log[0]?.args?._roomId)
+    //         console.log("room: " + (newRoomId??"NaN")+"created")
+    //         if(newRoomId > totalRooms) setTotalRooms(newRoomId) // first room at index 0 is placeholder
+
+    //         await readContract({
+    //             address: chainConfig.royaleContractAddress,
+    //             abi: chainConfig.royaleAbi,
+    //             functionName: 'games',
+    //             args: [newRoomId] //this argument will return only 1 room
+    //         }).then((res) => {
+    //             // console.log("room info 2")
+    //             //console.log(res)
+
+    //             setRooms((prevRoomData)=>{
+
+    //                 prevRoomData[newRoomId] = parseGameInfoObject(res, newRoomId);
+
+    //                 return [...prevRoomData];
+
+    //             })
+    //         })
+    //     },
+    // })
 
     const LobbyPageData = useMemo(()=>{
         const pageData = rooms?.map((x)=>x).reverse()?.filter(
@@ -138,6 +181,7 @@ const LobbyTableManual = () => {
 
         return paginate(pageData, 4, pageCount)
     },[pageCount, searchInput, rooms])
+    
     return useMemo(()=>(
         <div className="relative shadow-md 
         overflow-y-auto  h-[300px]

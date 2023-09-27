@@ -5,64 +5,18 @@ import { useNetwork } from 'wagmi';
 import { watchReadContracts } from '@wagmi/core';
 import { chainConfig } from '../../config/chainConfig';
 import {earningsRankArray, winningsRankArray} from '../../atoms';
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { formatEther, formatUnits } from 'viem';
 import { addressShortener } from '../../utils/addressShortener';
 
+
 export const RankingsDropdown = () => {
     const [showRankings, setRankingsDropdown] = useState(false);
-    const [earningsRankings, setEarningsRankings] = useAtom(earningsRankArray);
-    const [winningsRankings, setWinningsRankings] = useAtom(winningsRankArray);
+    const earningsRankings = useAtomValue(earningsRankArray);
+    const winningsRankings = useAtomValue(winningsRankArray);
     const { chain } = useNetwork();
-    const contractCallConfig = {
-        contracts:[
-            {
-                address: chainConfig.royaleContractAddress,
-                abi: chainConfig.royaleAbi,
-                functionName: 'getTop10RanksByEarnings',
-                args: []
-            },
-            {
-                address: chainConfig.royaleContractAddress,
-                abi: chainConfig.royaleAbi,
-                functionName: 'getTop10RanksByWinnings',
-                args: []
-            },
-        ],
-        listenToBlock: true,
-    }
-
-    // start a listener on rankings views
-    useEffect(()=>{
-        const unwatch = watchReadContracts(contractCallConfig, (data_)=>{
-            // console.log("rankings...")
-            // console.log(data_)
-            if(data_[0]?.status=="success"){
-                setEarningsRankings(
-                    data_[0]?.result?.map((p:any)=>({
-                        player: p?.player,
-                        amount: parseFloat(formatEther(p?.amount??0))
-                    })
-                    )
-                )
-            }
-
-            if(data_[1]?.status=="success"){
-                setWinningsRankings(
-                    data_[1]?.result?.map((p:any)=>({
-                        player: p?.player,
-                        amount: parseInt(formatUnits(p?.amount??0, 0))
-                    })
-                    )
-                )
-            }
-        })
-
-        return ()=>{
-            unwatch();
-        }
-    },[])
-
+    
+    //console.log("rankings refresh") this is called many times
     return useMemo(()=>{return(
         <div className="
         mb-1

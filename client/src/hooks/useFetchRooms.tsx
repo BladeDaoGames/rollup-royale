@@ -55,13 +55,15 @@ const useFetchRooms = () => {
             // await new Promise(()=>{
             //     setTimeout(()=>{console.log("timeout")},30000)
             // })
-
             // actual fetch
             if(import.meta.env.VITE_ROOMLOADMODE === 'loop'){
                 await Promise.all(
-                    Array.apply(null, Array(newTotalRooms))
+                    //Array.apply(null, Array(newTotalRooms))
+                    Array(parseInt(import.meta.env.VITE_ROOMBATCHSIZE)).fill(null).map((_, i)=>newTotalRooms-1-i)
+                        .reverse()
                         .map(
-                            async (_, roomId)=>{
+                            //async (_, roomId)=>{
+                            async (roomId)=>{ //using this for loading only some rooms
                                 return await readContract({
                                     address: chainConfig.royaleContractAddress,
                                     abi: chainConfig.royaleAbi,
