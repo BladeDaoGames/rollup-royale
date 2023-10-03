@@ -2,3 +2,10 @@
 .env
 .local
 __pycache__
+
+data/
+
+streamlit/*.json
+streamlit/*.pkl
+streamlit/*.csv
+.DS_Store
