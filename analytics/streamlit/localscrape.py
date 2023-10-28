@@ -104,31 +104,38 @@ def getUserStats(address:str, contract:any, index:int=0):
     return [0,0,0,0]
 
 def getBurnerParent(series:any, contract:any):
-    try:
-        if("burnerParent" in series):
-            if(series["burnerParent"] == "0x0" or series["burnerParent"] == "" or \
-                series["burnerParent"] == "0x0000000000000000000000000000000000000000"):
-                print("row index: ",series.name)
+    #make 1k to 5k
+    if (series.name>-1):
+        try:
+            if("burnerParent" in series):
+                if(series["burnerParent"] == "0x0" or series["burnerParent"] == "" or \
+                    series["burnerParent"] == "0x0000000000000000000000000000000000000000"):
+                    print("row index: ",series.name)
+                    addy = contract.functions.ownerAccounts(series["burners"]).call()
+                    print(addy)
+                    time.sleep(0.25)
+                    return addy
+                else:
+                    # skip if already mapped
+                    return series["burnerParent"]
+            else:
                 addy = contract.functions.ownerAccounts(series["burners"]).call()
+                # addy = series["burners"]
+                # print(f"skip burner {addy}")
                 print(addy)
                 time.sleep(0.25)
                 return addy
-            else:
-                return series["burnerParent"]
-        else:
-            addy = contract.functions.ownerAccounts(series["burners"]).call()
-            print(addy)
-            time.sleep(0.25)
-            return addy
-    except:
+        except:
+            return ""
         return ""
-    return ""
+    else:
+        return series["burnerParent"]
 
 def _compileBurners(players:pd.DataFrame, gEnded: pd.DataFrame, pKilled:pd.DataFrame):
     if(len(players) > 0 and ("burners" in players.columns)):
         print("existing players available")
         new_set = np.unique(np.append(pKilled._player.values, gEnded._winner.values))
-        set_diff = np.setdiff1d(players["burners"], new_set)
+        set_diff = np.setdiff1d(new_set, players["burners"])
         if(len(set_diff) > 0):
             print("new players available","appending new players")
             players = players[~players["burners"].isin(set_diff)]
