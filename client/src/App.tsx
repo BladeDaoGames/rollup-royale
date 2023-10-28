@@ -31,7 +31,7 @@ function App() {
           pt-0
           '>
 
-          {progressBarValue <100? 
+          {/* {progressBarValue <100? 
             <div className="
             mt-10
             w-1/2 flex-col justify-start items-center
@@ -44,14 +44,14 @@ function App() {
                 style={{width: `${progressBarValue}%`}}>{`${progressBarValue}%`}</div>
               </div>
             </div>
-            :
+            : */}
           <Router>
               <Routes>
                 <Route path='/' element={<Lobby/>}/>
-                <Route path="/game/:id" element={<GameRoom />} />
+                {/* <Route path="/game/:id" element={<GameRoom />} /> */}
               </Routes>
             </Router>
-            }
+            {/* } */}
           </main>
       <Footer />
       <Toaster position="top-center" toastOptions={{
