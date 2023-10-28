@@ -1,5 +1,6 @@
 .ipynb_checkpoints
 .env
+.env.gs
 .local
 __pycache__
 
@@ -8,4 +9,7 @@ data/
 streamlit/*.json
 streamlit/*.pkl
 streamlit/*.csv
+notebooks/*.csv
+notebooks/*.pkl
+notebooks/*.json
 .DS_Store
