@@ -15,28 +15,17 @@ const Lobby = () => {
             p-0 h-screen
         ">  
             {/* < RankingsDropdown /> */}
-            {/* < UtilsBar />
+            < UtilsBar />
             <LobbyTable/>
-            <TableBrowserPanel /> */}
+            <TableBrowserPanel />
             
-            <span className="flex flex-col justify-center items-center
-            text-white text-2xl font-bold
-            mx-auto mt-7
-            ">
-                <span>GAME CLOSED FOR REFACTOR!</span>
-                <span>GAME CLOSED FOR REFACTOR!</span>
-                <span>GAME CLOSED FOR REFACTOR!</span>
-                <span>GAME CLOSED FOR REFACTOR!</span>
-                <span>GAME CLOSED FOR REFACTOR!</span>
-            
-            </span>
-            {/* <div className="
+            <div className="
                 h-2/5 min-h-[240px] mt-1
                 rounded-b-lg
             ">
-               
+            
             <ChatWindow room="lobby1" msgLimit={100} />
-            </div> */}
+            </div>
         </div>
     )
 }
