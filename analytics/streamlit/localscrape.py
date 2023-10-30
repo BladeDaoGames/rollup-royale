@@ -105,7 +105,7 @@ def getUserStats(address:str, contract:any, index:int=0):
 
 def getBurnerParent(series:any, contract:any):
     #make 1k to 5k
-    if (series.name>-1):
+    if (series.name>19999 and series.name<30000):
         try:
             if("burnerParent" in series):
                 if(series["burnerParent"] == "0x0" or series["burnerParent"] == "" or \
